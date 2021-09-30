@@ -1,24 +1,29 @@
-import logo from './logo.svg';
 import './App.css';
+import React from 'react';
+import AuthenticationPage from './pages/AuthenticationPage';
+import LandingPage from './pages/LandingPage';
+import MatchingPage from './pages/MatchingPage';
+import UserProfilePage from './pages/UserProfilePage';
+import CollaborationPage from './pages/CollaborationPage';
+
+import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className='App'>
+        <header className='App-header'>
+          <Switch>
+            <Route path='/about' component={LandingPage} />
+            <Route path='/login' component={AuthenticationPage} />
+            <Route path='/match' component={MatchingPage} />
+            <Route path='/profile' component={UserProfilePage} />
+            <Route path='/collaborate' component={CollaborationPage} />
+            <Route render={() => <Redirect to={{ pathname: '/about' }} />} />
+          </Switch>
+        </header>
+      </div>
+    </Router>
   );
 }
 
