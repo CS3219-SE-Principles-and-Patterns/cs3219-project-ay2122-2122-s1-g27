@@ -10,7 +10,14 @@ import { BACKGROUND_COLOR, NAVBAR_COLOR } from './Constants';
 import theme from './Theme';
 import logo from './assets/PeerPrepLogo.png';
 import { Box, AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
-import { BrowserRouter as Router, Switch, Route, Redirect, Link } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+  Link,
+  useLocation
+} from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 
 const AppContainer = styled(Grid)({
@@ -56,7 +63,9 @@ const PeerPrepText = styled(Typography)(({ theme }) => ({
   }
 }));
 
-function NavBar() {
+function NavBar(props) {
+  const { pathname } = useLocation();
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <StyledAppBar position='static'>
@@ -71,13 +80,15 @@ function NavBar() {
             PeerPrep
           </PeerPrepText>
 
-          <Button color='inherit'>
-            <LoginLink to='/login'>
-              <Typography variant='h6' sx={{ textTransform: 'none', fontWeight: 600 }}>
-                Sign In
-              </Typography>
-            </LoginLink>
-          </Button>
+          {pathname != '/login' ? (
+            <Button color='inherit'>
+              <LoginLink to='/login'>
+                <Typography variant='h6' sx={{ textTransform: 'none', fontWeight: 600 }}>
+                  Sign In
+                </Typography>
+              </LoginLink>
+            </Button>
+          ) : null}
         </Toolbar>
       </StyledAppBar>
     </Box>
