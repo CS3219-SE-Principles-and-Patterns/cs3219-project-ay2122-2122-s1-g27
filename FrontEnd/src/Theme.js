@@ -6,6 +6,7 @@ const theme = createTheme({
     fontFamily: '"Source Sans Pro", sans-serif;'
   },
   palette: {
+    mode: 'dark',
     background: {
       default: BACKGROUND_COLOR,
       paper: BACKGROUND_COLOR

@@ -1,6 +1,6 @@
-import { Box, Grid, Button, Typography } from '@mui/material';
+import { Grid, Button, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import { React, Fragment } from 'react';
+import { React } from 'react';
 import { Link } from 'react-router-dom';
 import LandingPageBanner from '../../assets/LandingPageBanner.png';
 

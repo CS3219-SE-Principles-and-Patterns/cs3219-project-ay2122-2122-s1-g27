@@ -80,7 +80,7 @@ function NavBar(props) {
             PeerPrep
           </PeerPrepText>
 
-          {pathname != '/login' ? (
+          {pathname !== '/login' ? (
             <Button color='inherit'>
               <LoginLink to='/login'>
                 <Typography variant='h6' sx={{ textTransform: 'none', fontWeight: 600 }}>
