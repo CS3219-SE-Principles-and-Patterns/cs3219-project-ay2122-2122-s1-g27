@@ -85,21 +85,21 @@ function Description() {
         </Typography>
       </Grid>
       <Grid item xs={12} container justifyContent='center'>
-        <Button
-          variant='contained'
-          sx={{
-            backgroundColor: '#7EA151',
-            width: '270px',
-            marginTop: '20px',
-            textTransform: 'none'
-          }}
-        >
-          <LoginLink to='/login'>
-            <Typography variant='subtitle1' sx={{ fontWeight: 600 }}>
+        <LoginLink to='/login'>
+          <Button
+            variant='contained'
+            sx={{
+              backgroundColor: '#7EA151',
+              width: '270px',
+              marginTop: '20px',
+              textTransform: 'none'
+            }}
+          >
+            <Typography variant='subtitle1' sx={{ color: '#FCFCFC', fontWeight: 600 }}>
               Join Now!
             </Typography>
-          </LoginLink>
-        </Button>
+          </Button>
+        </LoginLink>
       </Grid>
     </Grid>
   );

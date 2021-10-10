@@ -6,8 +6,8 @@ import UserProfilePage from './pages/UserProfilePage';
 import CollaborationPage from './pages/CollaborationPage';
 import { styled } from '@mui/system';
 import { Grid } from '@mui/material';
-import { BACKGROUND_COLOR, NAVBAR_COLOR } from './Constants';
-import theme from './Theme';
+import { BACKGROUND_COLOR, NAVBAR_COLOR } from './utils/StylingConstants';
+import theme from './utils/Theme';
 import logo from './assets/PeerPrepLogo.png';
 import { Box, AppBar, Toolbar, Typography, Button, IconButton } from '@mui/material';
 import {

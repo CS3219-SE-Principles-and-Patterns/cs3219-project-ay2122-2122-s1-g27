@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material/styles';
-import { BACKGROUND_COLOR } from './Constants';
+import { BACKGROUND_COLOR } from './StylingConstants';
 
 const theme = createTheme({
   typography: {

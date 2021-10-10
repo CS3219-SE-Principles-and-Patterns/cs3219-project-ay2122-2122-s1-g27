@@ -54,7 +54,8 @@ const StyledButton = styled(Button)(({ theme }) => ({
     width: '60%'
   },
   backgroundColor: '#FFC727 ',
-  textTransform: 'none'
+  textTransform: 'none',
+  padding: '2%'
 }));
 
 function AuthenticationPage() {
