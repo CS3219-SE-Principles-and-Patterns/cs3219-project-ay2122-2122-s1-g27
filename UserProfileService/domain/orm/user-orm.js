@@ -4,11 +4,13 @@ const db = require('../repositories/mongo')
  * ORM only defines the calls to the DB Layer to CRUD data
  */
 
-exports.FindUser = async () => {
+exports.UserExists = async (username) => {
   try {
-    return db.users.findOne({
-      username: 'DivineDX',
+    const user = await db.users.findOne({
+      username,
     })
+    if (user) return true
+    return false
   } catch (err) {
     console.log('Error, cannot find user', err)
     return { err }
@@ -28,3 +30,9 @@ exports.CreateUser = async (username, password) => {
     return { err }
   }
 }
+
+// exports.LoginUser = async (username, password) => {
+//   try {
+//     const user = db.users
+//   } catch (err) {}
+// }

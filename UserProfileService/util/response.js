@@ -4,7 +4,7 @@
  * @param {String} message
  * @param {Array} data
  */
-exports.Response = async (status, message, data) => ({
+exports.Response = (status, message, data = []) => ({
   status,
   message,
   data,
