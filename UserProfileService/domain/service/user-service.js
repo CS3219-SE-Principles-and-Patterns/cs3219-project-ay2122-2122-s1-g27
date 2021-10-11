@@ -11,8 +11,8 @@ const { STATUS_SUCCESS, STATUS_FAIL } = require('../../util/enums')
  * All Functions defined here will have `req` and `res`
  */
 
-const { JWT_SECRET_TOKEN } = process.env
-// const REFRESH_TOKEN = process.env.REFRESH_TOKEN
+const { JWT_SECRET_TOKEN, REFRESH_TOKEN } = process.env
+const refreshTokens = [] // TODO: change to Redis/Cache
 
 const internalServerError = (err, from, res) => {
   console.log(`From: ${from}, Error: ${err}`)
@@ -24,6 +24,10 @@ const missingArgsError = async (from, res) => {
   console.log(`From: ${from}`)
   const resp = Response(STATUS_FAIL, 'Missing HTTP Request Body Parameters')
   return res.status(400).json(resp)
+}
+
+const generateAccessToken = (username) => {
+  return (token = jwt.sign({ username }, JWT_SECRET_TOKEN, { expiresIn: '2m' }))
 }
 
 // middleware for auth JWT
@@ -76,10 +80,12 @@ exports.LoginUser = async (req, res) => {
         // exists, now check for correct hashed password
         if (await bcrypt.compare(password, user.password)) {
           // verified, create JWT
-
-          const token = jwt.sign({ username }, JWT_SECRET_TOKEN, { expiresIn: '2m' })
+          const accessToken = generateAccessToken(username)
+          const refreshToken = jwt.sign(username, REFRESH_TOKEN)
+          refreshTokens.push(refreshToken)
           const resp = Response(STATUS_SUCCESS, 'Credentials Confirmed', {
-            accessToken: token,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
           })
           return res.status(200).json(resp)
         }
@@ -94,6 +100,19 @@ exports.LoginUser = async (req, res) => {
   } catch (err) {
     return internalServerError(err, 'LoginUser', res)
   }
+}
+
+exports.RefreshToken = async (req, res) => {
+  const refreshToken = req.body.token
+  if (refreshToken == null)
+    return res.sendStatus(401).json(Response(STATUS_FAIL, 'Token not present in Body'))
+  if (!refreshTokens.includes(refreshToken))
+    return res.sendStatus(403).json(Response(STATUS_FAIL, 'Access Denied'))
+  jwt.verify(refreshToken, REFRESH_TOKEN, (err, user) => {
+    if (err) return res.sendStatus(403).json(Response(STATUS_FAIL, 'Refresh Token Invalid'))
+    const accessToken = generateAccessToken(user.username)
+    res.json(Response(STATUS_SUCCESS, 'Refresh Token Success', { accessToken: accessToken }))
+  })
 }
 
 // use this route to verify

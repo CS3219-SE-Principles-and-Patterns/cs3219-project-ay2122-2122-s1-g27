@@ -9,6 +9,7 @@ routes.get('/', (_, res) => res.send('Hello World with Express'))
 routes.post('/user/create', UserService.CreateUser)
 routes.post('/user/login', UserService.LoginUser)
 routes.get('/user/auth', UserService.AuthRoute)
+routes.post('/user/token', UserService.RefreshToken)
 
 /**
  * Set the router of the Express Server
