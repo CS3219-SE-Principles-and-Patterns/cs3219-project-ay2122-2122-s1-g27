@@ -1,23 +1,45 @@
+const bcrypt = require('bcrypt')
+
 const ormUser = require('../orm/user-orm')
 const { Response } = require('../../util/response')
+const { STATUS_SUCCESS, STATUS_FAIL } = require('../../util/enums')
 
 /**
  * Service Layer defines the HTTP Route Handler Functions
  * All Functions defined here will have `req` and `res`
  */
-// contain the function definition of the HTTP Routes
-exports.FindUser = async (_, res) => {
+
+const internalServerError = async (err, from, res) => {
+  console.log(`From: ${from}, Error: ${err}`)
+  const resp = Response(STATUS_FAIL, 'DB Failure')
+  return res.status(500).send(resp)
+}
+
+exports.CreateUser = async (req, res) => {
   try {
-    const respOrm = await ormUser.FindUser()
-    if (!respOrm.err) {
-      const resp = await Response('Success', 'Found User', respOrm)
-      return res.status(200).json(resp)
+    const { username, password } = req.body
+    if (username && password) {
+      const usernameExist = await ormUser.UserExists(username)
+      if (!usernameExist) {
+        // doesn't exist, can safely create
+        const hashed = await bcrypt.hash(password, 10)
+        const respOrm = await ormUser.CreateUser(username, hashed)
+        if (!respOrm.err && respOrm) {
+          // successfully created
+          const resp = Response(STATUS_SUCCESS, 'User Successfully Created')
+          return res.status(201).json(resp)
+        }
+        console.log('Cannot Create User: ', respOrm.err)
+        const resp = Response(STATUS_FAIL, 'Cannot Create User')
+        return res.status(400).json(resp)
+      }
+      console.log(`User-${username} already exists, rejecting CreateUser`)
+      const resp = Response(STATUS_FAIL, 'User already exists')
+      return res.status(409).json(resp)
     }
-    const resp = await Response('Failure', 'Cannot Find User', respOrm)
-    return res.status(404).json(resp)
+    const resp = Response(STATUS_FAIL, 'Missing Args from Request Body')
+    return res.status(400).json(resp)
   } catch (err) {
-    console.log('err: ', err)
-    const resp = await Response('Failure', 'DB failed', [])
-    return res.status(500).send(resp)
+    return internalServerError(err, 'CreateUser', res)
   }
 }

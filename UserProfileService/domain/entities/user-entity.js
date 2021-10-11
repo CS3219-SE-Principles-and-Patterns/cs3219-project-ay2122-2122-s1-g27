@@ -8,8 +8,9 @@ module.exports = (db) => {
     username: {
       type: String,
       required: true,
+      unique: true,
     },
-    hashedPassword: {
+    password: {
       type: String,
       required: true,
     },
