@@ -14,3 +14,17 @@ exports.FindUser = async () => {
     return { err }
   }
 }
+
+exports.CreateUser = async (username, password) => {
+  try {
+    const user = db.users({
+      username,
+      password,
+    })
+    user.save()
+    return true
+  } catch (err) {
+    console.log('Cannot create user', err)
+    return { err }
+  }
+}

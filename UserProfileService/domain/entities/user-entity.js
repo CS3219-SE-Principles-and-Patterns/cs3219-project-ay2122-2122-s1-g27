@@ -9,7 +9,7 @@ module.exports = (db) => {
       type: String,
       required: true,
     },
-    hashedPassword: {
+    password: {
       type: String,
       required: true,
     },
