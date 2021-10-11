@@ -31,8 +31,13 @@ exports.CreateUser = async (username, password) => {
   }
 }
 
-// exports.LoginUser = async (username, password) => {
-//   try {
-//     const user = db.users
-//   } catch (err) {}
-// }
+exports.FindUser = async (username) => {
+  try {
+    return db.users.findOne({
+      username,
+    })
+  } catch (err) {
+    console.log('Error, cannot find user', err)
+    return { err }
+  }
+}

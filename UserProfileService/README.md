@@ -18,3 +18,12 @@ To start, we recommend installing the `ESLint`(dbaeumer.vscode-eslint) and `Pret
 
 - `yarn lint`: Use ESLint to check for any errors`
 - `yarn lint --fix`: Use ESLint to auto-fix any errors highlighted
+
+### `.env` File
+
+Place the following variables under this file
+
+```
+JWT_SECRET_TOKEN=???
+REFRESH_TOKEN=???
+```
