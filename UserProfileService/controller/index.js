@@ -1,15 +1,16 @@
 const { Router } = require('express')
 
 const UserService = require('../domain/service/user-service')
+const AuthService = require('../domain/service/auth-service')
 
 const routes = Router()
 
 // Controller will contain all the User-defined Routes
 routes.get('/', (_, res) => res.send('Hello World with Express'))
 routes.post('/user/create', UserService.CreateUser)
-routes.post('/user/login', UserService.LoginUser)
-routes.get('/user/auth', UserService.AuthRoute)
-routes.post('/user/token', UserService.RefreshToken)
+routes.post('/user/login', AuthService.LoginUser)
+routes.get('/user/auth', AuthService.AuthRoute)
+routes.post('/user/token', AuthService.RefreshToken)
 
 /**
  * Set the router of the Express Server
