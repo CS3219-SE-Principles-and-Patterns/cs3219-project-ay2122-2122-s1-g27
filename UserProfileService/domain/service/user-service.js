@@ -11,6 +11,9 @@ exports.CreateUser = async (req, res) => {
     const { username, password } = req.body
     if (username && password) {
       const usernameExist = await ormUser.UserExists(username)
+      if (usernameExist.err) {
+        throw usernameExist.err
+      }
       if (!usernameExist) {
         // doesn't exist, can safely create
         const hashed = await bcrypt.hash(password, 10)

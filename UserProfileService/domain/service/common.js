@@ -13,7 +13,7 @@ exports.InternalServerError = (err, from, res) => {
 }
 
 exports.MissingArgsError = (from, res) => {
-  console.log(`From: ${from}`)
+  console.log(`From: ${from}, MissingArgs`)
   const resp = Response(STATUS_FAIL, 'Missing HTTP Request Body Parameters')
   return res.status(400).json(resp)
 }

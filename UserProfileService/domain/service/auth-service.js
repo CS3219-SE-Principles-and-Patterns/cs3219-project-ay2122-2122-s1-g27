@@ -75,7 +75,7 @@ exports.RefreshToken = async (req, res) => {
 exports.AuthRoute = async (req, res) => {
   authenticateToken(req, res, () =>
     res.status(200).json({
-      status: 'success',
+      status: STATUS_SUCCESS,
       message: 'Token is verified',
     })
   )
