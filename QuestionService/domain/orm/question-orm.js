@@ -1,7 +1,5 @@
 const db = require('../repositories/mongo')
 
-const Question = db.questions()
-
 /**
  * ORM only defines the calls to the DB Layer to CRUD data
  */
@@ -35,7 +33,7 @@ exports.AddQuestion = async (req) => {
     //   throw new Error('A question with the specified title already exists')
     // }
 
-    const question = new Question({
+    const question = db.questions({
       title: data.title,
       difficulty: data.difficulty,
       topic: data.topic,
@@ -60,7 +58,7 @@ exports.DeleteQuestion = async (req) => {
   try {
     const data = req.body
 
-    Question.deleteOne(
+    db.questions.deleteOne(
       {
         title: data.title,
       },
@@ -78,9 +76,9 @@ exports.DeleteQuestion = async (req) => {
       questionBody: data.questionBody,
       answer: data.answer,
     }
-    const question = new Question(questionData)
+    // const question = new Question(questionData)
 
-    return question
+    return questionData
   } catch (err) {
     console.log('Delete Question Failed: ', err)
     return { err }
