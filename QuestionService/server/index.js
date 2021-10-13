@@ -9,6 +9,6 @@ server.use(express.json())
 server.use(cors()) // config cors so that front-end can use
 server.options('*', cors())
 
-require('../service/controller')(server)
+require('../controller')(server)
 
 module.exports = server

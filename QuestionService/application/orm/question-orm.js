@@ -1,5 +1,4 @@
-const db = require('../infrastructure/mongo')
-
+const questionsRepo = require('../../infrastructure/repository')
 /**
  * ORM only defines the calls to the DB Layer to CRUD data
  */
@@ -11,12 +10,13 @@ exports.FindQuestion = async (req) => {
   try {
     const data = req.body
 
-    const currentTitleExists = await db.questions.findOne({ title: data.title })
+    const currentTitleExists = await questionsRepo.findOne({ title: data.title })
     if (!currentTitleExists) {
       throw new Error('No such question exists')
     }
 
     const currentQuestion = currentTitleExists
+    console.log(currentQuestion)
     return currentQuestion
   } catch (err) {
     console.log('Error while accessing DB for finding single question', err)
@@ -31,12 +31,12 @@ exports.AddQuestion = async (req) => {
   try {
     const data = req.body
 
-    const currentTitleExists = await db.questions.findOne({ title: data.title })
+    const currentTitleExists = await questionsRepo.findOne({ title: data.title })
     if (currentTitleExists) {
       throw new Error('A question with the specified title already exists')
     }
 
-    const question = db.questions({
+    const question = await questionsRepo.createOne({
       title: data.title,
       difficulty: data.difficulty,
       topic: data.topic,
@@ -44,12 +44,12 @@ exports.AddQuestion = async (req) => {
       answer: data.answer,
     })
 
-    // save model to database
     question.save((err) => {
       if (err) {
         throw new Error('Save to database failed')
       }
     })
+    console.log(question)
 
     return question
   } catch (err) {
@@ -65,15 +65,17 @@ exports.DeleteQuestion = async (req) => {
   try {
     const data = req.body
 
-    const currentTitleExists = await db.questions.findOne({ title: data.title })
+    const currentTitleExists = await questionsRepo.findOne({ title: data.title })
     if (!currentTitleExists) {
       throw new Error('A question with the specified title does not exist')
     }
 
     // only allow one question of the same title to exist
-    await db.questions.deleteMany({
+    await questionsRepo.deleteMany({
       title: data.title,
     })
+
+    console.log(currentTitleExists)
 
     return currentTitleExists
   } catch (err) {
@@ -87,7 +89,7 @@ Finds all questions in the database
 */
 exports.FindAllQuestions = async () => {
   try {
-    return db.questions.find({})
+    return questionsRepo.findAll()
   } catch (err) {
     console.log('Error while accessing DB for getting all questions', err)
     return { err }
