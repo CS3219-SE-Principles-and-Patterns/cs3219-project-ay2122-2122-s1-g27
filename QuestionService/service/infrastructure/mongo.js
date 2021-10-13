@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const config = require('../../configs').development
-const question = require('../entities/question-entity')
+const question = require('../domain/question-entity')
 
 /**
  * (OUT PORT)

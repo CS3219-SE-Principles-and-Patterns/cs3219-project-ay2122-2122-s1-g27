@@ -17,7 +17,7 @@ This layer connects our repositories to a Database provider (Mongoose; infrastru
 Therefore, this is a service that uses the Hexagonal Architecture.
 */
 const { Router } = require('express')
-const QuestionService = require('../domain/service/question-service')
+const QuestionService = require('../application/question-service')
 
 const routes = Router()
 

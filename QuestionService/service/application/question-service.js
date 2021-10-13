@@ -1,6 +1,6 @@
-const { METADATA } = require('../../constants/constants')
-const { Response, wrapResult } = require('../../util/response')
-const ormQuestion = require('../orm/question-orm')
+const { METADATA } = require('../constants/constants')
+const { Response, wrapResult } = require('../util/response')
+const ormQuestion = require('../domain/question-orm')
 
 /**
  * Application Layer (Service) defines the HTTP Route Handler Functions
