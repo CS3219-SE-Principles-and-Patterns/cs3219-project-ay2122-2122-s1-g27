@@ -19,7 +19,6 @@ if (dbURI) {
     console.log('MongoDB Connected Successfully')
 
     const questionSchema = new mongoose.Schema(schema)
-    console.log(schema)
     db.questions = mongoose.model('questions', questionSchema)
 
     module.exports = db

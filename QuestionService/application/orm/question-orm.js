@@ -16,7 +16,6 @@ exports.FindQuestion = async (req) => {
     }
 
     const currentQuestion = currentTitleExists
-    console.log(currentQuestion)
     return currentQuestion
   } catch (err) {
     console.log('Error while accessing DB for finding single question', err)
@@ -49,7 +48,6 @@ exports.AddQuestion = async (req) => {
         throw new Error('Save to database failed')
       }
     })
-    console.log(question)
 
     return question
   } catch (err) {
@@ -74,8 +72,6 @@ exports.DeleteQuestion = async (req) => {
     await questionsRepo.deleteMany({
       title: data.title,
     })
-
-    console.log(currentTitleExists)
 
     return currentTitleExists
   } catch (err) {
