@@ -4,7 +4,7 @@ const question = require('../entities/question-entity')
 
 /**
  * (OUT PORT)
- * Layer that communicates directly with the Database.
+ * Infrastructure Layer that communicates directly with the Database.
  * Here. we connect to database and then export this db representation.
  */
 const dbURI = config.db.URI
