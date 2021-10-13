@@ -3,11 +3,12 @@ module.exports = {
     browser: true,
     commonjs: true,
     es2021: true,
+    mocha: true,
   },
   extends: ['airbnb', 'prettier'],
   plugins: ['prettier'],
   parserOptions: {
-    ecmaVersion: 8,
+    ecmaVersion: 2020,
   },
   rules: {
     'prettier/prettier': ['error'],

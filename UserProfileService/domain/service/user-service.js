@@ -1,25 +1,19 @@
+require('dotenv').config()
 const bcrypt = require('bcrypt')
 
 const ormUser = require('../orm/user-orm')
 const { Response } = require('../../util/response')
 const { STATUS_SUCCESS, STATUS_FAIL } = require('../../util/enums')
-
-/**
- * Service Layer defines the HTTP Route Handler Functions
- * All Functions defined here will have `req` and `res`
- */
-
-const internalServerError = async (err, from, res) => {
-  console.log(`From: ${from}, Error: ${err}`)
-  const resp = Response(STATUS_FAIL, 'DB Failure')
-  return res.status(500).send(resp)
-}
+const { InternalServerError, MissingArgsError } = require('./common')
 
 exports.CreateUser = async (req, res) => {
   try {
     const { username, password } = req.body
     if (username && password) {
       const usernameExist = await ormUser.UserExists(username)
+      if (usernameExist.err) {
+        throw usernameExist.err
+      }
       if (!usernameExist) {
         // doesn't exist, can safely create
         const hashed = await bcrypt.hash(password, 10)
@@ -37,9 +31,8 @@ exports.CreateUser = async (req, res) => {
       const resp = Response(STATUS_FAIL, 'User already exists')
       return res.status(409).json(resp)
     }
-    const resp = Response(STATUS_FAIL, 'Missing Args from Request Body')
-    return res.status(400).json(resp)
+    return MissingArgsError('CreateUser', res)
   } catch (err) {
-    return internalServerError(err, 'CreateUser', res)
+    return InternalServerError(err, 'CreateUser', res)
   }
 }
