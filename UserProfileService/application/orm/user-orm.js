@@ -1,4 +1,4 @@
-const db = require('../repositories/mongo')
+const db = require('../../infrastructure/persistence/mongo')
 
 /**
  * ORM only defines the calls to the DB Layer to CRUD data

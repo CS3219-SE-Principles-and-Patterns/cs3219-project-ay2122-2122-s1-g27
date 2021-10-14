@@ -1,7 +1,7 @@
 const { Router } = require('express')
 
-const UserService = require('../domain/service/user-service')
-const AuthService = require('../domain/service/auth-service')
+const UserService = require('../application/service/user-service')
+const AuthService = require('../application/service/auth-service')
 
 const routes = Router()
 
