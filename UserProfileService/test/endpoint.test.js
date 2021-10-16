@@ -3,7 +3,7 @@ const chaiHttp = require('chai-http')
 const mongoose = require('mongoose')
 
 const app = require('../server')
-const Users = require('../domain/repositories/mongo').users
+const Users = require('../infrastructure/persistence/mongo').users
 const { URI } = require('../configs').development.db
 const { USER_STUB } = require('./stubs')
 const { VerifySuccess, VerifyFailure } = require('./utils')

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const config = require('../../configs').development
-const user = require('../entities/user-entity')
+const user = require('../../domain/entities/user-entity')
 
 /**
  * (OUT PORT)
