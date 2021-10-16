@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/ManasVegi/CS3219-G27-deployment.git/static/css/main.58cb5d95.chunk.css",
+    "main.js": "/ManasVegi/CS3219-G27-deployment.git/static/js/main.f5b0c052.chunk.js",
+    "main.js.map": "/ManasVegi/CS3219-G27-deployment.git/static/js/main.f5b0c052.chunk.js.map",
+    "runtime-main.js": "/ManasVegi/CS3219-G27-deployment.git/static/js/runtime-main.df49db5d.js",
+    "runtime-main.js.map": "/ManasVegi/CS3219-G27-deployment.git/static/js/runtime-main.df49db5d.js.map",
+    "static/js/2.7f709def.chunk.js": "/ManasVegi/CS3219-G27-deployment.git/static/js/2.7f709def.chunk.js",
+    "static/js/2.7f709def.chunk.js.map": "/ManasVegi/CS3219-G27-deployment.git/static/js/2.7f709def.chunk.js.map",
+    "static/js/3.dc1270b6.chunk.js": "/ManasVegi/CS3219-G27-deployment.git/static/js/3.dc1270b6.chunk.js",
+    "static/js/3.dc1270b6.chunk.js.map": "/ManasVegi/CS3219-G27-deployment.git/static/js/3.dc1270b6.chunk.js.map",
+    "index.html": "/ManasVegi/CS3219-G27-deployment.git/index.html",
+    "static/css/main.58cb5d95.chunk.css.map": "/ManasVegi/CS3219-G27-deployment.git/static/css/main.58cb5d95.chunk.css.map",
+    "static/js/2.7f709def.chunk.js.LICENSE.txt": "/ManasVegi/CS3219-G27-deployment.git/static/js/2.7f709def.chunk.js.LICENSE.txt",
+    "static/media/LandingPageBanner.a782dea4.png": "/ManasVegi/CS3219-G27-deployment.git/static/media/LandingPageBanner.a782dea4.png",
+    "static/media/LoginPage.3d6951ea.png": "/ManasVegi/CS3219-G27-deployment.git/static/media/LoginPage.3d6951ea.png",
+    "static/media/PeerPrepLogo.651b4125.png": "/ManasVegi/CS3219-G27-deployment.git/static/media/PeerPrepLogo.651b4125.png",
+    "static/media/logo.6ce24c58.svg": "/ManasVegi/CS3219-G27-deployment.git/static/media/logo.6ce24c58.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.df49db5d.js",
+    "static/js/2.7f709def.chunk.js",
+    "static/css/main.58cb5d95.chunk.css",
+    "static/js/main.f5b0c052.chunk.js"
+  ]
+}
