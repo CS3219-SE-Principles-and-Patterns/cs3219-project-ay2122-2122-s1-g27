@@ -11,8 +11,7 @@ const { JWT_SECRET_TOKEN, REFRESH_TOKEN } = process.env
 
 const refreshTokens = [] // TODO: change to Redis/Cache
 
-const generateAccessToken = (username) =>
-  jwt.sign({ username }, JWT_SECRET_TOKEN, { expiresIn: '2m' })
+const generateAccessToken = (username) => jwt.sign({ username }, JWT_SECRET_TOKEN) // no expiry for now
 
 // middleware for auth JWT
 const authenticateToken = (req, res, next) => {
