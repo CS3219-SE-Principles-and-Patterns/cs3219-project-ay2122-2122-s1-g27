@@ -9,6 +9,14 @@ on:
   pull_request:
     branches: [ master ]
 
+env:
+  JWT_SECRET_TOKEN: d48b5528be3aa90d6029c2c41344efc423e64863baee9916a1370ad8a3d0b7fbefb78ddcf49b5bf557b9adeb19a1f2a22153868c1d8c070728393343b9de67ca
+  REFRESH_TOKEN: d035fc5eb9047053dbb1f6374877b9ee43e42f2de99fdc32b013f0ca125eb256953bbc5398af570870d8cc22a9f4e6c66d0b964615b552e0d7f6fb32acb1d99d
+  DB_HOST: localhost
+  DB_PORT: 27017
+  DB_NAME: UserProfileDB
+  NODE_DOCKER_PORT: 8080
+  
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -26,7 +34,7 @@ jobs:
       uses: actions/checkout@v2
       
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
