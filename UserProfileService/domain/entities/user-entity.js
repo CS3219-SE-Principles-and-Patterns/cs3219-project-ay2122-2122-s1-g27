@@ -15,5 +15,6 @@ module.exports = (db) => {
       required: true,
     },
   })
-  return db.model('users', userSchema)
+  const collectionName = 'users'
+  return db.model('users', userSchema, collectionName)
 }
