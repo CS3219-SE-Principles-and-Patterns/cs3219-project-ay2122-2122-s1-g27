@@ -1,11 +1,11 @@
 const mongoose = require('mongoose')
-
 const config = require('../../configs').development
-const schema = require('../../domain/entities/user-entity')
+const schema = require('../../domain/question-entity')
 
 /**
  * (OUT PORT)
- * Layer that communicates directly with the Database
+ * Infrastructure Layer that communicates directly with the Database. Facilitates persistence.
+ * This connects to database and then we export data representations into Repository which consists contracts for interaction.
  */
 
 const constructMongoDBURI = (dbConfig) => {
@@ -26,7 +26,7 @@ const constructMongoDBURI = (dbConfig) => {
     return `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=admin`
   }
   console.log('Warning, using default MongoDB URI')
-  return 'mongodb://localhost:27017/UserProfileDB'
+  return 'mongodb://localhost:27017/QuestionDB'
 }
 
 const dbURI = constructMongoDBURI(config.db)
@@ -41,9 +41,10 @@ if (dbURI) {
   const conn = mongoose.connection
   if (conn) {
     console.log('MongoDB Connected Successfully')
-    const userSchema = new mongoose.Schema(schema)
-    const collectionName = 'users'
-    db.users = mongoose.model('users', userSchema, collectionName)
+
+    const questionSchema = new mongoose.Schema(schema)
+    const collectionName = 'questions'
+    db.questions = mongoose.model('questions', questionSchema, collectionName)
 
     module.exports = db
   } else {
