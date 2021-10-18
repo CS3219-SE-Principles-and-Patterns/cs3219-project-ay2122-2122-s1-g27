@@ -1,4 +1,4 @@
 exports.USER_STUB = {
-  username: 'Alistair Cockburn',
+  username: 'AlistairCockburn',
   password: 'I am awesome',
 }
