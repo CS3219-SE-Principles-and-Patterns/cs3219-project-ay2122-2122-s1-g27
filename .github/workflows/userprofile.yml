@@ -39,6 +39,7 @@ jobs:
         working-directory: ./UserProfileService
         node-version: ${{ matrix.node-version }}
         cache: 'yarn'
+        cache-dependency-path: ./UserProfileService/yarn.lock
     
     - name: Start MongoDB
       uses: supercharge/mongodb-github-action@1.6.0
