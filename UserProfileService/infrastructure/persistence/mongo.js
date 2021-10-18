@@ -19,9 +19,11 @@ const constructMongoDBURI = (dbConfig) => {
     const { DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME } = dbConfig
     if (dbConfig.DB_USER === '' || dbConfig.DB_PASSWORD === '') {
       // no need permisions
+      console.log('Running without permissions')
       return `mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`
     }
-    return `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`
+    console.log('Running with permissions')
+    return `mongodb://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?authSource=admin`
   }
   console.log('Warning, using default MongoDB URI')
   return 'mongodb://localhost:27017/UserProfileDB'
