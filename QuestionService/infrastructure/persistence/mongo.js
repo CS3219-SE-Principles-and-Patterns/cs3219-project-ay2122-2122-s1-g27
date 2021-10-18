@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
-const config = require('../configs').development
-const schema = require('../domain/question-entity')
+const config = require('../../configs').development
+const schema = require('../../domain/question-entity')
 
 /**
  * (OUT PORT)

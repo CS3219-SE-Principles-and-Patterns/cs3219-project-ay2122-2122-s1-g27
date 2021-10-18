@@ -18,6 +18,7 @@ const configs = {
       DB_HOST: DB_HOST || 'localhost',
       DB_PORT: DB_PORT || '27017',
       DB_NAME: DB_NAME || 'UserProfileDB',
+      URI: 'mongodb://localhost:27017/UserProfileDB', // for local testing
     },
   },
   production: {
@@ -28,6 +29,7 @@ const configs = {
       DB_HOST: DB_HOST || 'localhost',
       DB_PORT: DB_PORT || '27017',
       DB_NAME: DB_NAME || 'UserProfileDB',
+      URI: 'mongodb://localhost:27017/UserProfileDB', // for local testing
     },
   },
 }

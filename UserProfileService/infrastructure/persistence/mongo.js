@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const config = require('../../configs').development
-const user = require('../../domain/entities/user-entity')
+const schema = require('../../domain/entities/user-entity')
 
 /**
  * (OUT PORT)
@@ -41,7 +41,10 @@ if (dbURI) {
   const conn = mongoose.connection
   if (conn) {
     console.log('MongoDB Connected Successfully')
-    db.users = user(mongoose)
+    const userSchema = new mongoose.Schema(schema)
+    const collectionName = 'users'
+    db.users = mongoose.model('users', userSchema, collectionName)
+
     module.exports = db
   } else {
     console.log('Error connecting MongoDB')

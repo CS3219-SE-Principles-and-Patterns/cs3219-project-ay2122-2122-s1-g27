@@ -1,4 +1,4 @@
-const questionsRepo = require('../../infrastructure/repository')
+const questionsRepo = require('../../infrastructure/persistence/repository')
 /**
  * ORM only defines the calls to the DB Layer to CRUD data
  */
