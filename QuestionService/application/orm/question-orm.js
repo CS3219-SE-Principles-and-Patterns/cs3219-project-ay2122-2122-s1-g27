@@ -4,7 +4,7 @@ const questionsRepo = require('../../infrastructure/persistence/repository')
  */
 
 /*
-Accesses a question in the database based on its title and returns this question.
+Accesses a question in the database based on its id and returns this question.
 */
 exports.FindQuestion = async (req) => {
   try {
@@ -22,6 +22,30 @@ exports.FindQuestion = async (req) => {
 
     const currentQuestion = currentTitleExists
     return currentQuestion
+  } catch (err) {
+    console.log('Error in finding single question', err)
+    return { err }
+  }
+}
+
+/*
+Accesses a question in the database which satisfy all filters in the request.
+*/
+exports.FindMatchedQuestion = async (req) => {
+  try {
+    const data = req.body
+
+    if (!data.topics || !data.difficulties) {
+      throw new Error('Request is missing some attribute(s)')
+    }
+
+    const filter = { topics: data.topics, difficulties: data.difficulties }
+    const results = await questionsRepo.findMatch(filter)
+    if (!results.length) {
+      throw new Error('No such question id exists')
+    }
+
+    return results
   } catch (err) {
     console.log('Error in finding single question', err)
     return { err }

@@ -9,6 +9,7 @@ routes.get('/', (_, res) => res.send('Welcome to the QuestionService. Do you hav
 // read
 routes.post('/question/', QuestionService.FindQuestionById)
 routes.get('/question/all', QuestionService.FindAllQuestions)
+routes.post('/question/match', QuestionService.FindMatchedQuestion)
 routes.get('/question/metadata', QuestionService.GetQuestionMetadata)
 
 /* 
