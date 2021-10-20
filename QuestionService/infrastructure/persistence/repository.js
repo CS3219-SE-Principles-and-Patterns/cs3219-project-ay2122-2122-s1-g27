@@ -10,8 +10,10 @@ const findOne = async (condition) => questionsDb.findOne(condition)
 
 const findAll = async () => questionsDb.find({})
 
+module.exports = { findOne, findAll, questionsDb }
+
+/* Methods for extensibility: Allow users in the future to add / delete own questions
+
 const createOne = async (params) => questionsDb(params)
-
 const deleteMany = async (params) => questionsDb.deleteMany(params)
-
-module.exports = { findOne, findAll, createOne, deleteMany, questionsDb }
+*/
