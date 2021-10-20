@@ -1,0 +1,14 @@
+{
+    "topics": [
+        "Arrays",
+        "Linked Lists",
+        "Recursion",
+        "Hashing",
+        "Binary Tree"
+    ],
+    "difficulties": [
+        "Easy",
+        "Medium",
+        "Hard"
+    ]
+}
