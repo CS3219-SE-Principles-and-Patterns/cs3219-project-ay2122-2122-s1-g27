@@ -41,7 +41,7 @@ exports.FindMatchedQuestion = async (req) => {
 
     const filter = { topics: data.topics, difficulties: data.difficulties }
     const results = await questionsRepo.findMatch(filter)
-    if (!results.length) {
+    if (!results || results.length === 0) {
       throw new Error('No such question id exists')
     }
     const randomIndex = getRandomNumberBetweenInclMinExclMax(0, results.length)
