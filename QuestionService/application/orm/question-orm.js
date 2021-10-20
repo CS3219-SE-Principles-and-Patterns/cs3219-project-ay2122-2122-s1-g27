@@ -1,4 +1,5 @@
 const questionsRepo = require('../../infrastructure/persistence/repository')
+const { getRandomNumberBetweenInclMinExclMax } = require('../util/utilities')
 /**
  * ORM only defines the calls to the DB Layer to CRUD data
  */
@@ -29,12 +30,11 @@ exports.FindQuestion = async (req) => {
 }
 
 /*
-Accesses a question in the database which satisfy all filters in the request.
+Accesses a question in the database which satisfy all filters in the request, with a random question chosen if multiple questions satisfy the filters.
 */
 exports.FindMatchedQuestion = async (req) => {
   try {
     const data = req.body
-
     if (!data.topics || !data.difficulties) {
       throw new Error('Request is missing some attribute(s)')
     }
@@ -44,8 +44,10 @@ exports.FindMatchedQuestion = async (req) => {
     if (!results.length) {
       throw new Error('No such question id exists')
     }
+    const randomIndex = getRandomNumberBetweenInclMinExclMax(0, results.length)
+    const randomResult = results[randomIndex]
 
-    return results
+    return randomResult
   } catch (err) {
     console.log('Error in finding single question', err)
     return { err }
