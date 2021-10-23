@@ -6,10 +6,11 @@ const { getRandomNumberBetweenInclMinExclMax } = require('../util/utilities')
 
 /*
 Accesses a question in the database based on its id and returns this question.
+Note the current approach uses GET request's req.query; alternatively, can use req.body if a POST request.
 */
 exports.FindQuestion = async (req) => {
   try {
-    const data = req.body // alternatively, can use req.query
+    const data = req.query
 
     if (!data.id) {
       throw new Error('Request has no id attribute')
@@ -113,7 +114,7 @@ exports.FindAllQuestions = async () => {
 
 // exports.AddAllQuestions = async (req) => {
 //   try {
-//     const data = req.body.allQuestions
+//     const data = req.body.questionsData
 
 //     const results = data.map(async (questionData) => {
 //       if (

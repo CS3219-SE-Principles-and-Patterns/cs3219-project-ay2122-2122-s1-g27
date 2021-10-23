@@ -1,7 +1,7 @@
 {
   "questionsData": [
     {
-      "id": "1",
+      "id": 1,
       "title": "testTitle1",
       "difficulty": "Easy",
       "topic": "Arrays",
@@ -9,7 +9,7 @@
       "answer": "fb.com"
     },
     {
-      "id": "2",
+      "id": 2,
       "title": "testTitle2",
       "difficulty": "Easy",
       "topic": "Recursion",
@@ -17,7 +17,7 @@
       "answer": "fb.com"
     },
     {
-      "id": "3",
+      "id": 3,
       "title": "testTitle3",
       "difficulty": "Easy",
       "topic": "Arrays",
@@ -25,7 +25,7 @@
       "answer": "fb.com"
     },
     {
-      "id": "4",
+      "id": 4,
       "title": "testTitle4",
       "difficulty": "Easy",
       "topic": "Hashing",
@@ -33,7 +33,7 @@
       "answer": "fb.com"
     },
     {
-      "id": "5",
+      "id": 5,
       "title": "testTitle5",
       "difficulty": "Medium",
       "topic": "Arrays",
@@ -41,7 +41,7 @@
       "answer": "fb.com"
     },
     {
-      "id": "6",
+      "id": 6,
       "title": "testTitle6",
       "difficulty": "Medium",
       "topic": "Hashing",
@@ -49,7 +49,7 @@
       "answer": "fb.com"
     },
     {
-      "id": "7",
+      "id": 7,
       "title": "testTitle7",
       "difficulty": "Medium",
       "topic": "Arrays",
@@ -57,7 +57,7 @@
       "answer": "fb.com"
     },
     {
-      "id": "8",
+      "id": 8,
       "title": "testTitle8",
       "difficulty": "Easy",
       "topic": "Linked Lists",
@@ -65,7 +65,7 @@
       "answer": "fb.com"
     },
     {
-      "id": "9",
+      "id": 9,
       "title": "testTitle9",
       "difficulty": "Hard",
       "topic": "Arrays",
@@ -73,7 +73,7 @@
       "answer": "fb.com"
     },
     {
-      "id": "10",
+      "id": 10,
       "title": "testTitle10",
       "difficulty": "Hard",
       "topic": "Binary Tree",

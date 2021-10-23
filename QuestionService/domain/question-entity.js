@@ -6,7 +6,7 @@
 
 const schema = {
   id: {
-    type: String,
+    type: Number,
     required: true,
   },
   title: {
