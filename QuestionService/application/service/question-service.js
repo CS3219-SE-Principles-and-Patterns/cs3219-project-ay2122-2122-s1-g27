@@ -8,9 +8,10 @@ const ormQuestion = require('../orm/question-orm')
  * These contain the function definition of the HTTP Routes
  */
 
-const FindQuestion = async (req, res) => {
+const FindQuestionById = async (req, res) => {
   try {
-    const respOrm = await ormQuestion.FindQuestion(req)
+    const questionID = req.params.id
+    const respOrm = await ormQuestion.FindQuestion(questionID)
     return await wrapResult(res, 'Cannot Find Question', 'Found Question', respOrm)
   } catch (err) {
     console.log('err: ', err)
@@ -19,21 +20,11 @@ const FindQuestion = async (req, res) => {
   }
 }
 
-const AddQuestion = async (req, res) => {
+const FindMatchedQuestion = async (req, res) => {
   try {
-    const respOrm = await ormQuestion.AddQuestion(req)
-    return await wrapResult(res, 'Cannot Add Question', 'Added Question', respOrm)
-  } catch (err) {
-    console.log('err: ', err)
-    const resp = await Response('Failure', 'DB failed', [])
-    return res.status(500).send(resp)
-  }
-}
-
-const DeleteQuestion = async (req, res) => {
-  try {
-    const respOrm = await ormQuestion.DeleteQuestion(req)
-    return await wrapResult(res, 'Cannot Delete Question', 'Deleted Question', respOrm)
+    const { topics, difficulties } = req.body
+    const respOrm = await ormQuestion.FindMatchedQuestion(topics, difficulties)
+    return await wrapResult(res, 'Cannot Find Question for Match', 'Found Match Question', respOrm)
   } catch (err) {
     console.log('err: ', err)
     const resp = await Response('Failure', 'DB failed', [])
@@ -55,9 +46,45 @@ const FindAllQuestions = async (_, res) => {
 const GetQuestionMetadata = async (_, res) => res.status(200).json(METADATA)
 
 module.exports = {
-  FindQuestion,
+  FindQuestionById,
   FindAllQuestions,
-  AddQuestion,
-  DeleteQuestion,
+  FindMatchedQuestion,
   GetQuestionMetadata,
 }
+
+/*
+Methods for extensibility: Allow users in the future to add / delete own questions
+
+const AddQuestion = async (req, res) => {
+  try {
+    const respOrm = await ormQuestion.AddQuestion(req)
+    return await wrapResult(res, 'Cannot Add Question', 'Added Question', respOrm)
+  } catch (err) {
+    console.log('err: ', err)
+    const resp = await Response('Failure', 'DB failed', [])
+    return res.status(500).send(resp)
+  }
+}
+
+const AddAllQuestions = async (req, res) => {
+  try {
+    const respOrm = await ormQuestion.AddAllQuestions(req)
+    return await wrapResult(res, 'Cannot Add All Questions', 'Added All Question', respOrm)
+  } catch (err) {
+    console.log('err: ', err)
+    const resp = await Response('Failure', 'DB failed', [])
+    return res.status(500).send(resp)
+  }
+}
+
+const DeleteQuestion = async (req, res) => {
+  try {
+    const respOrm = await ormQuestion.DeleteQuestion(req)
+    return await wrapResult(res, 'Cannot Delete Question', 'Deleted Question', respOrm)
+  } catch (err) {
+    console.log('err: ', err)
+    const resp = await Response('Failure', 'DB failed', [])
+    return res.status(500).send(resp)
+  }
+}
+*/
