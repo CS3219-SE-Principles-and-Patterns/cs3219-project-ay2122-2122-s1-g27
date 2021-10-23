@@ -8,15 +8,13 @@ const { getRandomNumberBetweenInclMinExclMax } = require('../util/utilities')
 Accesses a question in the database based on its id and returns this question.
 Note the current approach uses GET request's req.query; alternatively, can use req.body if a POST request.
 */
-exports.FindQuestion = async (req) => {
+exports.FindQuestion = async (questionID) => {
   try {
-    const data = req.query
-
-    if (!data.id) {
+    if (!questionID) {
       throw new Error('Request has no id attribute')
     }
 
-    const filter = { id: data.id }
+    const filter = { id: questionID }
     const currentTitleExists = await questionsRepo.findOne(filter)
     if (!currentTitleExists) {
       throw new Error('No such question id exists')
@@ -33,14 +31,13 @@ exports.FindQuestion = async (req) => {
 /*
 Accesses a question in the database which satisfy all filters in the request, with a random question chosen if multiple questions satisfy the filters.
 */
-exports.FindMatchedQuestion = async (req) => {
+exports.FindMatchedQuestion = async (topics, difficulties) => {
   try {
-    const data = req.body
-    if (!data.topics || !data.difficulties) {
+    if (!topics || !difficulties) {
       throw new Error('Request is missing some attribute(s)')
     }
 
-    const filter = { topics: data.topics, difficulties: data.difficulties }
+    const filter = { topics, difficulties }
     const results = await questionsRepo.findMatch(filter)
     if (!results || results.length === 0) {
       throw new Error('No such question id exists')

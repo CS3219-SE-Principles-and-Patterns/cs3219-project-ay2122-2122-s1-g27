@@ -7,7 +7,7 @@ const routes = Router()
 routes.get('/', (_, res) => res.send('Welcome to the QuestionService. Do you have any questions?'))
 
 // read
-routes.get('/question/', QuestionService.FindQuestionById)
+routes.get('/question/:id', QuestionService.FindQuestionById)
 routes.get('/question/all', QuestionService.FindAllQuestions)
 routes.post('/question/match', QuestionService.FindMatchedQuestion)
 routes.get('/question/metadata', QuestionService.GetQuestionMetadata)

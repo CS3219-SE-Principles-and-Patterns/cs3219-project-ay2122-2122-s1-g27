@@ -10,7 +10,8 @@ const ormQuestion = require('../orm/question-orm')
 
 const FindQuestionById = async (req, res) => {
   try {
-    const respOrm = await ormQuestion.FindQuestion(req)
+    const questionID = req.params.id
+    const respOrm = await ormQuestion.FindQuestion(questionID)
     return await wrapResult(res, 'Cannot Find Question', 'Found Question', respOrm)
   } catch (err) {
     console.log('err: ', err)
@@ -21,7 +22,8 @@ const FindQuestionById = async (req, res) => {
 
 const FindMatchedQuestion = async (req, res) => {
   try {
-    const respOrm = await ormQuestion.FindMatchedQuestion(req)
+    const { topics, difficulties } = req.body
+    const respOrm = await ormQuestion.FindMatchedQuestion(topics, difficulties)
     return await wrapResult(res, 'Cannot Find Question for Match', 'Found Match Question', respOrm)
   } catch (err) {
     console.log('err: ', err)
