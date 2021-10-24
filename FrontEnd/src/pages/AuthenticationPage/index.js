@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useState, useContext } from 'react';
 import {
     Grid,
     Typography,
@@ -8,7 +8,9 @@ import {
     Button,
 } from '@mui/material';
 import { styled } from '@mui/system';
+import { AppContext } from '../../utils/AppContext';
 import LoginPage from '../../assets/LoginPage.png';
+import { Redirect } from 'react-router-dom';
 
 const Image = styled('img')(({ theme }) => ({
     paddingTop: '10%',
@@ -65,20 +67,80 @@ const StyledButton = styled(Button)(({ theme }) => ({
     padding: '2%',
 }));
 
+const StyledAlertMessage = styled(Typography)(({ theme }) => ({
+    [theme.breakpoints.down('md')]: {
+        width: '100%',
+    },
+    [theme.breakpoints.only('md')]: {
+        width: '90%',
+    },
+    [theme.breakpoints.only('lg')]: {
+        width: '80%',
+    },
+    [theme.breakpoints.only('xl')]: {
+        width: '60%',
+    },
+}));
+
 function AuthenticationPage() {
     const [username, setUsername] = useState(null);
     const [password, setPassword] = useState(null);
+    const [isIncorrectAttempt, setIncorrectAttempt] = useState(false);
+
+    const { user, setUser, jwt, setJwt } = useContext(AppContext);
 
     const handleChangeUsername = (event) => setUsername(event.target.value);
     const handleChangePassword = (event) => setPassword(event.target.value);
+
     const authenticate = () => {
-        // use username and password state, then authenticate using backend api
-        // if success => store user object in context and redirect to matching page
-        // if fail => go to fail
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: username,
+                password: password,
+            }),
+        };
+
+        return fetch('http://localhost:8080/user/create', requestOptions).then(
+            (data) => {
+                if (data.status === 409 || data.status === 201) {
+                    // already exists / successfully created, so can login
+                    data.json().then((data) => performLogin());
+                }
+            }
+        );
+    };
+
+    const performLogin = () => {
+        const requestOptions = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: username,
+                password: password,
+            }),
+        };
+
+        return fetch('http://localhost:8080/user/login', requestOptions).then(
+            (data) => {
+                if (data.status === 401) {
+                    // incorrect password
+                    setIncorrectAttempt(true);
+                } else if (data.status === 200) {
+                    data.json().then((data) => {
+                        // set JWT access token in session storage
+                        setUser(username);
+                        setJwt(data.data.accessToken);
+                    });
+                }
+            }
+        );
     };
 
     return (
         <Grid container>
+            {user && jwt ? <Redirect to={{ pathname: '/match' }} /> : null}
             <Grid
                 item
                 container
@@ -130,7 +192,22 @@ function AuthenticationPage() {
                             type="password"
                         />
                     </StyledTextField>
-                    <StyledButton variant="contained">
+                    {isIncorrectAttempt ? (
+                        <StyledAlertMessage
+                            align="center"
+                            sx={{
+                                color: '#CF0000',
+                                marginTop: '30px',
+                            }}
+                        >
+                            Your previous attempt had an incorrect password
+                        </StyledAlertMessage>
+                    ) : null}
+                    <StyledButton
+                        variant="contained"
+                        onClick={() => authenticate()}
+                        disabled={!username || !password}
+                    >
                         <Typography
                             variant="subtitle1"
                             sx={{ color: '#FCFCFC', fontWeight: 600 }}

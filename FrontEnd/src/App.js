@@ -1,4 +1,5 @@
-import React from 'react';
+import { React, useState, useContext } from 'react';
+import { AppContext } from './utils/AppContext';
 import AuthenticationPage from './pages/AuthenticationPage';
 import LandingPage from './pages/LandingPage';
 import MatchingPage from './pages/MatchingPage';
@@ -72,6 +73,7 @@ const PeerPrepText = styled(Typography)(({ theme }) => ({
 
 function NavBar(props) {
     const { pathname } = useLocation();
+    const { user } = useContext(AppContext);
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -94,8 +96,8 @@ function NavBar(props) {
                     </PeerPrepText>
 
                     {pathname !== '/login' ? (
-                        <Button color="inherit">
-                            <LoginLink to="/login">
+                        <Button color="inherit" disabled={user}>
+                            <LoginLink to="/login" disabled={user}>
                                 <Typography
                                     variant="h6"
                                     sx={{
@@ -103,7 +105,7 @@ function NavBar(props) {
                                         fontWeight: 600,
                                     }}
                                 >
-                                    Sign In
+                                    {user ? '@' + user : 'Sign In'}
                                 </Typography>
                             </LoginLink>
                         </Button>
@@ -115,28 +117,39 @@ function NavBar(props) {
 }
 
 function App() {
+    const [user, setUser] = useState(null);
+    const [jwt, setJwt] = useState(null);
+
     return (
         <ThemeProvider theme={theme}>
-            <Router>
-                <AppContainer>
-                    <NavBar />
-                    <Switch>
-                        <Route path="/about" component={LandingPage} />
-                        <Route path="/login" component={AuthenticationPage} />
-                        <Route path="/match" component={MatchingPage} />
-                        <Route path="/profile" component={UserProfilePage} />
-                        <Route
-                            path="/collaborate"
-                            component={CollaborationPage}
-                        />
-                        <Route
-                            render={() => (
-                                <Redirect to={{ pathname: '/about' }} />
-                            )}
-                        />
-                    </Switch>
-                </AppContainer>
-            </Router>
+            <AppContext.Provider value={{ user, setUser, jwt, setJwt }}>
+                <Router>
+                    <AppContainer>
+                        <NavBar />
+                        <Switch>
+                            <Route path="/about" component={LandingPage} />
+                            <Route
+                                path="/login"
+                                component={AuthenticationPage}
+                            />
+                            <Route path="/match" component={MatchingPage} />
+                            <Route
+                                path="/profile"
+                                component={UserProfilePage}
+                            />
+                            <Route
+                                path="/collaborate"
+                                component={CollaborationPage}
+                            />
+                            <Route
+                                render={() => (
+                                    <Redirect to={{ pathname: '/about' }} />
+                                )}
+                            />
+                        </Switch>
+                    </AppContainer>
+                </Router>
+            </AppContext.Provider>
         </ThemeProvider>
     );
 }
