@@ -61,6 +61,14 @@ describe('Endpoint Testing', () => {
     VerifyFailure(wrongLoginRes, 401)
   })
 
+  it('Prevent creation of username with > 1 word', async () => {
+    const createRes = await chai.request(app).post('/user/create').send({
+      username: 'Two words',
+      password: 123,
+    })
+    VerifyFailure(createRes, 400)
+  })
+
   it('Prevent creation of same username', async () => {
     const createRes = await chai.request(app).post('/user/create').send(USER_STUB)
     VerifySuccess(createRes, 201)

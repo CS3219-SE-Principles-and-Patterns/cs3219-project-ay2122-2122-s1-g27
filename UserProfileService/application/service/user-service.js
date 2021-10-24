@@ -10,6 +10,12 @@ exports.CreateUser = async (req, res) => {
   try {
     const { username, password } = req.body
     if (username && password) {
+      const usernameNumWords = username.trim().split(' ').length
+      if (usernameNumWords > 1) {
+        // accept single word only
+        return res.status(400).json(Response(STATUS_FAIL, 'Username must be single word'))
+      }
+
       const usernameExist = await ormUser.UserExists(username)
       if (usernameExist.err) {
         throw usernameExist.err

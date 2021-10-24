@@ -1,4 +1,4 @@
-const db = require('../../infrastructure/persistence/mongo')
+const repo = require('../../infrastructure/persistence/repository')
 
 /**
  * ORM only defines the calls to the DB Layer to CRUD data
@@ -6,7 +6,7 @@ const db = require('../../infrastructure/persistence/mongo')
 
 exports.UserExists = async (username) => {
   try {
-    const user = await db.users.findOne({
+    const user = await repo.findOne({
       username,
     })
     if (user) return true
@@ -19,7 +19,7 @@ exports.UserExists = async (username) => {
 
 exports.CreateUser = async (username, password) => {
   try {
-    const user = db.users({
+    const user = await repo.createOne({
       username,
       password,
     })
@@ -33,7 +33,7 @@ exports.CreateUser = async (username, password) => {
 
 exports.FindUser = async (username) => {
   try {
-    return db.users.findOne({
+    return repo.findOne({
       username,
     })
   } catch (err) {
