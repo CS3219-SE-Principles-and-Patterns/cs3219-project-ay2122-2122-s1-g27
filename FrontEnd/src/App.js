@@ -73,7 +73,7 @@ const PeerPrepText = styled(Typography)(({ theme }) => ({
 
 function NavBar(props) {
     const { pathname } = useLocation();
-    const { user } = useContext(AppContext);
+    const { user, setUser, setJwt } = useContext(AppContext);
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -101,11 +101,34 @@ function NavBar(props) {
                                 <Typography
                                     variant="h6"
                                     sx={{
+                                        display: { xs: 'none', sm: 'block' },
                                         textTransform: 'none',
                                         fontWeight: 600,
                                     }}
                                 >
                                     {user ? '@' + user : 'Sign In'}
+                                </Typography>
+                            </LoginLink>
+                        </Button>
+                    ) : null}
+
+                    {user ? (
+                        <Button
+                            color="inherit"
+                            onClick={() => {
+                                setUser(null);
+                                setJwt(null);
+                            }}
+                        >
+                            <LoginLink to="/about">
+                                <Typography
+                                    variant="h6"
+                                    sx={{
+                                        textTransform: 'none',
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    Log Out
                                 </Typography>
                             </LoginLink>
                         </Button>
