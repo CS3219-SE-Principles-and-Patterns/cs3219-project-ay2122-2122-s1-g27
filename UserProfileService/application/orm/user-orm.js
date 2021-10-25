@@ -41,3 +41,12 @@ exports.FindUser = async (username) => {
     return { err }
   }
 }
+
+exports.UpdatePreferences = async (username, topics, difficulties) => {
+  try {
+    return repo.findOneAndUpdate({ username }, { topics, difficulties })
+  } catch (err) {
+    console.log('Error, unable to update preferences', err)
+    return { err }
+  }
+}

@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 const app = require('../server')
 const Users = require('../infrastructure/persistence/mongo').users
 const { URI } = require('../configs').development.db
-const { USER_STUB } = require('./stubs')
+const { USER_STUB, PREFERENCES_STUB } = require('./stubs')
 const { VerifySuccess, VerifyFailure } = require('./utils')
 
 chai.should()
@@ -109,5 +109,18 @@ describe('Endpoint Testing', () => {
   it('No Auth Header Fail', async () => {
     const authRes = await chai.request(app).get('/user/auth')
     VerifyFailure(authRes, 401)
+  })
+
+  it('Successfully update user preferences and able to fetch', async () => {
+    // const user = new Users(USER_STUB)
+    // const username = user.username
+    await chai.request(app).post('/user/create').send(USER_STUB)
+    const updateRes = await chai.request(app).post('/user/update').send(PREFERENCES_STUB)
+    VerifySuccess(updateRes, 200)
+
+    const getRes = await chai.request(app).post('/user/get').send({ username: USER_STUB.username })
+    VerifySuccess(getRes, 200)
+    const getResData = getRes.body.data
+    getResData.topics.should.deep.equal(PREFERENCES_STUB.topics)
   })
 })

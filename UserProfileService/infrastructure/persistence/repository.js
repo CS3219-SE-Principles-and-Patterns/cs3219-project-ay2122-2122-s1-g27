@@ -10,4 +10,6 @@ const findOne = async (condition) => usersDB.findOne(condition)
 
 const createOne = async (params) => usersDB(params)
 
-module.exports = { findOne, createOne }
+const findOneAndUpdate = async (query, update) => usersDB.findOneAndUpdate(query, update)
+
+module.exports = { findOne, createOne, findOneAndUpdate }
