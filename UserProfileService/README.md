@@ -19,6 +19,7 @@ To start, we recommend installing the `ESLint`(dbaeumer.vscode-eslint) and `Pret
 - `yarn lint`: Use ESLint to check for any errors`
 - `yarn lint --fix`: Use ESLint to auto-fix any errors highlighted
 - `yarn test`: Run Unit Tests
+- `mongoimport --db UserProfileDB --collection users --jsonArray data/dummy-users.json`: Load Dummy Question Data to MongoDB
 
 ## DevOps
 

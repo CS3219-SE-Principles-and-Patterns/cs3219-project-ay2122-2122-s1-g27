@@ -14,6 +14,14 @@ const schema = {
     type: String,
     required: true,
   },
+  topics: {
+    // Arrays, Linked Lists, Binary Tree, Recursion, Hashing, Traversal, Heaps
+    type: [String],
+  },
+  difficulties: {
+    // Easy, Medium, Hard
+    type: [String],
+  },
 }
 
 module.exports = schema
