@@ -13,6 +13,7 @@ import {
 import { styled } from '@mui/system';
 import DoneIcon from '@mui/icons-material/Done';
 import { AppContext } from '../../utils/AppContext';
+import { Redirect } from 'react-router-dom';
 
 const TopicsContainer = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('md')]: {
@@ -102,168 +103,177 @@ function MatchingPage() {
         );
     }
 
-    return (
-        <Grid container justifyContent="center">
-            <Grid item xs={12} sx={{ padding: '25px' }}>
-                <Typography
-                    align="center"
-                    variant="h5"
-                    sx={{ color: 'white', fontWeight: 'bold' }}
-                >
-                    What do you feel like doing today?
-                </Typography>
-            </Grid>
+    if (!jwt) {
+        return <Redirect to={{ pathname: '/about' }} />;
+    } else {
+        return (
+            <Grid container justifyContent="center">
+                <Grid item xs={12} sx={{ padding: '25px' }}>
+                    <Typography
+                        align="center"
+                        variant="h5"
+                        sx={{ color: 'white', fontWeight: 'bold' }}
+                    >
+                        What do you feel like doing today?
+                    </Typography>
+                </Grid>
 
-            <Grid item xs={6} md={6} sx={{ paddingTop: '10px' }}>
-                <TopicsContainer>
-                    {topics &&
-                        Object.values(topics).map((topic, idx) => (
-                            <Chip
-                                key={topic + idx}
-                                label={topic}
-                                clickable
-                                size="medium"
-                                sx={{
-                                    fontWeight: 'bold',
-                                    margin: '20px',
-                                    marginLeft: '7px',
-                                    marginRight: '7px',
-                                    textShadow: '1px 1px #000000',
-                                    backgroundColor: selectedTopics.includes(
-                                        topic
-                                    )
-                                        ? '#7CA34C'
-                                        : '#96AE9D',
-                                    '&:hover,&:focus': {
+                <Grid item xs={6} md={6} sx={{ paddingTop: '10px' }}>
+                    <TopicsContainer>
+                        {topics &&
+                            Object.values(topics).map((topic, idx) => (
+                                <Chip
+                                    key={topic + idx}
+                                    label={topic}
+                                    clickable
+                                    size="medium"
+                                    sx={{
+                                        fontWeight: 'bold',
+                                        margin: '20px',
+                                        marginLeft: '7px',
+                                        marginRight: '7px',
+                                        textShadow: '1px 1px #000000',
                                         backgroundColor:
                                             selectedTopics.includes(topic)
                                                 ? '#7CA34C'
                                                 : '#96AE9D',
-                                    },
-                                }}
-                                onClick={() => handleSelectedTopic(topic)}
-                                avatar={
-                                    selectedTopics.includes(topic) ? (
-                                        <DoneIcon />
-                                    ) : null
-                                }
-                            />
-                        ))}
-                </TopicsContainer>
-            </Grid>
-            <Grid item xs={10}>
-                <Divider
-                    sx={{
-                        marginLeft: '35%',
-                        marginRight: '35%',
-                        width: '30%',
-                        height: '1px',
-                        marginTop: '20px',
-                        backgroundColor: '#D4B2FF',
-                    }}
-                />
-            </Grid>
-            <Grid item xs={8} md={6} sx={{ paddingTop: '25px' }}>
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginBottom: '10px',
-                    }}
-                >
-                    {difficulties &&
-                        Object.values(difficulties).map((difficulty, idx) => (
-                            <Chip
-                                key={difficulty + idx}
-                                sx={{
-                                    fontWeight: 'bold',
-                                    margin: '4%',
-                                    textShadow: '1px 1px #000000',
-                                    backgroundColor:
-                                        selectedDifficulties.includes(
-                                            difficulty
-                                        )
-                                            ? difficultyColors[idx]
-                                            : difficultyColors[idx],
-                                    '&:hover,&:focus': {
-                                        backgroundColor:
+                                        '&:hover,&:focus': {
+                                            backgroundColor:
+                                                selectedTopics.includes(topic)
+                                                    ? '#7CA34C'
+                                                    : '#96AE9D',
+                                        },
+                                    }}
+                                    onClick={() => handleSelectedTopic(topic)}
+                                    avatar={
+                                        selectedTopics.includes(topic) ? (
+                                            <DoneIcon />
+                                        ) : null
+                                    }
+                                />
+                            ))}
+                    </TopicsContainer>
+                </Grid>
+                <Grid item xs={10}>
+                    <Divider
+                        sx={{
+                            marginLeft: '35%',
+                            marginRight: '35%',
+                            width: '30%',
+                            height: '1px',
+                            marginTop: '20px',
+                            backgroundColor: '#D4B2FF',
+                        }}
+                    />
+                </Grid>
+                <Grid item xs={8} md={6} sx={{ paddingTop: '25px' }}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginBottom: '10px',
+                        }}
+                    >
+                        {difficulties &&
+                            Object.values(difficulties).map(
+                                (difficulty, idx) => (
+                                    <Chip
+                                        key={difficulty + idx}
+                                        sx={{
+                                            fontWeight: 'bold',
+                                            margin: '4%',
+                                            textShadow: '1px 1px #000000',
+                                            backgroundColor:
+                                                selectedDifficulties.includes(
+                                                    difficulty
+                                                )
+                                                    ? difficultyColors[idx]
+                                                    : difficultyColors[idx],
+                                            '&:hover,&:focus': {
+                                                backgroundColor:
+                                                    selectedDifficulties.includes(
+                                                        difficulty
+                                                    )
+                                                        ? difficultyColors[idx]
+                                                        : difficultyColors[idx],
+                                            },
+                                        }}
+                                        clickable={
+                                            selectedTopics.length > 0 ||
                                             selectedDifficulties.includes(
                                                 difficulty
                                             )
-                                                ? difficultyColors[idx]
-                                                : difficultyColors[idx],
-                                    },
-                                }}
-                                clickable={
-                                    selectedTopics.length > 0 ||
-                                    selectedDifficulties.includes(difficulty)
-                                }
-                                onClick={() => {
-                                    if (
-                                        selectedTopics.length > 0 ||
-                                        selectedDifficulties.includes(
-                                            difficulty
-                                        )
-                                    ) {
-                                        handleSelectedDifficulty(difficulty);
-                                    }
-                                }}
-                                label={difficulty}
-                                avatar={
-                                    selectedDifficulties.includes(
-                                        difficulty
-                                    ) ? (
-                                        <DoneIcon />
-                                    ) : null
-                                }
-                            />
-                        ))}
-                </div>
-            </Grid>
-            <Grid item xs={10}>
-                <Divider
-                    sx={{
-                        marginLeft: '35%',
-                        marginRight: '35%',
-                        width: '30%',
-                        height: '1px',
-                        marginTop: '20px',
-                        backgroundColor: '#EAD077',
-                    }}
-                />
-            </Grid>
-            <Grid item xs={12}>
-                <div
-                    style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginTop: '40px',
-                    }}
-                >
-                    <Button
-                        variant="contained"
-                        disabled={
-                            selectedTopics.length === 0 ||
-                            selectedDifficulties.length === 0
-                        }
+                                        }
+                                        onClick={() => {
+                                            if (
+                                                selectedTopics.length > 0 ||
+                                                selectedDifficulties.includes(
+                                                    difficulty
+                                                )
+                                            ) {
+                                                handleSelectedDifficulty(
+                                                    difficulty
+                                                );
+                                            }
+                                        }}
+                                        label={difficulty}
+                                        avatar={
+                                            selectedDifficulties.includes(
+                                                difficulty
+                                            ) ? (
+                                                <DoneIcon />
+                                            ) : null
+                                        }
+                                    />
+                                )
+                            )}
+                    </div>
+                </Grid>
+                <Grid item xs={10}>
+                    <Divider
                         sx={{
-                            width: '200px',
-                            borderRadius: '7px',
-                            fontWeight: 'bold',
-                            color: 'white',
-                            backgroundColor: '#69994C',
+                            marginLeft: '35%',
+                            marginRight: '35%',
+                            width: '30%',
+                            height: '1px',
+                            marginTop: '20px',
+                            backgroundColor: '#EAD077',
+                        }}
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            marginTop: '40px',
                         }}
                     >
-                        Match
-                    </Button>
-                </div>
-            </Grid>
+                        <Button
+                            variant="contained"
+                            disabled={
+                                selectedTopics.length === 0 ||
+                                selectedDifficulties.length === 0
+                            }
+                            sx={{
+                                width: '200px',
+                                borderRadius: '7px',
+                                fontWeight: 'bold',
+                                color: 'white',
+                                backgroundColor: '#69994C',
+                            }}
+                        >
+                            Match
+                        </Button>
+                    </div>
+                </Grid>
 
-            <HorizontalLabelPositionBelowStepper />
-        </Grid>
-    );
+                <HorizontalLabelPositionBelowStepper />
+            </Grid>
+        );
+    }
 }
 
 export default MatchingPage;
