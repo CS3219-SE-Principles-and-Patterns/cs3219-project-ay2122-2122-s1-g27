@@ -1,5 +1,21 @@
-const questionsRepo = require('../../infrastructure/persistence/repository')
+const questionsRepo = require('../../infrastructure/persistence/question-repository')
 const { getRandomNumberBetweenInclMinExclMax } = require('../util/utilities')
+
+// to filter questions for matching
+const FindMatchedQuestionUtility = async (topics, difficulties) => {
+  const filter = { topics, difficulties }
+  const results = await questionsRepo.findMatch(filter)
+  if (!results || results.length === 0) {
+    throw new Error('No such question id exists')
+  }
+  const randomIndex = getRandomNumberBetweenInclMinExclMax(0, results.length)
+  const randomResult = results[randomIndex]
+
+  return randomResult
+}
+
+exports.FindMatchedQuestionUtility = FindMatchedQuestionUtility
+
 /**
  * ORM only defines the calls to the DB Layer to CRUD data
  */
@@ -37,15 +53,9 @@ exports.FindMatchedQuestion = async (topics, difficulties) => {
       throw new Error('Request is missing some attribute(s)')
     }
 
-    const filter = { topics, difficulties }
-    const results = await questionsRepo.findMatch(filter)
-    if (!results || results.length === 0) {
-      throw new Error('No such question id exists')
-    }
-    const randomIndex = getRandomNumberBetweenInclMinExclMax(0, results.length)
-    const randomResult = results[randomIndex]
+    const matchedQuestion = exports.FindMatchedQuestionUtility(topics, difficulties)
 
-    return randomResult
+    return matchedQuestion
   } catch (err) {
     console.log('Error in finding single question', err)
     return { err }
@@ -63,7 +73,6 @@ exports.FindAllQuestions = async () => {
     return { err }
   }
 }
-
 // Methods for extensibility: Allow users in the future to add / delete own questions
 
 // /*
