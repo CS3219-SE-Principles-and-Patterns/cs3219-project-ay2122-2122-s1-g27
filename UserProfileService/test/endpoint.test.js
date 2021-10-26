@@ -112,8 +112,6 @@ describe('Endpoint Testing', () => {
   })
 
   it('Successfully update user preferences and able to fetch', async () => {
-    // const user = new Users(USER_STUB)
-    // const username = user.username
     await chai.request(app).post('/user/create').send(USER_STUB)
     const updateRes = await chai.request(app).post('/user/update').send(PREFERENCES_STUB)
     VerifySuccess(updateRes, 200)
