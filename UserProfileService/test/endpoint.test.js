@@ -111,6 +111,7 @@ describe('Endpoint Testing', () => {
     VerifyFailure(authRes, 401)
   })
 
+  // not used
   it('Successfully update user preferences and able to fetch', async () => {
     await chai.request(app).post('/user/create').send(USER_STUB)
     const updateRes = await chai.request(app).post('/user/update').send(PREFERENCES_STUB)

@@ -1,81 +1,45 @@
 const _ = require('lodash')
-
-/**
- * Map Data Structures to keep track of state and metadata
- */
-
-const awaitingMatches = {} // username --> (socketID, topics, difficulties)
-const matchingSocketIDsToUsername = {} // socketID --> username
-
-// ------- Functions ----------
-const addMatchingUser = async (username, socketID, topics, difficulties) => {
-  awaitingMatches[username] = {
-    socketID,
-    topics,
-    difficulties,
-  }
-  matchingSocketIDsToUsername[socketID] = username
-  console.log('Currently awaiting match', awaitingMatches)
-}
-
-const removeUserFromMatching = (socketID) => {
-  const username = matchingSocketIDsToUsername[socketID]
-  console.log(`Removing SocketID: ${socketID} | Username: ${username}`)
-
-  delete awaitingMatches[username]
-  delete matchingSocketIDsToUsername[socketID]
-  console.log('Currently awaiting match', awaitingMatches)
-}
-
-const triggerMatch = (triggerUsername, matchedUsername, commonTopics, commonDifficulties) => {
-  //
-}
-
-const searchMatchingUser = (userDetailsQueue, username, topics, difficulties) => {
-  //   eslint-disable-next-line no-restricted-syntax
-  for (const tuple of userDetailsQueue) {
-    // tuple: [username, (socketID, topics, difficulties)]
-    const [otherUsername, otherUserData] = tuple
-    const commonTopics = _.intersection(topics, otherUserData.topics)
-    const commonDifficulties = _.intersection(difficulties, otherUserData.difficulties)
-    console.log(`commonTopics`, commonTopics)
-    console.log(`commonDifficulties`, commonDifficulties)
-    if (commonTopics.length !== 0 && commonDifficulties.length !== 0) {
-      console.log(`Match found between ${username} and ${tuple[0]}`)
-      triggerMatch(username, otherUsername, commonTopics, commonDifficulties)
-    }
-  }
-}
+const ormMatch = require('../orm/match-orm')
 
 const MatchHandler = (socket, io) => {
-  socket.on('match', (username, topics, difficulties) => {
-    if (username === undefined || !Array.isArray(topics) || !Array.isArray(difficulties)) {
+  socket.on('match', async (username, topics, difficulties) => {
+    if (typeof username !== 'string' || !Array.isArray(topics) || !Array.isArray(difficulties)) {
       return socket.emit('match', 'Bad Request')
     }
-    if (!username) {
-      console.warn('User attempting to match without being online')
-      return socket.emit('match', 'Not online')
-    }
-    console.log(
-      `Attempting to match user-${username} of: \ntopics-[${topics}]\ndifficulties-[${difficulties}]`
-    )
+    // Arguments Valid
+    // Step1: Get a list of valid matches
+    const possibleMatches = await ormMatch.FindMatches(topics, difficulties, username)
 
-    // clone and get Array of [username, ()]
-    const awaitingMatchesQueue = Object.entries(JSON.parse(JSON.stringify(awaitingMatches)))
-    if (awaitingMatchesQueue.length === 0) {
-      // add and wait for future matches
-      console.log('No one else to match with')
-      addMatchingUser(username, socket.id, topics, difficulties)
-      return socket.emit('match', 'Waiting to Match')
-    }
-
-    // try to match with existing pending users
-    if (searchMatchingUser(awaitingMatchesQueue, username, topics, difficulties)) {
-      console.log('Match is successful')
+    // Step2: Check if list of matches contain > 0 users. If no, go to Step2a. If yes, go to Step2b
+    if (possibleMatches.length === 0) {
+      // Step2a: Create a Match and persist in DB. Set timeout of 30s to find possible matching
+      // Upon timeout, if username still exist in DB (meaning not matched), will inform user that
+      // no matches were found, and delete entry from DB (warning: check for EXACT object equality)
+      console.log('No possible match as of now')
+      const createMatch = ormMatch.CreateMatch(username, socket.id, topics, difficulties)
+      // TODO: Timeout
+      if (createMatch) {
+        console.log('Successful match creation!')
+        return socket.emit('match', 'waiting')
+      }
+      return socket.emit('match', 'ServerError')
     }
 
-    // if cannot match with anyone, insert into awaitingMatches as well
-    return addMatchingUser(username, socket.id, topics, difficulties)
+    // Step2b: Find a random user from list of matches
+    // Query QuestionService to generate and get unique room ID. Emit RoomID to both clients
+    // Additionally, delete the matched user from the QuestionService (so it wont get matched with someone else)
+    const matched = _.sample(possibleMatches) // match object (See: match-entity.js)
+    console.log('matched', matched)
+    const matchedUsername = matched.username
+    const matchedSocketID = matched.socketID
+    const clearMatched = ormMatch.RemoveMatch(matchedUsername)
+    if (clearMatched.err) {
+      console.error(`Deleting User-${matchedUsername} encountered error`)
+      return socket.emit('matchFail', 'failed')
+    }
+    const dummyRoomID = 'some-room'
+    socket.emit('matchSuccess', dummyRoomID, matchedUsername) // emit to initator
+    return io.to(matchedSocketID).emit('matchSuccess', dummyRoomID, matchedUsername) // emit to matched
   })
 }
 

@@ -1,5 +1,4 @@
-// const { onlineHandler, removeOnlineUser } = require('../application/handler/onlineHandler')
-const { matchHandler } = require('../application/handler/matchHandler')
+const { MatchHandler } = require('../application/handler/matchHandler')
 /**
  *
  * @param {listener} socket listener instance
@@ -16,12 +15,10 @@ const socketController = (socket, io) => {
     io.emit('message', msg1, msg2)
   })
 
-  // onlineHandler(socket, io)
-  matchHandler(socket, io)
+  MatchHandler(socket, io)
 
   socket.on('disconnect', (reason) => {
     console.log('Disconnecting reason', reason)
-    // removeOnlineUser(socket.id)
   })
 }
 
