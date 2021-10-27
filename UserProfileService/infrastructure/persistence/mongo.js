@@ -1,7 +1,8 @@
 const mongoose = require('mongoose')
 
 const config = require('../../configs').development
-const schema = require('../../domain/entities/user-entity')
+const userEntity = require('../../domain/entities/user-entity')
+const matchEntity = require('../../domain/entities/match-entity')
 
 /**
  * (OUT PORT)
@@ -41,9 +42,10 @@ if (dbURI) {
   const conn = mongoose.connection
   if (conn) {
     console.log('MongoDB Connected Successfully')
-    const userSchema = new mongoose.Schema(schema)
-    const collectionName = 'users'
-    db.users = mongoose.model('users', userSchema, collectionName)
+    const userSchema = new mongoose.Schema(userEntity)
+    db.users = mongoose.model('users', userSchema, 'users')
+    const matchSchema = new mongoose.Schema(matchEntity)
+    db.match = mongoose.model('match', matchSchema, 'match')
 
     module.exports = db
   } else {

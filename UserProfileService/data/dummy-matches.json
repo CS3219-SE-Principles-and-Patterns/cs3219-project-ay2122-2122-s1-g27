@@ -1,0 +1,32 @@
+[
+  {
+    "username": "DivineDX",
+    "socketID": "foo",
+    "topics": ["Arrays", "Hashing", "Traversal"],
+    "difficulties": ["Easy", "Medium"]
+  },
+  {
+    "username": "DivineDXHard",
+    "socketID": "foo1",
+    "topics": ["Arrays", "Hashing", "Traversal"],
+    "difficulties": ["Hard"]
+  }, 
+  {
+    "username": "FireBreathingEugene",
+    "socketID": "bar",
+    "topics": ["Arrays", "Linked Lists", "Recursion"],
+    "difficulties": ["Medium", "Hard"]
+  },
+  {
+    "username": "VineethBuddha",
+    "socketID": "baz",
+    "topics": ["Recursion"],
+    "difficulties": ["Medium", "Hard"]
+  },
+  {
+    "username": "ManasVegi",
+    "socketID": "fooz",
+    "topics": ["Binary Tree"],
+    "difficulties": ["Hard"]
+  }
+]

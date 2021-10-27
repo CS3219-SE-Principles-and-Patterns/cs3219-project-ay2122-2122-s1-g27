@@ -3,13 +3,33 @@ const db = require('./mongo')
 // Repository for questions (hidden from exports)
 
 const usersDB = db.users
+const matchDB = db.match
 
 // Functions for repository interactions and transactions
 
-const findOne = async (condition) => usersDB.findOne(condition)
+// UsersDB
+const findOneUser = async (condition) => usersDB.findOne(condition)
 
-const createOne = async (params) => usersDB(params)
+const createOneUser = async (params) => usersDB(params)
 
-const findOneAndUpdate = async (query, update) => usersDB.findOneAndUpdate(query, update)
+const findOneAndUpdateUser = async (query, update) => usersDB.findOneAndUpdate(query, update)
 
-module.exports = { findOne, createOne, findOneAndUpdate }
+// MatchDB
+const upsertUserMatch = (params) => {
+  const { username } = params
+  return matchDB.findOneAndUpdate({ username }, params, { upsert: true }, (err) => {
+    if (err) throw err
+  })
+}
+
+const removeUserMatch = async (params) => matchDB.deleteOne(params)
+
+// const findAllMatchingUsers = async
+
+module.exports = {
+  findOneUser,
+  createOneUser,
+  findOneAndUpdateUser,
+  upsertUserMatch,
+  removeUserMatch,
+}

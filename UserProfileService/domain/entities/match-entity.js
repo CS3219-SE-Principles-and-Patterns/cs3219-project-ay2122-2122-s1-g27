@@ -1,16 +1,10 @@
-/**
- * Entity Layer - Used by Repository Layer
- * Defines and models Schema of the MongoDB Table
- * @param {Mongoose} db
- */
-
 module.exports = {
   username: {
     type: String,
     required: true,
     unique: true,
   },
-  password: {
+  socketID: {
     type: String,
     required: true,
   },
@@ -21,5 +15,9 @@ module.exports = {
   difficulties: {
     // Easy, Medium, Hard
     type: [String],
+  },
+  matchedWith: {
+    // other username
+    type: String,
   },
 }

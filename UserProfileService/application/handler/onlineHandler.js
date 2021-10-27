@@ -3,6 +3,13 @@ const { FindUser } = require('../orm/user-orm')
 const onlineUsernameToUserDetails = {}
 const onlineSocketIDsToUsername = {}
 
+const GetUsernameOfSocketID = (socketID) => {
+  if (socketID in onlineSocketIDsToUsername) {
+    return onlineSocketIDsToUsername[socketID]
+  }
+  return false
+}
+
 const addOnlineUser = async (username, socketID) => {
   try {
     const userDetails = await FindUser(username)
@@ -37,6 +44,8 @@ const onlineHandler = (socket, _) => {
 }
 
 module.exports = {
+  UsernameToDetailsMap: onlineUsernameToUserDetails,
+  GetUsernameOfSocketID,
   removeOnlineUser,
   onlineHandler,
 }

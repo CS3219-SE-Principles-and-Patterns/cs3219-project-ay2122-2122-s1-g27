@@ -2,6 +2,7 @@ const { Router } = require('express')
 
 const UserService = require('../application/service/user-service')
 const AuthService = require('../application/service/auth-service')
+const MatchService = require('../application/service/match-service')
 
 const routes = Router()
 
@@ -13,6 +14,10 @@ routes.post('/user/get', UserService.GetUserDetails)
 routes.post('/user/update', UserService.UpdatePreferences)
 routes.get('/user/auth', AuthService.AuthRoute)
 routes.post('/user/token', AuthService.RefreshToken)
+
+// TEMP: For Testing Purposes only
+routes.post('/match/create', MatchService.CreateMatch)
+routes.delete('/match/delete', MatchService.DeleteMatch)
 
 /**
  * Set the router of the Express Server
