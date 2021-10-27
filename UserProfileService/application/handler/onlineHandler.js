@@ -1,5 +1,6 @@
 const { FindUser } = require('../orm/user-orm')
 
+// deprecated: No longer used
 const onlineUsernameToUserDetails = {}
 const onlineSocketIDsToUsername = {}
 

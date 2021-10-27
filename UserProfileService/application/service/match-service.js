@@ -9,7 +9,7 @@ exports.CreateMatch = async (req, res) => {
   try {
     const { username, socketID, topics, difficulties } = req.body
     if (!username || !socketID || !Array.isArray(topics) || !Array.isArray(difficulties)) {
-      return MissingArgsError('MatchUser', res)
+      return MissingArgsError('CreateMatch', res)
     }
 
     const respOrm = await ormMatch.CreateMatch(username, socketID, topics, difficulties)
@@ -20,7 +20,7 @@ exports.CreateMatch = async (req, res) => {
 
     return res.status(201).json(Response(STATUS_SUCCESS, 'Create Successful'))
   } catch (err) {
-    return InternalServerError(err, 'MatchUser', res)
+    return InternalServerError(err, 'CreateMatch', res)
   }
 }
 
@@ -40,5 +40,24 @@ exports.DeleteMatch = async (req, res) => {
     return res.status(200).json(Response(STATUS_SUCCESS, 'Successfully Delete Match'))
   } catch (err) {
     return InternalServerError(err, 'DeleteMatch', res)
+  }
+}
+
+exports.FindMatch = async (req, res) => {
+  try {
+    const { topics, difficulties, username } = req.body
+    if (!username || !Array.isArray(topics) || !Array.isArray(difficulties)) {
+      return MissingArgsError('FindMatch', res)
+    }
+
+    const respOrm = await ormMatch.FindMatches(topics, difficulties, username)
+    if (respOrm.err) {
+      return res.status(400).json(Response(STATUS_FAIL, 'Unable to FindMatch'))
+    }
+
+    console.log('FindMatchResp', respOrm)
+    return res.status(200).json(Response(STATUS_SUCCESS, 'Successfully Find Match', respOrm))
+  } catch (err) {
+    return InternalServerError(err, 'FindMatch', res)
   }
 }

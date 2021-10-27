@@ -43,6 +43,7 @@ exports.CreateUser = async (req, res) => {
   }
 }
 
+// Not in use at the moment
 exports.GetUserDetails = async (req, res) => {
   try {
     const { username } = req.body
@@ -65,6 +66,7 @@ exports.GetUserDetails = async (req, res) => {
   }
 }
 
+// Not in use at the moment
 exports.UpdatePreferences = async (req, res) => {
   try {
     const { username, topics, difficulties } = req.body

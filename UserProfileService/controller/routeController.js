@@ -18,6 +18,8 @@ routes.post('/user/token', AuthService.RefreshToken)
 // TEMP: For Testing Purposes only
 routes.post('/match/create', MatchService.CreateMatch)
 routes.delete('/match/delete', MatchService.DeleteMatch)
+routes.post('/match/find', MatchService.FindMatch)
+// ---
 
 /**
  * Set the router of the Express Server

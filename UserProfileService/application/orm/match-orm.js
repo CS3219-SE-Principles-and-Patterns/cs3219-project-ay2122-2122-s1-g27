@@ -37,3 +37,21 @@ exports.RemoveMatch = async (username) => {
     return { err }
   }
 }
+
+/**
+ * Find all possible possible matches for a particular user, then randomly pick one to be matched
+ * @param {[string]} topics
+ * @param {[string]} difficulties
+ * @param {string} username
+ * @returns {[object]} match object in UserProfileDB.match
+ */
+exports.FindMatches = async (topics, difficulties, username) => {
+  try {
+    const res = await repo.findMatches(topics, difficulties, username)
+    console.log('res', res)
+    return res
+  } catch (err) {
+    console.log('Cannot find match', err)
+    return { err }
+  }
+}
