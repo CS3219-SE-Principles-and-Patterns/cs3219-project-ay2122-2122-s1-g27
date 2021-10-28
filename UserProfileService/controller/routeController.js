@@ -10,8 +10,6 @@ const routes = Router()
 routes.get('/', (_, res) => res.send('Hello World with Express'))
 routes.post('/user/create', UserService.CreateUser)
 routes.post('/user/login', AuthService.LoginUser)
-routes.post('/user/get', UserService.GetUserDetails)
-routes.post('/user/update', UserService.UpdatePreferences)
 routes.get('/user/auth', AuthService.AuthRoute)
 routes.post('/user/token', AuthService.RefreshToken)
 

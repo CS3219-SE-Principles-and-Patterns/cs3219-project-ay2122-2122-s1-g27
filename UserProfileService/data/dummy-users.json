@@ -1,14 +1,10 @@
 [
   {
     "username": "DivineDX",
-    "password": "$2b$10$U6v9K19mv8OGYqbguM7HU.bQYn1IlXFmy/ALVOjNoN.cfhzVAjwai",
-    "topics": ["Arrays", "Hashing", "Traversal"],
-    "difficulties": ["Easy", "Medium"]
+    "password": "$2b$10$U6v9K19mv8OGYqbguM7HU.bQYn1IlXFmy/ALVOjNoN.cfhzVAjwai"
   },
   {
     "username": "FireBreathingEugene",
-    "password": "$2b$10$U6v9K19mv8OGYqbguM7HU.bQYn1IlXFmy/ALVOjNoN.cfhzVAjwai",
-    "topics": ["Arrays", "Linked Lists", "Recursion"],
-    "difficulties": ["Medium", "Hard"]
+    "password": "$2b$10$U6v9K19mv8OGYqbguM7HU.bQYn1IlXFmy/ALVOjNoN.cfhzVAjwai"
   }
 ]

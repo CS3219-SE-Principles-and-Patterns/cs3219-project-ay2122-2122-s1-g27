@@ -110,16 +110,4 @@ describe('Endpoint Testing', () => {
     const authRes = await chai.request(app).get('/user/auth')
     VerifyFailure(authRes, 401)
   })
-
-  // not used
-  it('Successfully update user preferences and able to fetch', async () => {
-    await chai.request(app).post('/user/create').send(USER_STUB)
-    const updateRes = await chai.request(app).post('/user/update').send(PREFERENCES_STUB)
-    VerifySuccess(updateRes, 200)
-
-    const getRes = await chai.request(app).post('/user/get').send({ username: USER_STUB.username })
-    VerifySuccess(getRes, 200)
-    const getResData = getRes.body.data
-    getResData.topics.should.deep.equal(PREFERENCES_STUB.topics)
-  })
 })
