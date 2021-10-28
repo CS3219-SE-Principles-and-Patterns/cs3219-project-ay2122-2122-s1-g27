@@ -44,7 +44,7 @@ if (dbURI) {
     console.log('MongoDB Connected Successfully')
     const userSchema = new mongoose.Schema(userEntity)
     db.users = mongoose.model('users', userSchema, 'users')
-    const matchSchema = new mongoose.Schema(matchEntity)
+    const matchSchema = new mongoose.Schema(matchEntity, { timestamps: true })
     db.match = mongoose.model('match', matchSchema, 'match')
 
     module.exports = db

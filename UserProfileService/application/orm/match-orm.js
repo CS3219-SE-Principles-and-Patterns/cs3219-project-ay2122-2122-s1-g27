@@ -1,7 +1,7 @@
 const repo = require('../../infrastructure/persistence/repository')
 
 /**
- * Create a Match Entry
+ * Create (Upsert) a Match Entry. Will delete the old entry
  * @param {string} username
  * @param {string} socketID
  * @param {string[]} topics
@@ -33,7 +33,27 @@ exports.RemoveMatch = async (username) => {
     const res = await repo.removeUserMatch({ username }) // contain .deleteCount
     return res
   } catch (err) {
-    console.log('Error, cannot remove match', err)
+    console.error('Error, cannot remove match', err)
+    return { err }
+  }
+}
+
+/**
+ * Removed expired entries from the DB
+ * @param {number} secondsBefore Entries before a certain time will be deleted
+ * @returns
+ */
+exports.RemoveExpiredMatches = async (secondsBefore = 30) => {
+  try {
+    const currDate = new Date(Date.now() - secondsBefore * 1000)
+    const res = await repo.removeMatchesBeforeDateTime(currDate)
+    if (res.acknowledged) {
+      console.log(`Deleted ${res.deletedCount} expired matches`)
+      return true
+    }
+    return false
+  } catch (err) {
+    console.error('Error cannot removed expired', err)
     return { err }
   }
 }
@@ -48,7 +68,6 @@ exports.RemoveMatch = async (username) => {
 exports.FindMatches = async (topics, difficulties, username) => {
   try {
     const res = await repo.findMatches(topics, difficulties, username)
-    console.log('res', res)
     return res
   } catch (err) {
     console.log('Cannot find match', err)

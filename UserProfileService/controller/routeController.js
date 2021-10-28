@@ -19,6 +19,7 @@ routes.post('/user/token', AuthService.RefreshToken)
 routes.post('/match/create', MatchService.CreateMatch)
 routes.delete('/match/delete', MatchService.DeleteMatch)
 routes.post('/match/find', MatchService.FindMatch)
+routes.delete('/match/delete-expired', MatchService.DeleteExpiredMatches)
 // ---
 
 /**

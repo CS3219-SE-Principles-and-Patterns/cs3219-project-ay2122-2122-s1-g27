@@ -1,12 +1,28 @@
 const _ = require('lodash')
 const ormMatch = require('../orm/match-orm')
 
+/**
+ * From the list of possible matches (ordered by datetime, ascending)
+ * Return the match
+ * @param {[match]} possibleMatches
+ *
+ * @return {match} Match Object (see match-entity.js)
+ */
+const getMatch = (possibleMatches) => {
+  const matched = _.sample(possibleMatches) // match object (See: match-entity.js)
+  console.log('matched', matched)
+  return matched
+}
+
 const MatchHandler = (socket, io) => {
   socket.on('match', async (username, topics, difficulties) => {
     if (typeof username !== 'string' || !Array.isArray(topics) || !Array.isArray(difficulties)) {
       return socket.emit('match', 'Bad Request')
     }
     // Arguments Valid
+    // Step0: Evict expired matches
+    await ormMatch.RemoveExpiredMatches()
+
     // Step1: Get a list of valid matches
     const possibleMatches = await ormMatch.FindMatches(topics, difficulties, username)
 
@@ -17,19 +33,18 @@ const MatchHandler = (socket, io) => {
       // no matches were found, and delete entry from DB (warning: check for EXACT object equality)
       console.log('No possible match as of now')
       const createMatch = ormMatch.CreateMatch(username, socket.id, topics, difficulties)
-      // TODO: Timeout
       if (createMatch) {
         console.log('Successful match creation!')
         return socket.emit('match', 'waiting')
+        // TODO: Timeout
       }
-      return socket.emit('match', 'ServerError')
+      return socket.emit('matchFail', 'ServerError')
     }
 
     // Step2b: Find a random user from list of matches
     // Query QuestionService to generate and get unique room ID. Emit RoomID to both clients
     // Additionally, delete the matched user from the QuestionService (so it wont get matched with someone else)
-    const matched = _.sample(possibleMatches) // match object (See: match-entity.js)
-    console.log('matched', matched)
+    const matched = getMatch(possibleMatches)
     const matchedUsername = matched.username
     const matchedSocketID = matched.socketID
     const clearMatched = ormMatch.RemoveMatch(matchedUsername)

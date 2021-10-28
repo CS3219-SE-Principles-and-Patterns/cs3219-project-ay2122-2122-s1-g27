@@ -43,6 +43,18 @@ exports.DeleteMatch = async (req, res) => {
   }
 }
 
+exports.DeleteExpiredMatches = async (req, res) => {
+  try {
+    const respOrm = await ormMatch.RemoveExpiredMatches()
+    if (respOrm.err) {
+      return res.status(500).json(Response(STATUS_FAIL, 'Unable to Delete Expired Matches'))
+    }
+    return res.status(200).json(Response(STATUS_SUCCESS, 'Successfully Deleted Expired Matches'))
+  } catch (err) {
+    return InternalServerError(err, 'DeleteExpiredMatches', res)
+  }
+}
+
 exports.FindMatch = async (req, res) => {
   try {
     const { topics, difficulties, username } = req.body

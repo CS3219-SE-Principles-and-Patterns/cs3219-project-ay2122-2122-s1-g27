@@ -11,13 +11,11 @@ module.exports = {
   topics: {
     // Arrays, Linked Lists, Binary Tree, Recursion, Hashing, Traversal, Heaps
     type: [String],
+    required: true,
   },
   difficulties: {
     // Easy, Medium, Hard
     type: [String],
-  },
-  matchedWith: {
-    // other username
-    type: String,
+    required: true,
   },
 }

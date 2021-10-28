@@ -3,30 +3,40 @@
     "username": "DivineDX",
     "socketID": "foo",
     "topics": ["Arrays", "Hashing", "Traversal"],
-    "difficulties": ["Easy", "Medium"]
+    "difficulties": ["Easy", "Medium"],
+    "createdAt": { "$date": "2021-10-28T01:05:06.199Z" },
+    "updatedAt": { "$date": "2021-10-28T01:05:06.199Z" }
   },
   {
     "username": "DivineDXHard",
     "socketID": "foo1",
     "topics": ["Arrays", "Hashing", "Traversal"],
-    "difficulties": ["Hard"]
-  }, 
+    "difficulties": ["Hard"],
+    "createdAt": { "$date": "2021-10-27T01:05:06.199Z" },
+    "updatedAt": { "$date": "2021-10-27T01:05:06.199Z" }
+  },
   {
     "username": "FireBreathingEugene",
     "socketID": "bar",
     "topics": ["Arrays", "Linked Lists", "Recursion"],
-    "difficulties": ["Medium", "Hard"]
+    "difficulties": ["Medium", "Hard"],
+    "createdAt": { "$date": "2021-10-26T01:05:06.199Z" },
+    "updatedAt": { "$date": "2021-10-26T01:05:06.199Z" }
   },
   {
     "username": "VineethBuddha",
     "socketID": "baz",
     "topics": ["Recursion"],
-    "difficulties": ["Medium", "Hard"]
+    "difficulties": ["Medium", "Hard"],
+    "createdAt": { "$date": "2021-10-28T00:05:06.199Z" },
+    "updatedAt": { "$date": "2021-10-28T00:05:06.199Z" }
   },
   {
     "username": "ManasVegi",
     "socketID": "fooz",
     "topics": ["Binary Tree"],
-    "difficulties": ["Hard"]
+    "difficulties": ["Hard"],
+    "createdAt": { "$date": "2021-10-28T01:04:06.199Z" },
+    "updatedAt": { "$date": "2021-10-28T01:04:15.199Z" }
   }
 ]

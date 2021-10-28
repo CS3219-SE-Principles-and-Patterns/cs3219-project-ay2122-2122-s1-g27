@@ -33,19 +33,26 @@ const upsertUserMatch = (params) => {
  */
 const removeUserMatch = async (params) => matchDB.deleteOne(params)
 
+const removeMatchesBeforeDateTime = async (date) =>
+  matchDB.deleteMany({
+    updatedAt: { $lte: date },
+  })
+
 /**
  * Find all possible matches for a particular user. Will filter out current user's username
  * @param {[string]} topics
  * @param {[string]} difficulties
  * @param {string} username
- * @returns
+ * @returns {[match]} Array of Match objects, sorted by ascending of createdAt
  */
 const findMatches = async (topics, difficulties, username) =>
-  matchDB.find({
-    username: { $ne: username },
-    topics: { $in: topics },
-    difficulties: { $in: difficulties },
-  })
+  matchDB
+    .find({
+      username: { $ne: username },
+      topics: { $in: topics },
+      difficulties: { $in: difficulties },
+    })
+    .sort({ updatedAt: 1 })
 
 module.exports = {
   findOneUser,
@@ -53,5 +60,6 @@ module.exports = {
   findOneAndUpdateUser,
   upsertUserMatch,
   removeUserMatch,
+  removeMatchesBeforeDateTime,
   findMatches,
 }
