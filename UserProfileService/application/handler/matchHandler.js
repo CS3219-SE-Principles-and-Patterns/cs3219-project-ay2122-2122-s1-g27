@@ -1,6 +1,35 @@
 const _ = require('lodash')
 const ormMatch = require('../orm/match-orm')
 
+const TIMEOUT = 10000 // ms
+
+const checkMatchStatus = async (socket, username) => {
+  const userMatch = await ormMatch.FindUserMatched(username)
+  // if null: have been matched by someone else and already removed. Already received success message
+  if (userMatch != null) {
+    console.log('Match still present in DB', userMatch)
+    try {
+      if (userMatch.err) {
+        throw new Error(`FindUserMatchError: ${userMatch.err}`)
+      } else {
+        // Check if really 30 seconds elapsed, as user may have upserted (initiated new match)
+        const currDate = new Date(Date.now())
+        if (currDate - userMatch.updatedAt >= TIMEOUT) {
+          // expired
+          console.log('Evicting Expired Match: ', username)
+          ormMatch.RemoveMatch(username)
+          socket.emit('matchFail', 'Expired')
+        } else {
+          console.log(`Not expired yet: CurrDate: ${currDate} | UserDate: ${userMatch.updatedAt}`)
+        }
+      }
+    } catch (err) {
+      console.error(`Encountered err while checking user match status`, err)
+      socket.emit('matchFail', 'Expired')
+    }
+  }
+}
+
 /**
  * From the list of possible matches (ordered by datetime, ascending)
  * Return the match
@@ -20,11 +49,9 @@ const MatchHandler = (socket, io) => {
       return socket.emit('match', 'Bad Request')
     }
     // Arguments Valid
-    // Step0: Evict expired matches
-    await ormMatch.RemoveExpiredMatches()
 
     // Step1: Get a list of valid matches
-    const possibleMatches = await ormMatch.FindMatches(topics, difficulties, username)
+    const possibleMatches = await ormMatch.FindMatches(topics, difficulties, username, TIMEOUT)
 
     // Step2: Check if list of matches contain > 0 users. If no, go to Step2a. If yes, go to Step2b
     if (possibleMatches.length === 0) {
@@ -34,11 +61,13 @@ const MatchHandler = (socket, io) => {
       console.log('No possible match as of now')
       const createMatch = ormMatch.CreateMatch(username, socket.id, topics, difficulties)
       if (createMatch) {
-        console.log('Successful match creation!')
-        return socket.emit('match', 'waiting')
-        // TODO: Timeout
+        console.log('Successful match creation, now waiting')
+        socket.emit('match', 'waiting')
+        return setTimeout(() => checkMatchStatus(socket, username), TIMEOUT)
+      } else {
+        console.log('Match Fail, could not createMatch')
+        return socket.emit('matchFail', 'ServerError')
       }
-      return socket.emit('matchFail', 'ServerError')
     }
 
     // Step2b: Find a random user from list of matches

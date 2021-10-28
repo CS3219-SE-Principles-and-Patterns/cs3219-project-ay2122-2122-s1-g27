@@ -17,6 +17,13 @@ const findOneAndUpdateUser = async (query, update) => usersDB.findOneAndUpdate(q
 // MatchDB
 
 /**
+ * Find the match object for a particular user
+ * @param {string} username
+ * @returns {match}
+ */
+const findUserMatch = (username) => matchDB.findOne({ username })
+
+/**
  * Upsert a Match. Done when no matches could be found
  * @param {object} params Contains username (string), socketID (string), topics ([string]), difficulties ([string])
  */
@@ -39,11 +46,11 @@ const removeMatchesBeforeDateTime = async (date) =>
   })
 
 /**
- * Find all possible matches for a particular user. Will filter out current user's username
+ * Find all possible matches for a particular user. Will filter out current user's username and sort by updatedAt time
  * @param {[string]} topics
  * @param {[string]} difficulties
  * @param {string} username
- * @returns {[match]} Array of Match objects, sorted by ascending of createdAt
+ * @returns {[match]} Array of Match objects, sorted asc by `updatedAt` 
  */
 const findMatches = async (topics, difficulties, username) =>
   matchDB
@@ -58,6 +65,7 @@ module.exports = {
   findOneUser,
   createOneUser,
   findOneAndUpdateUser,
+  findUserMatch,
   upsertUserMatch,
   removeUserMatch,
   removeMatchesBeforeDateTime,

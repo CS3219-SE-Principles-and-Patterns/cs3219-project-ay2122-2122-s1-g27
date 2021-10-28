@@ -5,6 +5,22 @@ const { InternalServerError, MissingArgsError } = require('./common')
 
 // WARNING: This service is not supposed to be used in production, just for testing/debugging purposes!
 
+exports.FindUserMatched = async (req, res) => {
+  try {
+    const { username } = req.params
+    const respOrm = await ormMatch.FindUserMatched(username)
+    if (respOrm === null) {
+      return res.status(404).json(Response(STATUS_SUCCESS, 'No Match Found', []))
+    }
+    if (respOrm.err) {
+      return res.status(500).json(Response(STATUS_FAIL, 'Unable to find match!'))
+    }
+    return res.status(200).json(Response(STATUS_SUCCESS, 'Find Match Successful', respOrm))
+  } catch (err) {
+    return InternalServerError(err, 'FindUserMatch', res)
+  }
+}
+
 exports.CreateMatch = async (req, res) => {
   try {
     const { username, socketID, topics, difficulties } = req.body
@@ -67,7 +83,6 @@ exports.FindMatch = async (req, res) => {
       return res.status(400).json(Response(STATUS_FAIL, 'Unable to FindMatch'))
     }
 
-    console.log('FindMatchResp', respOrm)
     return res.status(200).json(Response(STATUS_SUCCESS, 'Successfully Find Match', respOrm))
   } catch (err) {
     return InternalServerError(err, 'FindMatch', res)

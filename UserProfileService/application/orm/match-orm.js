@@ -1,6 +1,20 @@
 const repo = require('../../infrastructure/persistence/repository')
 
 /**
+ * Query a Match Entry by providing a username.
+ * @param {string} username
+ * @returns {match}
+ */
+exports.FindUserMatched = (username) => {
+  try {
+    return repo.findUserMatch(username)
+  } catch (err) {
+    console.log('Error cannot find user match', err)
+    return { err }
+  }
+}
+
+/**
  * Create (Upsert) a Match Entry. Will delete the old entry
  * @param {string} username
  * @param {string} socketID
@@ -40,12 +54,12 @@ exports.RemoveMatch = async (username) => {
 
 /**
  * Removed expired entries from the DB
- * @param {number} secondsBefore Entries before a certain time will be deleted
+ * @param {number} msBefore Entries before a certain amt of milliseconds will be deleted
  * @returns
  */
-exports.RemoveExpiredMatches = async (secondsBefore = 30) => {
+exports.RemoveExpiredMatches = async (msBefore = 30000) => {
   try {
-    const currDate = new Date(Date.now() - secondsBefore * 1000)
+    const currDate = new Date(Date.now() - msBefore)
     const res = await repo.removeMatchesBeforeDateTime(currDate)
     if (res.acknowledged) {
       console.log(`Deleted ${res.deletedCount} expired matches`)
@@ -59,16 +73,19 @@ exports.RemoveExpiredMatches = async (secondsBefore = 30) => {
 }
 
 /**
- * Find all possible possible matches for a particular user, then randomly pick one to be matched
+ * Find all possible matches (i.e. not expired) for a particular user, return ascending time
  * @param {[string]} topics
  * @param {[string]} difficulties
  * @param {string} username
+ * @param {number} msBefore
  * @returns {[object]} match object in UserProfileDB.match
  */
-exports.FindMatches = async (topics, difficulties, username) => {
+exports.FindMatches = async (topics, difficulties, username, msBefore = 30000) => {
   try {
+    const currDate = new Date(Date.now())
     const res = await repo.findMatches(topics, difficulties, username)
-    return res
+    const activeMatches = res.filter((match) => currDate - match.updatedAt < msBefore)
+    return activeMatches
   } catch (err) {
     console.log('Cannot find match', err)
     return { err }

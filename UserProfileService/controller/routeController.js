@@ -16,6 +16,7 @@ routes.get('/user/auth', AuthService.AuthRoute)
 routes.post('/user/token', AuthService.RefreshToken)
 
 // TEMP: For Testing Purposes only
+routes.get('/match/find/:username', MatchService.FindUserMatched)
 routes.post('/match/create', MatchService.CreateMatch)
 routes.delete('/match/delete', MatchService.DeleteMatch)
 routes.post('/match/find', MatchService.FindMatch)
