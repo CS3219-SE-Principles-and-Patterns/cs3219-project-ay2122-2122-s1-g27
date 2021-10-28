@@ -1,7 +1,7 @@
 const _ = require('lodash')
 const ormMatch = require('../orm/match-orm')
 
-const TIMEOUT = 10000 // ms
+const TIMEOUT = 30000 // ms
 
 const checkMatchStatus = async (socket, username) => {
   const userMatch = await ormMatch.FindUserMatched(username)
@@ -31,16 +31,32 @@ const checkMatchStatus = async (socket, username) => {
 }
 
 /**
- * From the list of possible matches (ordered by datetime, ascending)
- * Return the match
+ * Loop through all possible matches, attempt match
  * @param {[match]} possibleMatches
- *
- * @return {match} Match Object (see match-entity.js)
  */
-const getMatch = (possibleMatches) => {
-  const matched = _.sample(possibleMatches) // match object (See: match-entity.js)
-  console.log('matched', matched)
-  return matched
+const handlePossibleMatches = async (possibleMatches, socket, io) => {
+  const matchStack = possibleMatches.reverse()
+  let successful = false
+  while (matchStack.length > 0) {
+    const currMatch = matchStack.pop()
+    console.log('Current matched', currMatch)
+    const matchedUsername = currMatch.username
+    const matchedSocketID = currMatch.socketID
+    // eslint-disable-next-line no-await-in-loop
+    const clearMatched = await ormMatch.RemoveMatch(matchedUsername)
+    if (clearMatched.err) {
+      console.error(`Deleting User-${matchedUsername} encountered error`)
+    } else {
+      const dummyRoomID = 'some-room'
+      socket.emit('matchSuccess', dummyRoomID, matchedUsername) // emit to initator
+      io.to(matchedSocketID).emit('matchSuccess', dummyRoomID, matchedUsername) // emit to matched
+      successful = true
+      break
+    }
+  }
+  if (!successful) {
+    socket.emit('matchFail', 'failed')
+  }
 }
 
 const MatchHandler = (socket, io) => {
@@ -73,17 +89,7 @@ const MatchHandler = (socket, io) => {
     // Step2b: Find a random user from list of matches
     // Query QuestionService to generate and get unique room ID. Emit RoomID to both clients
     // Additionally, delete the matched user from the QuestionService (so it wont get matched with someone else)
-    const matched = getMatch(possibleMatches)
-    const matchedUsername = matched.username
-    const matchedSocketID = matched.socketID
-    const clearMatched = ormMatch.RemoveMatch(matchedUsername)
-    if (clearMatched.err) {
-      console.error(`Deleting User-${matchedUsername} encountered error`)
-      return socket.emit('matchFail', 'failed')
-    }
-    const dummyRoomID = 'some-room'
-    socket.emit('matchSuccess', dummyRoomID, matchedUsername) // emit to initator
-    return io.to(matchedSocketID).emit('matchSuccess', dummyRoomID, matchedUsername) // emit to matched
+    await handlePossibleMatches(possibleMatches, socket, io)
   })
 }
 
