@@ -10,11 +10,11 @@ routes.get('/', (_, res) => res.send('Welcome to the QuestionService. Do you hav
 // read
 routes.get('/question/id/:id', QuestionService.FindQuestionById)
 routes.get('/question/all', QuestionService.FindAllQuestions)
-routes.post('/question/match', QuestionService.FindMatchedQuestion)
+routes.post('/question/match', QuestionService.FindMatchedQuestion) // similar to POST /question/room, but this returns actual mapped question
 routes.get('/question/metadata', QuestionService.GetQuestionMetadata)
 
 routes.get('/question/room', RoomService.FindRoomById)
-routes.post('/question/room', RoomService.CreateRoom)
+routes.post('/question/room', RoomService.CreateRoom) // similar to POST /question/match, but this returns the roomId that has a question mapped to it
 
 /* 
 Below are all admin methods; feel free to delete and use mongoDB admin; 

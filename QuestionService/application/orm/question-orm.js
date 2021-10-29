@@ -8,6 +8,7 @@ const FindMatchedQuestionUtility = async (topics, difficulties) => {
   if (!results || results.length === 0) {
     throw new Error('No such question id exists')
   }
+
   const randomIndex = getRandomNumberBetweenInclMinExclMax(0, results.length)
   const randomResult = results[randomIndex]
 
