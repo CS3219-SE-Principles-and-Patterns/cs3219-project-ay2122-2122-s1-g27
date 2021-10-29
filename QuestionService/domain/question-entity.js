@@ -22,11 +22,23 @@ const schema = {
     required: true,
   },
   questionBody: {
+    type: [String],
+    required: true,
+  },
+  source: {
     type: String,
     required: true,
   },
   answer: {
     type: String,
+    required: true,
+  },
+  sampleCases: {
+    type: [{ input: String, output: String }],
+    required: true,
+  },
+  constraints: {
+    type: [String],
     required: true,
   },
 }
