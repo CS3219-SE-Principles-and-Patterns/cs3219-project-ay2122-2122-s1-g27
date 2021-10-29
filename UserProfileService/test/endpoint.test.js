@@ -3,9 +3,9 @@ const chaiHttp = require('chai-http')
 const mongoose = require('mongoose')
 
 const app = require('../server')
-const Users = require('../infrastructure/persistence/mongo').users
+const db = require('../infrastructure/persistence/mongo')
 const { URI } = require('../configs').development.db
-const { USER_STUB } = require('./stubs')
+const { USER_STUB, PREFERENCES_STUB } = require('./stubs')
 const { VerifySuccess, VerifyFailure } = require('./utils')
 
 chai.should()
@@ -14,7 +14,7 @@ chai.use(chaiHttp)
 describe('Endpoint Testing', () => {
   beforeEach(async () => {
     // clear DB
-    await Users.deleteMany({})
+    await db.users.deleteMany({})
   })
   after(async () => {
     mongoose.disconnect()

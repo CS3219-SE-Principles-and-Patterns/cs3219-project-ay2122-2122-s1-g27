@@ -6,7 +6,7 @@ const repo = require('../../infrastructure/persistence/repository')
 
 exports.UserExists = async (username) => {
   try {
-    const user = await repo.findOne({
+    const user = await repo.findOneUser({
       username,
     })
     if (user) return true
@@ -19,7 +19,7 @@ exports.UserExists = async (username) => {
 
 exports.CreateUser = async (username, password) => {
   try {
-    const user = await repo.createOne({
+    const user = await repo.createOneUser({
       username,
       password,
     })
@@ -33,11 +33,20 @@ exports.CreateUser = async (username, password) => {
 
 exports.FindUser = async (username) => {
   try {
-    return repo.findOne({
+    return repo.findOneUser({
       username,
     })
   } catch (err) {
     console.log('Error, cannot find user', err)
+    return { err }
+  }
+}
+
+exports.UpdatePreferences = async (username, topics, difficulties) => {
+  try {
+    return repo.findOneAndUpdateUser({ username }, { topics, difficulties })
+  } catch (err) {
+    console.log('Error, unable to update preferences', err)
     return { err }
   }
 }
