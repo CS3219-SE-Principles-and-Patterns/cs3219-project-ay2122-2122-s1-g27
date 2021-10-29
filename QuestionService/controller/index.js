@@ -10,7 +10,6 @@ routes.get('/', (_, res) => res.send('Welcome to the QuestionService. Do you hav
 // read
 routes.get('/question/id/:id', QuestionService.FindQuestionById)
 routes.get('/question/all', QuestionService.FindAllQuestions)
-routes.post('/question/match', QuestionService.FindMatchedQuestion) // similar to POST /question/room, but this returns actual mapped question
 routes.get('/question/metadata', QuestionService.GetQuestionMetadata)
 
 routes.get('/question/room', RoomService.FindRoomById)

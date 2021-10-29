@@ -88,7 +88,10 @@ exports.FindAllQuestions = async () => {
 //       !data.difficulty ||
 //       !data.topic ||
 //       !data.questionBody ||
-//       !data.answer
+//       !data.source ||
+//       !data.answer ||
+//       !data.sampleCases ||
+//       !data.constraints
 //     ) {
 //       throw new Error('Request has missing required attribute(s)')
 //     }
@@ -99,12 +102,15 @@ exports.FindAllQuestions = async () => {
 //     }
 
 //     const question = await questionsRepo.createOne({
-//       id: data.id,
-//       title: data.title,
-//       difficulty: data.difficulty,
-//       topic: data.topic,
-//       questionBody: data.questionBody,
-//       answer: data.answer,
+//        id: data.id,
+//        title: data.title,
+//        difficulty: data.difficulty,
+//        topic: data.topic,
+//        questionBody: data.questionBody,
+//        source: data.source,
+//        answer: data.answer,
+//        sampleCases: data.sampleCases,
+//        constraints: data.constraints,
 //     })
 //     question.save((err) => {
 //       if (err) {
@@ -130,7 +136,10 @@ exports.FindAllQuestions = async () => {
 //         !questionData.difficulty ||
 //         !questionData.topic ||
 //         !questionData.questionBody ||
-//         !questionData.answer
+//         !questionData.source ||
+//         !questionData.answer ||
+//         !questionData.sampleCases ||
+//         !questionData.constraints
 //       ) {
 //         throw new Error('Request has missing required attribute(s)')
 //       }
@@ -141,12 +150,15 @@ exports.FindAllQuestions = async () => {
 //       }
 
 //       const question = await questionsRepo.createOne({
-//         id: questionData.id,
-//         title: questionData.title,
-//         difficulty: questionData.difficulty,
-//         topic: questionData.topic,
-//         questionBody: questionData.questionBody,
-//         answer: questionData.answer,
+//        id: questionData.id,
+//        title: questionData.title,
+//        difficulty: questionData.difficulty,
+//        topic: questionData.topic,
+//        questionBody: questionData.questionBody,
+//        source: questionData.source,
+//        answer: questionData.answer,
+//        sampleCases: questionData.sampleCases,
+//        constraints: questionData.constraints,
 //       })
 //       question.save((err) => {
 //         if (err) {

@@ -20,18 +20,6 @@ const FindQuestionById = async (req, res) => {
   }
 }
 
-const FindMatchedQuestion = async (req, res) => {
-  try {
-    const { topics, difficulties } = req.body
-    const respOrm = await ormQuestion.FindMatchedQuestion(topics, difficulties)
-    return await wrapResult(res, 'Cannot Find Question for Match', 'Found Match Question', respOrm)
-  } catch (err) {
-    console.log('err: ', err)
-    const resp = await Response('Failure', 'DB failed', [])
-    return res.status(500).send(resp)
-  }
-}
-
 const FindAllQuestions = async (_, res) => {
   try {
     const respOrm = await ormQuestion.FindAllQuestions()
@@ -48,7 +36,6 @@ const GetQuestionMetadata = async (_, res) => res.status(200).json(METADATA)
 module.exports = {
   FindQuestionById,
   FindAllQuestions,
-  FindMatchedQuestion,
   GetQuestionMetadata,
 }
 
