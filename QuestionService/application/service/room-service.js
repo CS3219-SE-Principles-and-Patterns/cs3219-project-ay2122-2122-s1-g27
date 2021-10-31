@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt')
+const { sha256 } = require('js-sha256')
 const { Response, wrapResult } = require('../util/response')
 const ormRoom = require('../orm/room-orm')
 const ormQuestion = require('../orm/question-orm')
@@ -6,10 +6,8 @@ const { getRandomNumberBetweenInclMinExclMax } = require('../util/utilities')
 
 // for generating room id
 
-const SALT_ROUNDS_1 = 3
-const SALT_ROUNDS_2 = 2
-const SALT_1 = bcrypt.genSaltSync(SALT_ROUNDS_1)
-const SALT_2 = bcrypt.genSaltSync(SALT_ROUNDS_2)
+const SALT_1 = 32
+const SALT_2 = 2
 
 /**
  * Application Layer (Service) defines the HTTP Route Handler Functions
@@ -22,7 +20,7 @@ const CreateRoom = async (req, res) => {
     const { topics, difficulties, username1, username2 } = req.body
 
     const beforeHash = `${SALT_1}${username1}${SALT_2}${username2}`
-    const hash = String(bcrypt.hashSync(beforeHash, SALT_1))
+    const hash = sha256(beforeHash)
 
     const matchedQuestions = await ormQuestion.FindMatchedQuestions(topics, difficulties)
     const randomIndex = getRandomNumberBetweenInclMinExclMax(0, matchedQuestions.length)
