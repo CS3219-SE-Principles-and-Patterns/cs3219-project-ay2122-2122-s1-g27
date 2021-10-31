@@ -1,10 +1,13 @@
+require('dotenv').config()
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 const mongoose = require('mongoose')
+const Client = require('socket.io-client')
 
 const app = require('../server')
 const db = require('../infrastructure/persistence/mongo')
 const { URI } = require('../configs').development.db
+const { PORT } = require('../configs').development
 const { USER_STUB } = require('./stubs')
 const { VerifySuccess, VerifyFailure } = require('./utils')
 
@@ -120,5 +123,49 @@ describe('Endpoint Testing for HTTP Requests', () => {
   it('No Auth Header Fail', async () => {
     const authRes = await chai.request(app).get('/user/auth')
     VerifyFailure(authRes, 401)
+  })
+})
+
+describe('Endpoint Testing for Socket.io', () => {
+  let clientSocket
+  before((done) => {
+    app.listen(PORT, () => {
+      clientSocket = Client.connect(`http://localhost:${PORT}`)
+      clientSocket.on('connect', () => {
+        setTimeout(() => {
+          // need timeout to allow proper connection to server
+          done()
+        }, 1500)
+      })
+    })
+  })
+
+  beforeEach(async () => {
+    await mongoose.connect(URI, {
+      useNewUrlParser: true,
+    })
+  })
+
+  after(() => {
+    // mongoose.disconnect()
+    clientSocket.close()
+  })
+
+  it('Test Message', () => {
+    const msg1 = 'msg1'
+    const msg2 = 'msg2'
+    clientSocket.on('message', (arg1, arg2) => {
+      arg1.should.equal(msg1)
+      arg2.should.equal(msg2)
+    })
+    clientSocket.emit('message', msg1, msg2)
+  })
+
+  it('Test Match, no possible matches', () => {
+    // warning: not actually working, can't seeem to connect to DB
+    clientSocket.on('match', (res) => {
+      res.should.equal('waiting')
+    })
+    clientSocket.emit('match', 'FooBar', ['Heaps'], ['Hard'])
   })
 })
