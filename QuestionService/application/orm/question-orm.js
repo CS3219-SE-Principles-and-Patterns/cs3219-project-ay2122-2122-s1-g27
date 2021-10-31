@@ -1,5 +1,5 @@
-const questionsRepo = require('../../infrastructure/persistence/repository')
-const { getRandomNumberBetweenInclMinExclMax } = require('../util/utilities')
+const questionsRepo = require('../../infrastructure/persistence/question-repository')
+
 /**
  * ORM only defines the calls to the DB Layer to CRUD data
  */
@@ -31,10 +31,13 @@ exports.FindQuestion = async (questionID) => {
 /*
 Accesses a question in the database which satisfy all filters in the request, with a random question chosen if multiple questions satisfy the filters.
 */
-exports.FindMatchedQuestion = async (topics, difficulties) => {
+exports.FindMatchedQuestions = async (topics, difficulties) => {
   try {
     if (!topics || !difficulties) {
       throw new Error('Request is missing some attribute(s)')
+    }
+    if (!Array.isArray(topics) && !Array.isArray(difficulties)) {
+      throw new Error('Request has incorrect (non-array) types for topics and difficulties')
     }
 
     const filter = { topics, difficulties }
@@ -42,10 +45,8 @@ exports.FindMatchedQuestion = async (topics, difficulties) => {
     if (!results || results.length === 0) {
       throw new Error('No such question id exists')
     }
-    const randomIndex = getRandomNumberBetweenInclMinExclMax(0, results.length)
-    const randomResult = results[randomIndex]
 
-    return randomResult
+    return results
   } catch (err) {
     console.log('Error in finding single question', err)
     return { err }
@@ -63,7 +64,6 @@ exports.FindAllQuestions = async () => {
     return { err }
   }
 }
-
 // Methods for extensibility: Allow users in the future to add / delete own questions
 
 // /*
@@ -78,7 +78,10 @@ exports.FindAllQuestions = async () => {
 //       !data.difficulty ||
 //       !data.topic ||
 //       !data.questionBody ||
-//       !data.answer
+//       !data.source ||
+//       !data.answer ||
+//       !data.sampleCases ||
+//       !data.constraints
 //     ) {
 //       throw new Error('Request has missing required attribute(s)')
 //     }
@@ -89,12 +92,15 @@ exports.FindAllQuestions = async () => {
 //     }
 
 //     const question = await questionsRepo.createOne({
-//       id: data.id,
-//       title: data.title,
-//       difficulty: data.difficulty,
-//       topic: data.topic,
-//       questionBody: data.questionBody,
-//       answer: data.answer,
+//        id: data.id,
+//        title: data.title,
+//        difficulty: data.difficulty,
+//        topic: data.topic,
+//        questionBody: data.questionBody,
+//        source: data.source,
+//        answer: data.answer,
+//        sampleCases: data.sampleCases,
+//        constraints: data.constraints,
 //     })
 //     question.save((err) => {
 //       if (err) {
@@ -120,7 +126,10 @@ exports.FindAllQuestions = async () => {
 //         !questionData.difficulty ||
 //         !questionData.topic ||
 //         !questionData.questionBody ||
-//         !questionData.answer
+//         !questionData.source ||
+//         !questionData.answer ||
+//         !questionData.sampleCases ||
+//         !questionData.constraints
 //       ) {
 //         throw new Error('Request has missing required attribute(s)')
 //       }
@@ -131,12 +140,15 @@ exports.FindAllQuestions = async () => {
 //       }
 
 //       const question = await questionsRepo.createOne({
-//         id: questionData.id,
-//         title: questionData.title,
-//         difficulty: questionData.difficulty,
-//         topic: questionData.topic,
-//         questionBody: questionData.questionBody,
-//         answer: questionData.answer,
+//        id: questionData.id,
+//        title: questionData.title,
+//        difficulty: questionData.difficulty,
+//        topic: questionData.topic,
+//        questionBody: questionData.questionBody,
+//        source: questionData.source,
+//        answer: questionData.answer,
+//        sampleCases: questionData.sampleCases,
+//        constraints: questionData.constraints,
 //       })
 //       question.save((err) => {
 //         if (err) {

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const config = require('../../configs').development
-const schema = require('../../domain/question-entity')
+const question = require('../../domain/question-entity')
+const room = require('../../domain/room-entity')
 
 /**
  * (OUT PORT)
@@ -42,9 +43,13 @@ if (dbURI) {
   if (conn) {
     console.log('MongoDB Connected Successfully')
 
-    const questionSchema = new mongoose.Schema(schema)
-    const collectionName = 'questions'
-    db.questions = mongoose.model('questions', questionSchema, collectionName)
+    const questionSchema = new mongoose.Schema(question)
+    const questionCollectionName = 'questions'
+    db.questions = mongoose.model('questions', questionSchema, questionCollectionName)
+
+    const roomSchema = new mongoose.Schema(room)
+    const roomCollectionName = 'rooms'
+    db.rooms = mongoose.model('rooms', roomSchema, roomCollectionName)
 
     module.exports = db
   } else {
