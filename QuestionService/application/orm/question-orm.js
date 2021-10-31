@@ -1,21 +1,4 @@
 const questionsRepo = require('../../infrastructure/persistence/question-repository')
-const { getRandomNumberBetweenInclMinExclMax } = require('../util/utilities')
-
-// to filter questions for matching
-const FindMatchedQuestionUtility = async (topics, difficulties) => {
-  const filter = { topics, difficulties }
-  const results = await questionsRepo.findMatch(filter)
-  if (!results || results.length === 0) {
-    throw new Error('No such question id exists')
-  }
-
-  const randomIndex = getRandomNumberBetweenInclMinExclMax(0, results.length)
-  const randomResult = results[randomIndex]
-
-  return randomResult
-}
-
-exports.FindMatchedQuestionUtility = FindMatchedQuestionUtility
 
 /**
  * ORM only defines the calls to the DB Layer to CRUD data
@@ -48,15 +31,22 @@ exports.FindQuestion = async (questionID) => {
 /*
 Accesses a question in the database which satisfy all filters in the request, with a random question chosen if multiple questions satisfy the filters.
 */
-exports.FindMatchedQuestion = async (topics, difficulties) => {
+exports.FindMatchedQuestions = async (topics, difficulties) => {
   try {
     if (!topics || !difficulties) {
       throw new Error('Request is missing some attribute(s)')
     }
+    if (!Array.isArray(topics) && !Array.isArray(difficulties)) {
+      throw new Error('Request has incorrect (non-array) types for topics and difficulties')
+    }
 
-    const matchedQuestion = exports.FindMatchedQuestionUtility(topics, difficulties)
+    const filter = { topics, difficulties }
+    const results = await questionsRepo.findMatch(filter)
+    if (!results || results.length === 0) {
+      throw new Error('No such question id exists')
+    }
 
-    return matchedQuestion
+    return results
   } catch (err) {
     console.log('Error in finding single question', err)
     return { err }

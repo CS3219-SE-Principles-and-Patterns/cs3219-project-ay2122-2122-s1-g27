@@ -6,45 +6,18 @@ const app = require('../server')
 const Questions = require('../infrastructure/persistence/mongo').questions
 const Rooms = require('../infrastructure/persistence/mongo').rooms
 
-const dummyQuestionData = require('../data/dummy-questions.json')
-const { questionsDb } = require('../infrastructure/persistence/question-repository')
-
 const { URI } = require('../configs').development.db
-const { VerifySuccess, VerifyFailure } = require('./utils')
+const {
+  VerifySuccess,
+  VerifyFailure,
+  getQuestionFindResult,
+  checkIfCreateRoomFail,
+  checkIfCreateRoomSuccess,
+  loadDummyQuestionData,
+} = require('./utils.test')
 
 chai.should()
 chai.use(chaiHttp)
-
-const loadDummyQuestionData = () => {
-  const createOne = async (params) => questionsDb(params)
-  const allDummyQuestions = dummyQuestionData.map(async (questionData) => {
-    const question = await createOne({
-      id: questionData.id,
-      title: questionData.title,
-      difficulty: questionData.difficulty,
-      topic: questionData.topic,
-      questionBody: questionData.questionBody,
-      source: questionData.source,
-      answer: questionData.answer,
-      sampleCases: questionData.sampleCases,
-      constraints: questionData.constraints,
-    })
-    question.save((err) => {
-      if (err) {
-        console.log(err)
-        throw new Error('Save to database failed')
-      }
-    })
-    return question
-  })
-  return allDummyQuestions
-}
-
-const getQuestionFindResult = async (questionId) => {
-  const questionFindUrl = `/question/id/${questionId}`
-  const getAllQuestionsResult = await chai.request(app).get(questionFindUrl)
-  return getAllQuestionsResult
-}
 
 describe('Endpoint Testing', () => {
   beforeEach(async () => {
@@ -208,14 +181,12 @@ describe('Endpoint Testing', () => {
     const getRoomIdResult = await chai
       .request(app)
       .post('/question/room')
-      .set('content-type', 'application/x-www-form-urlencoded')
+      .set('content-type', 'application/json')
       .send(matchRequestData)
 
     VerifySuccess(getRoomIdResult, 200)
     const getRoomIdResultBody = getRoomIdResult.body
-    getRoomIdResultBody.status.should.eql('success')
-    getRoomIdResultBody.message.should.eql('Room Created')
-    getRoomIdResultBody.data.should.be.a('string')
+    checkIfCreateRoomSuccess(getRoomIdResultBody)
 
     // invalid topics
     const invalidMatchRequestTopicsData = {
@@ -227,15 +198,12 @@ describe('Endpoint Testing', () => {
     const invalidMatchRequestTopicsDataResult = await chai
       .request(app)
       .post('/question/room')
-      .set('content-type', 'application/x-www-form-urlencoded')
+      .set('content-type', 'application/json')
       .send(invalidMatchRequestTopicsData)
 
     VerifyFailure(invalidMatchRequestTopicsDataResult, 404)
     const invalidTopicsBody = invalidMatchRequestTopicsDataResult.body
-    invalidTopicsBody.status.should.eql('fail')
-    invalidTopicsBody.message.should.eql('Cannot Create Room')
-    invalidTopicsBody.data.should.be.a('object')
-    invalidTopicsBody.data.should.have.property('err')
+    checkIfCreateRoomFail(invalidTopicsBody)
 
     // invalid difficulties
     const invalidMatchRequestDifficultiesData = {
@@ -247,15 +215,12 @@ describe('Endpoint Testing', () => {
     const invalidMatchRequestDifficultiesDataResult = await chai
       .request(app)
       .post('/question/room')
-      .set('content-type', 'application/x-www-form-urlencoded')
+      .set('content-type', 'application/json')
       .send(invalidMatchRequestDifficultiesData)
 
     VerifyFailure(invalidMatchRequestDifficultiesDataResult, 404)
     const invalidDifficultiesBody = invalidMatchRequestDifficultiesDataResult.body
-    invalidDifficultiesBody.status.should.eql('fail')
-    invalidDifficultiesBody.message.should.eql('Cannot Create Room')
-    invalidDifficultiesBody.data.should.be.a('object')
-    invalidDifficultiesBody.data.should.have.property('err')
+    checkIfCreateRoomFail(invalidDifficultiesBody)
 
     // empty topics
     const emptyMatchRequestTopicsData = {
@@ -267,15 +232,12 @@ describe('Endpoint Testing', () => {
     const emptyMatchRequestTopicsDataResult = await chai
       .request(app)
       .post('/question/room')
-      .set('content-type', 'application/x-www-form-urlencoded')
+      .set('content-type', 'application/json')
       .send(emptyMatchRequestTopicsData)
 
     VerifyFailure(emptyMatchRequestTopicsDataResult, 404)
     const emptyTopicsBody = emptyMatchRequestTopicsDataResult.body
-    emptyTopicsBody.status.should.eql('fail')
-    emptyTopicsBody.message.should.eql('Cannot Create Room')
-    emptyTopicsBody.data.should.be.a('object')
-    emptyTopicsBody.data.should.have.property('err')
+    checkIfCreateRoomFail(emptyTopicsBody)
 
     // empty difficulties
     const emptyMatchRequestDifficultiesData = {
@@ -287,18 +249,15 @@ describe('Endpoint Testing', () => {
     const emptyMatchRequestDifficultiesDataResult = await chai
       .request(app)
       .post('/question/room')
-      .set('content-type', 'application/x-www-form-urlencoded')
+      .set('content-type', 'application/json')
       .send(emptyMatchRequestDifficultiesData)
 
     VerifyFailure(emptyMatchRequestDifficultiesDataResult, 404)
     const emptyDifficultiesBody = emptyMatchRequestDifficultiesDataResult.body
-    emptyDifficultiesBody.status.should.eql('fail')
-    emptyDifficultiesBody.message.should.eql('Cannot Create Room')
-    emptyDifficultiesBody.data.should.be.a('object')
-    emptyDifficultiesBody.data.should.have.property('err')
+    checkIfCreateRoomFail(emptyDifficultiesBody)
   })
 
-  it('Able to obtain questionId from room-question mapping given roomId via GET /question/room', async () => {
+  it('Able to obtain question from room-question mapping given roomId via GET /question/room', async () => {
     loadDummyQuestionData()
 
     // creation of room
@@ -311,14 +270,12 @@ describe('Endpoint Testing', () => {
     const getRoomIdResult = await chai
       .request(app)
       .post('/question/room')
-      .set('content-type', 'application/x-www-form-urlencoded')
+      .set('content-type', 'application/json')
       .send(matchRequestData)
 
     VerifySuccess(getRoomIdResult, 200)
     const getRoomIdResultBody = getRoomIdResult.body
-    getRoomIdResultBody.status.should.eql('success')
-    getRoomIdResultBody.message.should.eql('Room Created')
-    getRoomIdResultBody.data.should.be.a('string')
+    checkIfCreateRoomSuccess(getRoomIdResultBody)
 
     // use mapping to get valid result
     const roomId = getRoomIdResultBody.data
@@ -326,7 +283,7 @@ describe('Endpoint Testing', () => {
     const getRoomMatchedQuestionResult = await chai
       .request(app)
       .get('/question/room')
-      .set('content-type', 'application/x-www-form-urlencoded')
+      .set('content-type', 'application/json')
       .send(getRoomQuestionData)
 
     VerifySuccess(getRoomMatchedQuestionResult, 200)
@@ -335,15 +292,16 @@ describe('Endpoint Testing', () => {
     getRoomMatchedQuestionBody.message.should.eql('Found Room')
     getRoomMatchedQuestionBody.data.should.be.a('object')
     getRoomMatchedQuestionBody.data.roomId.should.eql(roomId)
-    getRoomMatchedQuestionBody.data.questionId.should.be.oneOf([1, 2, 5, 7, 9])
+    getRoomMatchedQuestionBody.data.question.id.should.be.oneOf([1, 2, 5, 7, 9])
 
     // try to access via an invalid room id (e.g. hacker)
     const invalidRoomQuestionData = { roomId: `${roomId}extraCodeHere` }
     const invalidRoomMatchedQuestionResult = await chai
       .request(app)
       .get('/question/room')
-      .set('content-type', 'application/x-www-form-urlencoded')
+      .set('content-type', 'application/json')
       .send(invalidRoomQuestionData)
+
     VerifyFailure(invalidRoomMatchedQuestionResult, 404)
     const invalidRoomMatchedQuestionBody = invalidRoomMatchedQuestionResult.body
     invalidRoomMatchedQuestionBody.status.should.eql('fail')

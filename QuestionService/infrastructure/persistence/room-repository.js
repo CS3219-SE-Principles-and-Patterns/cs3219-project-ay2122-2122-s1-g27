@@ -8,10 +8,10 @@ const roomsDb = db.rooms
 
 const findRoom = async (condition) => roomsDb.findOne(condition)
 
-const deleteRoom = async (del) => roomsDb.deleteMany(del)
+const deleteRoom = async (delFilter) => roomsDb.deleteMany(delFilter)
 
-const createRoom = async (del, params) =>
-  roomsDb.findOneAndUpdate(del, params, { upsert: true, returnOriginal: false })
+const createRoom = async (delFilter, params) =>
+  roomsDb.findOneAndUpdate(delFilter, params, { upsert: true, returnOriginal: false })
 
 // Consolidate database storage apis
 

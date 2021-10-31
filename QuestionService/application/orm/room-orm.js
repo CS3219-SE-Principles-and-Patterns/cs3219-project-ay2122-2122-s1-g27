@@ -1,28 +1,15 @@
-const bcrypt = require('bcrypt')
 const roomsRepo = require('../../infrastructure/persistence/room-repository')
-const { FindMatchedQuestionUtility } = require('./question-orm')
 
-// for generating room id
-const saltRounds = 3
-const saltRounds2 = 2
-const salt = bcrypt.genSaltSync(saltRounds)
-const salt2 = bcrypt.genSaltSync(saltRounds2)
-
-exports.CreateRoom = async (topics, difficulties, username1, username2) => {
+exports.CreateRoom = async (randomMatchedQuestion, hash) => {
   try {
-    if (!topics || !difficulties || !username1 || !username2) {
-      throw new Error('Request has missing required attribute(s)')
+    if (!randomMatchedQuestion || !hash) {
+      throw new Error('Room creation does not have both matched question and hash')
     }
-
-    const beforeHash = `${salt}${username1}${salt2}${username2}`
-    const hash = String(bcrypt.hashSync(beforeHash, salt))
-
-    const matchedQuestion = await FindMatchedQuestionUtility(topics, difficulties)
 
     const deleteCondition = { roomId: hash }
     const replacement = {
       roomId: hash,
-      questionId: matchedQuestion.id,
+      questionId: randomMatchedQuestion.id,
     }
 
     const room = await roomsRepo.createRoom(deleteCondition, replacement)
@@ -50,14 +37,12 @@ exports.FindRoom = async (roomId) => {
     // console.log(del)
 
     const filter = { roomId }
-    const currentRoomExists = await roomsRepo.findRoom(filter)
-    if (!currentRoomExists) {
+    const currentRoom = await roomsRepo.findRoom(filter)
+    if (!currentRoom) {
       throw new Error('No such room exists')
     }
 
-    const currentQuestion = currentRoomExists
-
-    return currentQuestion
+    return currentRoom
   } catch (err) {
     console.log('Error in finding room with provided room id', err)
     return { err }

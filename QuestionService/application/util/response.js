@@ -4,7 +4,7 @@
  * @param {String} message
  * @param {Array} data
  */
-const Response = async (status, message, data) => ({
+const Response = async (status, message, data = []) => ({
   status,
   message,
   data,
