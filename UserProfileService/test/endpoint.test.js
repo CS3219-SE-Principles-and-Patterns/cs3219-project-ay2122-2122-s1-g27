@@ -2,7 +2,8 @@ require('dotenv').config()
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 const mongoose = require('mongoose')
-const Client = require('socket.io-client')
+// const Client = require('socket.io-client')
+const io = require('socket.io-client')
 
 const app = require('../server')
 const db = require('../infrastructure/persistence/mongo')
@@ -126,16 +127,20 @@ describe('Endpoint Testing for HTTP Requests', () => {
   })
 })
 
-describe('Endpoint Testing for Socket.io', () => {
+describe.skip('Endpoint Testing for Socket.io', () => {
   let clientSocket
   before((done) => {
     app.listen(PORT, () => {
-      clientSocket = Client.connect(`http://localhost:${PORT}`)
+      clientSocket = io(`http://localhost:${PORT}`, {
+        extraHeaders: {
+          Authorization: 'Bearer abc',
+        },
+      })
       clientSocket.on('connect', () => {
         setTimeout(() => {
           // need timeout to allow proper connection to server
           done()
-        }, 1500)
+        }, 1000)
       })
     })
   })
