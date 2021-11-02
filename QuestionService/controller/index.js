@@ -7,13 +7,16 @@ const routes = Router()
 // Routes
 routes.get('/', (_, res) => res.send('Welcome to the QuestionService. Do you have any questions?'))
 
-// read
+// questions
 routes.get('/question/id/:id', QuestionService.FindQuestionById)
 routes.get('/question/all', QuestionService.FindAllQuestions)
 routes.get('/question/metadata', QuestionService.GetQuestionMetadata)
 
-routes.get('/question/room', RoomService.FindRoomById)
-routes.post('/question/room', RoomService.CreateRoom) // similar to POST /question/match, but this returns the roomId that has a question mapped to it
+// matching for rooms
+routes.post('/question/room', RoomService.CreateRoom)
+routes.get('/question/room/:roomId', RoomService.FindRoomById)
+routes.delete('/question/room/:roomId', RoomService.DeleteRoom)
+routes.get('/question/room/username/:username', RoomService.GetCurrentRoomByUsername)
 
 /* 
 Below are all admin methods; feel free to delete and use mongoDB admin; 

@@ -15,6 +15,14 @@ const schema = {
     type: Number,
     required: true,
   },
+  usernames: {
+    type: [String],
+    required: true,
+  },
+  created_at: {
+    type: Number,
+    required: true,
+  },
 }
 
 module.exports = schema
