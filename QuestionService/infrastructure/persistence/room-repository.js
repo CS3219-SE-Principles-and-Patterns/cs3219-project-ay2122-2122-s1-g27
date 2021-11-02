@@ -6,7 +6,7 @@ const db = require('./mongo')
 
 const roomsDb = db.rooms
 
-const findRoom = async (condition) => roomsDb.findOne(condition)
+const findRoom = async (condition) => roomsDb.find(condition).sort({ created_at: -1 }).limit(1)
 
 const deleteRoom = async (delFilter) => roomsDb.deleteMany(delFilter)
 

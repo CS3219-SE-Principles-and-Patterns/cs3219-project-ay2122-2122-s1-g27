@@ -48,7 +48,7 @@ const FindRoomById = async (req, res) => {
 
     if (!respOrmRoom.err) {
       const respOrmQuestion = await ormQuestion.FindQuestion(respOrmRoom.questionId)
-      result = { roomId, question: respOrmQuestion }
+      result = { question: respOrmQuestion }
     }
 
     return wrapResult(res, 'Cannot Find Room', 'Found Room', result)

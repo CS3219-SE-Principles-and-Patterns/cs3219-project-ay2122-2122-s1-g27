@@ -286,7 +286,6 @@ describe('Endpoint Testing', () => {
     getRoomMatchedQuestionBody.status.should.eql('success')
     getRoomMatchedQuestionBody.message.should.eql('Found Room')
     getRoomMatchedQuestionBody.data.should.be.a('object')
-    getRoomMatchedQuestionBody.data.roomId.should.eql(roomId)
     getRoomMatchedQuestionBody.data.question.id.should.be.oneOf([1, 2, 5, 7, 9])
 
     // try to access via an invalid room id (e.g. hacker)
@@ -352,9 +351,10 @@ describe('Endpoint Testing', () => {
 
     const username1 = 'firebreathingeugene'
     const username2 = 'waterbreathingeugene'
+    const username3 = 'airbreathingeugene'
     const neverBeforeUsedUsername = 'not!!!used...before'
 
-    // creation of room
+    // creation of room 1
     const matchRequestData = {
       username1,
       username2,
@@ -408,5 +408,53 @@ describe('Endpoint Testing', () => {
     invalidRoomMatchedQuestionBody.message.should.eql('Cannot Find Room')
     invalidRoomMatchedQuestionBody.data.should.be.a('object')
     invalidRoomMatchedQuestionBody.data.should.have.property('err')
+
+    // creation of room 2
+    const matchRequestData2 = {
+      username1: username3,
+      username2,
+      topics: ['Hashing'],
+      difficulties: ['Easy', 'Medium', 'Difficult'],
+    }
+    const getRoomIdResult2 = await chai
+      .request(app)
+      .post('/question/room')
+      .set('content-type', 'application/json')
+      .send(matchRequestData2)
+
+    VerifySuccess(getRoomIdResult2, 200)
+    const getRoomIdResult2Body = getRoomIdResult2.body
+    checkIfCreateRoomSuccess(getRoomIdResult2Body)
+
+    // use mapping to get valid result
+
+    // username2 had a room with username1, now has a room with username 3
+    // we want to return the latest one (i.e. with username 3)
+
+    const roomId2 = getRoomIdResult2Body.data
+
+    const getRoomMatchedQuestionResult3 = await chai
+      .request(app)
+      .get(`/question/room/username/${username2}`)
+
+    VerifySuccess(getRoomMatchedQuestionResult3, 200)
+    const getRoomMatchedQuestionBody3 = getRoomMatchedQuestionResult3.body
+    getRoomMatchedQuestionBody3.status.should.eql('success')
+    getRoomMatchedQuestionBody3.message.should.eql('Found Room')
+    getRoomMatchedQuestionBody3.data.should.be.a('object')
+    getRoomMatchedQuestionBody3.data.roomId.should.eql(roomId2)
+
+    const getRoomMatchedQuestionResult4 = await chai
+      .request(app)
+      .get(`/question/room/username/${username3}`)
+
+    console.log(getRoomMatchedQuestionResult4)
+
+    VerifySuccess(getRoomMatchedQuestionResult4, 200)
+    const getRoomMatchedQuestionBody4 = getRoomMatchedQuestionResult4.body
+    getRoomMatchedQuestionBody4.status.should.eql('success')
+    getRoomMatchedQuestionBody4.message.should.eql('Found Room')
+    getRoomMatchedQuestionBody4.data.should.be.a('object')
+    getRoomMatchedQuestionBody4.data.roomId.should.eql(roomId2)
   })
 })

@@ -19,6 +19,10 @@ const schema = {
     type: [String],
     required: true,
   },
+  created_at: {
+    type: Number,
+    required: true,
+  },
 }
 
 module.exports = schema

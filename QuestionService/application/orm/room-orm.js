@@ -19,6 +19,7 @@ exports.CreateRoom = async (randomMatchedQuestion, hash, usernames) => {
       roomId: hash,
       questionId: randomMatchedQuestion.id,
       usernames,
+      created_at: Date.now(),
     }
 
     const room = await roomsRepo.createRoom(deleteCondition, replacement)
@@ -42,16 +43,14 @@ exports.FindRoom = async (roomId) => {
       throw new Error('Request has no id attribute')
     }
 
-    // const del = await roomsRepo.deleteRoom({ roomId: roomId })
-    // console.log(del)
-
     const filter = { roomId }
     const currentRoom = await roomsRepo.findRoom(filter)
-    if (!currentRoom) {
+
+    if (currentRoom.length === 0 || !currentRoom[0]) {
       throw new Error('No such room exists')
     }
 
-    return currentRoom
+    return currentRoom[0]
   } catch (err) {
     console.log('Error in finding room with provided room id', err)
     return { err }
@@ -86,11 +85,12 @@ exports.FindRoomByUsername = async (username) => {
 
     const filter = { usernames: username }
     const currentRoom = await roomsRepo.findRoom(filter)
-    if (!currentRoom) {
+
+    if (currentRoom.length === 0 || !currentRoom[0]) {
       throw new Error('No such room exists')
     }
 
-    return { roomId: currentRoom.roomId }
+    return { roomId: currentRoom[0].roomId }
   } catch (err) {
     console.log('Error in finding room with provided username', err)
     return { err }
