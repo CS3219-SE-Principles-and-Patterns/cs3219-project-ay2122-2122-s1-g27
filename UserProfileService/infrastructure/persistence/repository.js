@@ -50,7 +50,7 @@ const removeMatchesBeforeDateTime = async (date) =>
  * @param {[string]} topics
  * @param {[string]} difficulties
  * @param {string} username
- * @returns {[match]} Array of Match objects, sorted asc by `updatedAt` 
+ * @returns {[match]} Array of Match objects, sorted asc by `updatedAt`
  */
 const findMatches = async (topics, difficulties, username) =>
   matchDB

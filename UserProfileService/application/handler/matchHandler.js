@@ -1,4 +1,3 @@
-const _ = require('lodash')
 const ormMatch = require('../orm/match-orm')
 
 const TIMEOUT = 30000 // ms
@@ -68,7 +67,11 @@ const MatchHandler = (socket, io) => {
 
     // Step1: Get a list of valid matches
     const possibleMatches = await ormMatch.FindMatches(topics, difficulties, username, TIMEOUT)
-
+    console.log('Possible matches', possibleMatches)
+    if (possibleMatches.err) {
+      console.error('Possible matches error', possibleMatches.err)
+      return socket.emit('matchFail', 'ServerError')
+    }
     // Step2: Check if list of matches contain > 0 users. If no, go to Step2a. If yes, go to Step2b
     if (possibleMatches.length === 0) {
       // Step2a: Create a Match and persist in DB. Set timeout of 30s to find possible matching
@@ -76,6 +79,10 @@ const MatchHandler = (socket, io) => {
       // no matches were found, and delete entry from DB (warning: check for EXACT object equality)
       console.log('No possible match as of now')
       const createMatch = ormMatch.CreateMatch(username, socket.id, topics, difficulties)
+      if (createMatch.err) {
+        console.error('createMatch error', createMatch.err)
+        return socket.emit('matchFail', 'ServerError')
+      }
       if (createMatch) {
         console.log('Successful match creation, now waiting')
         socket.emit('match', 'waiting')
@@ -89,7 +96,7 @@ const MatchHandler = (socket, io) => {
     // Step2b: Find a random user from list of matches
     // Query QuestionService to generate and get unique room ID. Emit RoomID to both clients
     // Additionally, delete the matched user from the QuestionService (so it wont get matched with someone else)
-    await handlePossibleMatches(possibleMatches, socket, io)
+    return handlePossibleMatches(possibleMatches, socket, io)
   })
 }
 
