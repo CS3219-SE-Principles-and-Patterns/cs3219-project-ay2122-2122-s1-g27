@@ -15,6 +15,10 @@ const schema = {
     type: Number,
     required: true,
   },
+  usernames: {
+    type: [String],
+    required: true,
+  },
 }
 
 module.exports = schema

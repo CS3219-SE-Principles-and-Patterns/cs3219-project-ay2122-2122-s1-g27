@@ -279,12 +279,7 @@ describe('Endpoint Testing', () => {
 
     // use mapping to get valid result
     const roomId = getRoomIdResultBody.data
-    const getRoomQuestionData = { roomId }
-    const getRoomMatchedQuestionResult = await chai
-      .request(app)
-      .get('/question/room')
-      .set('content-type', 'application/json')
-      .send(getRoomQuestionData)
+    const getRoomMatchedQuestionResult = await chai.request(app).get(`/question/room/${roomId}`)
 
     VerifySuccess(getRoomMatchedQuestionResult, 200)
     const getRoomMatchedQuestionBody = getRoomMatchedQuestionResult.body
@@ -295,15 +290,120 @@ describe('Endpoint Testing', () => {
     getRoomMatchedQuestionBody.data.question.id.should.be.oneOf([1, 2, 5, 7, 9])
 
     // try to access via an invalid room id (e.g. hacker)
-    const invalidRoomQuestionData = { roomId: `${roomId}extraCodeHere` }
     const invalidRoomMatchedQuestionResult = await chai
       .request(app)
-      .get('/question/room')
-      .set('content-type', 'application/json')
-      .send(invalidRoomQuestionData)
+      .get(`/question/room/${roomId}extraCodeHere`)
 
     VerifyFailure(invalidRoomMatchedQuestionResult, 404)
     const invalidRoomMatchedQuestionBody = invalidRoomMatchedQuestionResult.body
+    invalidRoomMatchedQuestionBody.status.should.eql('fail')
+    invalidRoomMatchedQuestionBody.message.should.eql('Cannot Find Room')
+    invalidRoomMatchedQuestionBody.data.should.be.a('object')
+    invalidRoomMatchedQuestionBody.data.should.have.property('err')
+  })
+
+  it('Able to delete room-question mapping given roomId via DELETE /question/room:roomId', async () => {
+    loadDummyQuestionData()
+
+    // creation of room
+    const matchRequestData = {
+      username1: 'firebreathingeugene',
+      username2: 'waterbreathingeugene',
+      topics: ['Arrays'],
+      difficulties: ['Easy', 'Medium', 'Difficult'],
+    }
+    const getRoomIdResult = await chai
+      .request(app)
+      .post('/question/room')
+      .set('content-type', 'application/json')
+      .send(matchRequestData)
+
+    VerifySuccess(getRoomIdResult, 200)
+    const getRoomIdResultBody = getRoomIdResult.body
+    checkIfCreateRoomSuccess(getRoomIdResultBody)
+
+    // use mapping to get valid result
+    const roomId = getRoomIdResultBody.data
+    const getRoomMatchedQuestionResult = await chai.request(app).delete(`/question/room/${roomId}`)
+
+    VerifySuccess(getRoomMatchedQuestionResult, 200)
+    const getRoomMatchedQuestionBody = getRoomMatchedQuestionResult.body
+    getRoomMatchedQuestionBody.status.should.eql('success')
+    getRoomMatchedQuestionBody.message.should.eql('Deleted Room')
+    getRoomMatchedQuestionBody.data.should.be.a('object')
+    getRoomMatchedQuestionBody.data.should.have.property('deletedCount')
+    getRoomMatchedQuestionBody.data.deletedCount.should.eql(1)
+
+    // invalid: should not be able to delete same mapping again
+    const getRoomMatchedQuestionResultAgain = await chai
+      .request(app)
+      .delete(`/question/room/${roomId}`)
+
+    VerifySuccess(getRoomMatchedQuestionResult, 200)
+    const getRoomMatchedQuestionBodyAgain = getRoomMatchedQuestionResultAgain.body
+    getRoomMatchedQuestionBodyAgain.status.should.eql('fail')
+    getRoomMatchedQuestionBodyAgain.message.should.eql('Cannot Delete Room')
+    getRoomMatchedQuestionBodyAgain.data.should.be.a('object')
+    getRoomMatchedQuestionBodyAgain.data.should.have.property('err')
+  })
+
+  it('Able to obtain roomId from room-question mapping given either username via GET /question/room/username/:username', async () => {
+    loadDummyQuestionData()
+
+    const username1 = 'firebreathingeugene'
+    const username2 = 'waterbreathingeugene'
+    const neverBeforeUsedUsername = 'not!!!used...before'
+
+    // creation of room
+    const matchRequestData = {
+      username1,
+      username2,
+      topics: ['Arrays'],
+      difficulties: ['Easy', 'Medium', 'Difficult'],
+    }
+    const getRoomIdResult = await chai
+      .request(app)
+      .post('/question/room')
+      .set('content-type', 'application/json')
+      .send(matchRequestData)
+
+    VerifySuccess(getRoomIdResult, 200)
+    const getRoomIdResultBody = getRoomIdResult.body
+    checkIfCreateRoomSuccess(getRoomIdResultBody)
+
+    // use mapping to get valid result
+    const roomId = getRoomIdResultBody.data
+
+    const getRoomMatchedQuestionResult1 = await chai
+      .request(app)
+      .get(`/question/room/username/${username1}`)
+
+    VerifySuccess(getRoomMatchedQuestionResult1, 200)
+    const getRoomMatchedQuestionBody1 = getRoomMatchedQuestionResult1.body
+    getRoomMatchedQuestionBody1.status.should.eql('success')
+    getRoomMatchedQuestionBody1.message.should.eql('Found Room')
+    getRoomMatchedQuestionBody1.data.should.be.a('object')
+    getRoomMatchedQuestionBody1.data.roomId.should.eql(roomId)
+
+    const getRoomMatchedQuestionResult2 = await chai
+      .request(app)
+      .get(`/question/room/username/${username2}`)
+
+    VerifySuccess(getRoomMatchedQuestionResult2, 200)
+    const getRoomMatchedQuestionBody2 = getRoomMatchedQuestionResult2.body
+    getRoomMatchedQuestionBody2.status.should.eql('success')
+    getRoomMatchedQuestionBody2.message.should.eql('Found Room')
+    getRoomMatchedQuestionBody2.data.should.be.a('object')
+    getRoomMatchedQuestionBody2.data.roomId.should.eql(roomId)
+
+    // try to access via an invalid room id (e.g. hacker)
+    const invalidRoomMatchedQuestionResult = await chai
+      .request(app)
+      .get(`/question/room/username/${neverBeforeUsedUsername}`)
+
+    VerifyFailure(invalidRoomMatchedQuestionResult, 404)
+    const invalidRoomMatchedQuestionBody = invalidRoomMatchedQuestionResult.body
+    console.log(invalidRoomMatchedQuestionBody)
     invalidRoomMatchedQuestionBody.status.should.eql('fail')
     invalidRoomMatchedQuestionBody.message.should.eql('Cannot Find Room')
     invalidRoomMatchedQuestionBody.data.should.be.a('object')
