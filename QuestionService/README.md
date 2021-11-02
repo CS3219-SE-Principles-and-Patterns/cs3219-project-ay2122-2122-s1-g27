@@ -5,7 +5,7 @@
 1. Run `yarn install` to install all depedencies
 2. Run `yarn start` to start the server using `Nodemon`. Server will start on port 8081 (by default)
 
-## Development Guide
+## Local Development Guide
 
 This project is equipped with `ESLint` and `Prettier` to enforce universal code styling and easy formatting.
 
@@ -32,16 +32,19 @@ This app components (MongoDB and NodeJS) is containerized using `Docker-Compose`
 
 ## `.env` File
 
-`.env` is _git ignored_ by default, but there exists a `.env.sample` you can use to copy into your actual `.env file`. Replacing Variables that you see appropriate
+`.env` is _git ignored_ by default, but there exists a `.env.sample` you can use to copy into your actual `.env file`. Replace variables as you see appropriate
 
 Here are the variables below and their explanations
 
 ```
+ENV: `development` for local usage/dev, `production` for production use
 DB_HOST: Host of the DB. `localhost` by default in local dev
 DB_PORT: DB Connection Port. `27017` by default
 DB_NAME: DB Name we are connecting to. QuestionDB by default
 DB_USER: DB Username credentials. Empty by default (for local dev)
 DB_PASSWORD: DB Password credentials. Empty by default (for local dev)
+
+ATLAS_PASSWORD: MongoDB Atlas Password
 
 MONGODB_USER: Docker Compose MongoDB Username Credential
 MONGODB_PASSWORD: Docker Compose MongoDB Password
@@ -49,4 +52,27 @@ MONGODB_LOCAL_PORT: Docker Compose MongoDB Connection Port
 
 NODE_LOCAL_PORT: Port to use to connect to our app. 8081 by default
 NODE_DOCKER_PORT: Port to use in our **Docker Container**. Also 8081 by default
+```
+
+## Database
+
+This microservice uses `MongoDB` for its persistence store. The name of the database it is using is called `QuestionDB`, and it will have 2 collections - `questions` and `rooms`
+
+In production, it uses `MongoDB Atlas`. The user with the configured administrative permissions is `cs3219`.
+
+**Relevant Commands**
+
+```
+// Local Connection to DB
+mongosh UserProfileDB
+
+// connect to MongoDB Atlas via shell (password will be prompted)
+mongosh "mongodb+srv://cluster0.afp4g.mongodb.net/QuestionDB" --username cs3219
+
+// Load Dummy Data into Local MongoDB
+mongoimport --db QuestionDB --collection questions --jsonArray data/dummy-questions.json
+
+
+// Load Dummy Data into MongoDB Cloud
+mongoimport --uri mongodb+srv://cs3219:<password>@cluster0.afp4g.mongodb.net/QuestionDB --collection questions --type json --file data/dummy-questions.json --jsonArray
 ```

@@ -1,7 +1,7 @@
 require('dotenv').config()
 const mongoose = require('mongoose')
 
-const { ENV } = process.env || 'development'
+const ENV = process.env.ENV || 'development'
 console.log(`Running in ${ENV} mode`)
 const config = require('../../configs')[ENV] // select development || production
 const userEntity = require('../../domain/entities/user-entity')

@@ -13,6 +13,7 @@ module.exports = {
   rules: {
     'prettier/prettier': ['error'],
     'no-console': 'off',
+    'no-else-return': 'off',
   },
   settings: {
     react: {

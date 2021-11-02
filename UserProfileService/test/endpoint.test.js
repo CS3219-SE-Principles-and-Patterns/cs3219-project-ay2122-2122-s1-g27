@@ -10,7 +10,7 @@ const db = require('../infrastructure/persistence/mongo')
 const { URI } = require('../configs').development.db
 const { PORT } = require('../configs').development
 const { USER_STUB } = require('./stubs')
-const { VerifySuccess, VerifyFailure } = require('./utils')
+const { VerifySuccess, VerifyFailure, Snooze } = require('./utils')
 
 chai.should()
 chai.use(chaiHttp)
@@ -62,7 +62,7 @@ describe('Endpoint Testing for HTTP Requests', () => {
   it('Create User and Successfully Login, Prevent Login if wrong password', async () => {
     const createRes = await chai.request(app).post('/user/create').send(USER_STUB)
     VerifySuccess(createRes, 201)
-
+    await Snooze(1000)
     const loginRes = await chai.request(app).post('/user/login').send(USER_STUB)
     VerifySuccess(loginRes, 200)
     const loginResData = loginRes.body.data
