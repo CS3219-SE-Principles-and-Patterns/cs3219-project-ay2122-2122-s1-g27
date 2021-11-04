@@ -22,7 +22,7 @@ io.on('connection', (socket) => {
     console.log(String(data.username) + ' joins room ' + String(data.room))
 
     socket.join(data.room)
-    io.in(data.room).emit('message', String(data.username) + ' connected to the chat')
+    io.in(data.room).emit('entryMessage', String(data.username) + ' connected to the chat')
   })
 
   // user interaction via text-chat
