@@ -18,7 +18,17 @@ const SALT_2 = 2
 const CreateRoom = async (req, res) => {
   try {
     const { topics, difficulties, username1, username2 } = req.body
-
+    if (
+      !Array.isArray(topics) ||
+      !Array.isArray(difficulties) ||
+      username1 == null ||
+      username2 == null
+    ) {
+      return res.status(400).send(Response('Failure', 'Missing Schema'))
+    }
+    console.log(
+      `Attempting to create room for user1: ${username1}, user2: ${username2}, topics: ${topics}, difficulties: ${difficulties}`
+    )
     const beforeHash = `${SALT_1}${username1}${SALT_2}${username2}`
     const hash = sha256(beforeHash)
 
@@ -33,7 +43,7 @@ const CreateRoom = async (req, res) => {
     return wrapResult(res, 'Cannot Create Room', 'Room Created', respOrm)
   } catch (err) {
     console.log('err: ', err)
-    const resp = await Response('Failure', 'DB failed')
+    const resp = Response('Failure', 'DB failed')
     return res.status(500).send(resp)
   }
 }
@@ -54,7 +64,7 @@ const FindRoomById = async (req, res) => {
     return wrapResult(res, 'Cannot Find Room', 'Found Room', result)
   } catch (err) {
     console.log('err: ', err)
-    const resp = await Response('Failure', 'DB failed')
+    const resp = Response('Failure', 'DB failed')
     return res.status(500).send(resp)
   }
 }
@@ -68,7 +78,7 @@ const DeleteRoom = async (req, res) => {
     return wrapResult(res, 'Cannot Delete Room', 'Deleted Room', respOrmRoom)
   } catch (err) {
     console.log('err: ', err)
-    const resp = await Response('Failure', 'DB failed')
+    const resp = Response('Failure', 'DB failed')
     return res.status(500).send(resp)
   }
 }
@@ -84,7 +94,7 @@ const GetCurrentRoomByUsername = async (req, res) => {
     return wrapResult(res, 'Cannot Find Room', 'Found Room', result)
   } catch (err) {
     console.log('err: ', err)
-    const resp = await Response('Failure', 'DB failed')
+    const resp = Response('Failure', 'DB failed')
     return res.status(500).send(resp)
   }
 }
