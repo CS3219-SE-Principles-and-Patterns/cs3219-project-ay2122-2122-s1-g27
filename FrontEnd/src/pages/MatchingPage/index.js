@@ -128,6 +128,7 @@ function MatchingPage() {
                                     clickable
                                     size="medium"
                                     sx={{
+                                        fontSize: '15px',
                                         fontWeight: 'bold',
                                         margin: '20px',
                                         marginLeft: '7px',
@@ -181,6 +182,7 @@ function MatchingPage() {
                                     <Chip
                                         key={difficulty + idx}
                                         sx={{
+                                            fontSize: '15px',
                                             fontWeight: 'bold',
                                             margin: '4%',
                                             textShadow: '1px 1px #000000',

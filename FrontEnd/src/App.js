@@ -118,6 +118,7 @@ function NavBar(props) {
                             onClick={() => {
                                 setUser(null);
                                 setJwt(null);
+                                sessionStorage.clear();
                             }}
                         >
                             <LoginLink to="/about">

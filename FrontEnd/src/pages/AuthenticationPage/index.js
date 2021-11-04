@@ -132,6 +132,8 @@ function AuthenticationPage() {
                         // set JWT access token in session storage
                         setUser(username);
                         setJwt(data.data.accessToken);
+                        sessionStorage.setItem('jwt', data.data.accessToken);
+                        sessionStorage.setItem('user', username);
                     });
                 }
             }
