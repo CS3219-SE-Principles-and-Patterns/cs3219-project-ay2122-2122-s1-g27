@@ -14,6 +14,7 @@ const {
   checkIfCreateRoomFail,
   checkIfCreateRoomSuccess,
   loadDummyQuestionData,
+  Stubs,
 } = require('./utils.test')
 
 chai.should()
@@ -279,7 +280,10 @@ describe('Endpoint Testing', () => {
 
     // use mapping to get valid result
     const roomId = getRoomIdResultBody.data
-    const getRoomMatchedQuestionResult = await chai.request(app).get(`/question/room/${roomId}`)
+    const getRoomMatchedQuestionResult = await chai
+      .request(app)
+      .get(`/question/room/${roomId}`)
+      .set('Authorization', Stubs.firebreathingeugeneJWT)
 
     VerifySuccess(getRoomMatchedQuestionResult, 200)
     const getRoomMatchedQuestionBody = getRoomMatchedQuestionResult.body
@@ -288,10 +292,22 @@ describe('Endpoint Testing', () => {
     getRoomMatchedQuestionBody.data.should.be.a('object')
     getRoomMatchedQuestionBody.data.question.id.should.be.oneOf([1, 2, 5, 7, 9])
 
-    // try to access via an invalid room id (e.g. hacker)
+    // Rejected if auth token not given
+    const noAuthMatchedQuestionResult = await chai.request(app).get(`/question/room/${roomId}`)
+    VerifyFailure(noAuthMatchedQuestionResult, 401)
+
+    // Rejected if its another user
+    const unauthorizedUserAttemptAccess = await chai
+      .request(app)
+      .get(`/question/room/${roomId}`)
+      .set('Authorization', Stubs.otherUsernameJWT)
+    VerifyFailure(unauthorizedUserAttemptAccess, 403)
+
+    // try to access via an invalid room id
     const invalidRoomMatchedQuestionResult = await chai
       .request(app)
       .get(`/question/room/${roomId}extraCodeHere`)
+      .set('Authorization', Stubs.firebreathingeugeneJWT)
 
     VerifyFailure(invalidRoomMatchedQuestionResult, 404)
     const invalidRoomMatchedQuestionBody = invalidRoomMatchedQuestionResult.body
@@ -323,7 +339,10 @@ describe('Endpoint Testing', () => {
 
     // use mapping to get valid result
     const roomId = getRoomIdResultBody.data
-    const getRoomMatchedQuestionResult = await chai.request(app).delete(`/question/room/${roomId}`)
+    const getRoomMatchedQuestionResult = await chai
+      .request(app)
+      .delete(`/question/room/${roomId}`)
+      .set('Authorization', Stubs.firebreathingeugeneJWT)
 
     VerifySuccess(getRoomMatchedQuestionResult, 200)
     const getRoomMatchedQuestionBody = getRoomMatchedQuestionResult.body
@@ -337,6 +356,7 @@ describe('Endpoint Testing', () => {
     const getRoomMatchedQuestionResultAgain = await chai
       .request(app)
       .delete(`/question/room/${roomId}`)
+      .set('Authorization', Stubs.firebreathingeugeneJWT)
 
     VerifySuccess(getRoomMatchedQuestionResult, 200)
     const getRoomMatchedQuestionBodyAgain = getRoomMatchedQuestionResultAgain.body
@@ -377,6 +397,7 @@ describe('Endpoint Testing', () => {
     const getRoomMatchedQuestionResult1 = await chai
       .request(app)
       .get(`/question/room/username/${username1}`)
+      .set('Authorization', Stubs.firebreathingeugeneJWT)
 
     VerifySuccess(getRoomMatchedQuestionResult1, 200)
     const getRoomMatchedQuestionBody1 = getRoomMatchedQuestionResult1.body
@@ -388,6 +409,7 @@ describe('Endpoint Testing', () => {
     const getRoomMatchedQuestionResult2 = await chai
       .request(app)
       .get(`/question/room/username/${username2}`)
+      .set('Authorization', Stubs.waterbreathingeugeneJWT)
 
     VerifySuccess(getRoomMatchedQuestionResult2, 200)
     const getRoomMatchedQuestionBody2 = getRoomMatchedQuestionResult2.body
@@ -400,14 +422,14 @@ describe('Endpoint Testing', () => {
     const invalidRoomMatchedQuestionResult = await chai
       .request(app)
       .get(`/question/room/username/${neverBeforeUsedUsername}`)
+      .set('Authorization', Stubs.otherUsernameJWT)
 
-    VerifyFailure(invalidRoomMatchedQuestionResult, 404)
+    VerifyFailure(invalidRoomMatchedQuestionResult, 403)
     const invalidRoomMatchedQuestionBody = invalidRoomMatchedQuestionResult.body
-    console.log(invalidRoomMatchedQuestionBody)
     invalidRoomMatchedQuestionBody.status.should.eql('fail')
-    invalidRoomMatchedQuestionBody.message.should.eql('Cannot Find Room')
-    invalidRoomMatchedQuestionBody.data.should.be.a('object')
-    invalidRoomMatchedQuestionBody.data.should.have.property('err')
+    invalidRoomMatchedQuestionBody.message.should.eql(
+      'You are not authorized to view this resource'
+    )
 
     // creation of room 2
     const matchRequestData2 = {
@@ -436,6 +458,7 @@ describe('Endpoint Testing', () => {
     const getRoomMatchedQuestionResult3 = await chai
       .request(app)
       .get(`/question/room/username/${username2}`)
+      .set('Authorization', Stubs.waterbreathingeugeneJWT)
 
     VerifySuccess(getRoomMatchedQuestionResult3, 200)
     const getRoomMatchedQuestionBody3 = getRoomMatchedQuestionResult3.body
@@ -447,6 +470,7 @@ describe('Endpoint Testing', () => {
     const getRoomMatchedQuestionResult4 = await chai
       .request(app)
       .get(`/question/room/username/${username3}`)
+      .set('Authorization', Stubs.airbreathingeugeneJWT)
 
     console.log(getRoomMatchedQuestionResult4)
 

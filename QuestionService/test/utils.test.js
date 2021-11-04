@@ -60,3 +60,14 @@ exports.loadDummyQuestionData = () => {
   })
   return allDummyQuestions
 }
+
+exports.Stubs = {
+  firebreathingeugeneJWT:
+    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImZpcmVicmVhdGhpbmdldWdlbmUiLCJpYXQiOjE2MzYwNDIwMjd9.8lZO02_roRgR-ps8zvlOfDWNwPpnoga0BNVy0DQX0hg',
+  waterbreathingeugeneJWT:
+    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IndhdGVyYnJlYXRoaW5nZXVnZW5lIiwiaWF0IjoxNjM2MDQzMDIzfQ.052VH8Bn6ePVhDgYj42ySTtvKGnIo7aBlludhJBfJw8',
+  airbreathingeugeneJWT:
+    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFpcmJyZWF0aGluZ2V1Z2VuZSIsImlhdCI6MTYzNjA0MzIzNH0.hSQ1n-iyqtCxJVpraMFqyYUNohyKMBnG4LsJtY81-rg',
+  otherUsernameJWT:
+    'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkRpdmluZURYIiwiaWF0IjoxNjM2MDI5ODgxfQ.ovZOLrwgMBoV2Ad0c1iApC9-_TO_ytwkdGUcuoUlp5g',
+}
