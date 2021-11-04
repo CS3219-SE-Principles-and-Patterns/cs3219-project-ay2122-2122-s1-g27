@@ -103,7 +103,7 @@ function MatchingPage() {
         );
     }
 
-    if (!jwt) {
+    if (!jwt && !sessionStorage.getItem('jwt')) {
         return <Redirect to={{ pathname: '/about' }} />;
     } else {
         return (

@@ -3,7 +3,6 @@ import { AppContext } from './utils/AppContext';
 import AuthenticationPage from './pages/AuthenticationPage';
 import LandingPage from './pages/LandingPage';
 import MatchingPage from './pages/MatchingPage';
-import UserProfilePage from './pages/UserProfilePage';
 import CollaborationPage from './pages/CollaborationPage';
 import { styled } from '@mui/system';
 import { Grid } from '@mui/material';
@@ -106,13 +105,15 @@ function NavBar(props) {
                                         fontWeight: 600,
                                     }}
                                 >
-                                    {user ? '@' + user : 'Sign In'}
+                                    {user || sessionStorage.getItem('user')
+                                        ? '@' + user
+                                        : 'Sign In'}
                                 </Typography>
                             </LoginLink>
                         </Button>
                     ) : null}
 
-                    {user ? (
+                    {user || sessionStorage.getItem('user') ? (
                         <Button
                             color="inherit"
                             onClick={() => {
@@ -144,6 +145,9 @@ function App() {
     const [user, setUser] = useState(null);
     const [jwt, setJwt] = useState(null);
 
+    if (!user && sessionStorage.getItem('user')) {
+        setUser(sessionStorage.getItem('user'));
+    }
     return (
         <ThemeProvider theme={theme}>
             <AppContext.Provider value={{ user, setUser, jwt, setJwt }}>
@@ -157,10 +161,6 @@ function App() {
                                 component={AuthenticationPage}
                             />
                             <Route path="/match" component={MatchingPage} />
-                            <Route
-                                path="/profile"
-                                component={UserProfilePage}
-                            />
                             <Route
                                 path="/collaborate"
                                 component={CollaborationPage}

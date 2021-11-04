@@ -142,7 +142,10 @@ function AuthenticationPage() {
 
     return (
         <Grid container>
-            {user && jwt ? <Redirect to={{ pathname: '/match' }} /> : null}
+            {(user || sessionStorage.getItem('user')) &&
+            (jwt || sessionStorage.getItem('jwt')) ? (
+                <Redirect to={{ pathname: '/match' }} />
+            ) : null}
             <Grid
                 item
                 container
