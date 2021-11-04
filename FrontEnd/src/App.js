@@ -74,7 +74,7 @@ function NavBar(props) {
     const { pathname } = useLocation();
     const { user, setUser, setJwt } = useContext(AppContext);
 
-    return (
+    return pathname.includes('collaborate') ? null : (
         <Box sx={{ flexGrow: 1 }}>
             <StyledAppBar position="static">
                 <Toolbar>
