@@ -3,6 +3,7 @@ import {
     FormControl, Grid, InputLabel, MenuItem, Select, Typography
 } from '@mui/material';
 import '../../App.css';
+import { AppContext } from '../../utils/AppContext';
 
 //code-mirror stuff
 import {Controlled as Codemirror} from 'react-codemirror2';
@@ -15,38 +16,60 @@ require('codemirror/mode/xml/xml');
 require('codemirror/mode/javascript/javascript');
 require('codemirror/mode/clike/clike');
 require('codemirror/mode/python/python');
-
-    
+  
 
 const socket = io("http://localhost:5005");
 
 class CollaborationPage extends Component {
+    static contextType = AppContext;
+
     constructor(props) {
         //make sure to receive room id and question from props
         super(props);
-        this.state = {code: 'x = "Hello World";', lang: 'javascript'};
+        this.state = {code: 'x = "Hello World";', lang: 'javascript', question: null };
         this.useReceivedCode = this.useReceivedCode.bind(this);
         this.brodcastUpdatedCode = this.broadcastUpdatedCode.bind(this);
         this.brodcastUpdatedLang = this.broadcastUpdatedLang.bind(this);
         this.handleLangChange = this.handleLangChange.bind(this);
+        this.roomId = "d5bfd8c21114ae407a0c22f91f5969f515b997180da35d963fa41d2c3771fdcd"; // props.roomId
     }
 
     componentDidMount() {
+        // fetch Question Data using room id: DONE
+        const { jwt } = this.context;
+        const requestOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + jwt
+            },
+        };
+
+        fetch('http://localhost:8081/question/room/' + this.roomId, requestOptions)
+            .then((data) => data.json())
+            .then((questionData) => {
+                this.setState({
+                    question: questionData.data.question
+                })
+            });
+
+
         //crucial for these socket operations NOT to be in constructor to avoid synchronization errors
-        socket.emit('room', {room: 1});
+        //take roomId from props
+        socket.emit('room', {room: this.roomId});
         socket.on('receive code', (newCode) => {
             this.useReceivedCode(newCode);
         });
         
         socket.on('new user joined', () => {
             console.log("sending " + this.state.code + " to new user");
-            this.broadcastUpdatedCode(1, this.state.code);
-            this.broadcastUpdatedLang(1, this.state.lang);
+            this.broadcastUpdatedCode(this.roomId, this.state.code);
+            this.broadcastUpdatedLang(this.roomId, this.state.lang);
         });
 
         socket.on('receive lang', (newLang) => {
             this.useReceivedLang(newLang);
-        })
+        })        
     }
     
 
@@ -75,7 +98,7 @@ class CollaborationPage extends Component {
         this.setState({
             lang: event.target.value
         });
-        this.broadcastUpdatedLang(1, event.target.value);
+        this.broadcastUpdatedLang(this.roomId, event.target.value);
     }
 
     render() {
@@ -86,6 +109,7 @@ class CollaborationPage extends Component {
         }
         return (
             <Grid container sx={{alignContent: "center"}}>
+                {this.state.question ? <div> questionLoaded </div> : null}
                 <Typography
                     variant="h5"
                     sx={{ color: '#FCFCFC', fontWeight: 600 }}
@@ -99,7 +123,7 @@ class CollaborationPage extends Component {
                             //check the origin of the change
                             //fire socket event ONLY when change caused by input
                             if (metadata.origin) {
-                                this.broadcastUpdatedCode(1, value); //change to props.roomId later
+                                this.broadcastUpdatedCode(this.roomId, value); //change to props.roomId later
                             } else {
                                 console.log("change caused by other user: not firing emit");
                             }
@@ -121,7 +145,7 @@ class CollaborationPage extends Component {
                                 label="Choose your Language"
                                 onChange={this.handleLangChange}
                             >
-                                <MenuItem value={"javascript"}>JS</MenuItem>
+                                <MenuItem value={"javascript"}>JavaScript</MenuItem>
                                 <MenuItem value={"text/x-java"}>Java</MenuItem>
                                 <MenuItem value={"python"}>Python</MenuItem>
                                 <MenuItem value={"text/x-csrc"}>C</MenuItem>
