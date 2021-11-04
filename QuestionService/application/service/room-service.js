@@ -2,10 +2,10 @@ const { sha256 } = require('js-sha256')
 const { Response, wrapResult } = require('../util/response')
 const ormRoom = require('../orm/room-orm')
 const ormQuestion = require('../orm/question-orm')
-const { getRandomNumberBetweenInclMinExclMax } = require('../util/utilities')
+const { GetRandomNumberBetweenInclMinExclMax } = require('../util/utilities')
+const { UnauthorizedError } = require('./common')
 
 // for generating room id
-
 const SALT_1 = 32
 const SALT_2 = 2
 
@@ -33,7 +33,7 @@ const CreateRoom = async (req, res) => {
     const hash = sha256(beforeHash)
 
     const matchedQuestions = await ormQuestion.FindMatchedQuestions(topics, difficulties)
-    const randomIndex = getRandomNumberBetweenInclMinExclMax(0, matchedQuestions.length)
+    const randomIndex = GetRandomNumberBetweenInclMinExclMax(0, matchedQuestions.length)
     const randomMatchedQuestion = matchedQuestions[randomIndex]
 
     const usernames = [username1, username2]
@@ -55,8 +55,11 @@ const FindRoomById = async (req, res) => {
     const respOrmRoom = await ormRoom.FindRoom(roomId)
 
     let result = respOrmRoom
-
     if (!respOrmRoom.err) {
+      const roomUsernames = result.usernames // array
+      if (!roomUsernames.includes(req.user)) {
+        return UnauthorizedError('FindRoomById', res)
+      }
       const respOrmQuestion = await ormQuestion.FindQuestion(respOrmRoom.questionId)
       result = { question: respOrmQuestion }
     }
@@ -73,6 +76,15 @@ const DeleteRoom = async (req, res) => {
   try {
     const { roomId } = req.params
 
+    // Check if deleter is one of the users
+    const findRoomOrm = await ormRoom.FindRoom(roomId)
+    if (!findRoomOrm.err) {
+      const roomUsernames = findRoomOrm.usernames // array
+      if (!roomUsernames.includes(req.user)) {
+        return UnauthorizedError('DeleteRoom', res)
+      }
+    }
+
     const respOrmRoom = await ormRoom.DeleteRoom(roomId)
 
     return wrapResult(res, 'Cannot Delete Room', 'Deleted Room', respOrmRoom)
@@ -86,7 +98,9 @@ const DeleteRoom = async (req, res) => {
 const GetCurrentRoomByUsername = async (req, res) => {
   try {
     const { username } = req.params
-
+    if (username !== req.user) {
+      return UnauthorizedError('GetCurrentRoomByUsername', res)
+    }
     const respOrmRoom = await ormRoom.FindRoomByUsername(username)
 
     const result = respOrmRoom

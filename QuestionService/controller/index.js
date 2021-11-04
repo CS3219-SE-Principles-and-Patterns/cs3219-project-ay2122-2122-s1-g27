@@ -1,6 +1,7 @@
 const { Router } = require('express')
 const QuestionService = require('../application/service/question-service')
 const RoomService = require('../application/service/room-service')
+const { AuthenticateToken } = require('./auth')
 
 const routes = Router()
 
@@ -14,9 +15,13 @@ routes.get('/question/metadata', QuestionService.GetQuestionMetadata)
 
 // matching for rooms
 routes.post('/question/room', RoomService.CreateRoom)
-routes.get('/question/room/:roomId', RoomService.FindRoomById)
-routes.delete('/question/room/:roomId', RoomService.DeleteRoom)
-routes.get('/question/room/username/:username', RoomService.GetCurrentRoomByUsername)
+routes.get('/question/room/:roomId', AuthenticateToken, RoomService.FindRoomById)
+routes.delete('/question/room/:roomId', AuthenticateToken, RoomService.DeleteRoom)
+routes.get(
+  '/question/room/username/:username',
+  AuthenticateToken,
+  RoomService.GetCurrentRoomByUsername
+)
 
 /* 
 Below are all admin methods; feel free to delete and use mongoDB admin; 
