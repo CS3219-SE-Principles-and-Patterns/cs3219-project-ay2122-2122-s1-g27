@@ -41,6 +41,7 @@ class CollaborationPage extends Component {
         this.handleLangChange = this.handleLangChange.bind(this);
         this.roomId =
             'd5bfd8c21114ae407a0c22f91f5969f515b997180da35d963fa41d2c3771fdcd'; // props.roomId
+        console.log(this.props.location.state.roomId);
     }
 
     componentDidMount() {

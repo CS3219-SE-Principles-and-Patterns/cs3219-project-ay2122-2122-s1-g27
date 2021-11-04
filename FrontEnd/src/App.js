@@ -144,13 +144,23 @@ function NavBar(props) {
 function App() {
     const [user, setUser] = useState(null);
     const [jwt, setJwt] = useState(null);
+    const [matchingSocket, setMatchingSocket] = useState(null);
 
     if (!user && sessionStorage.getItem('user')) {
         setUser(sessionStorage.getItem('user'));
     }
     return (
         <ThemeProvider theme={theme}>
-            <AppContext.Provider value={{ user, setUser, jwt, setJwt }}>
+            <AppContext.Provider
+                value={{
+                    user,
+                    setUser,
+                    jwt,
+                    setJwt,
+                    matchingSocket,
+                    setMatchingSocket,
+                }}
+            >
                 <Router>
                     <AppContainer>
                         <NavBar />

@@ -11,6 +11,7 @@ import { styled } from '@mui/system';
 import { AppContext } from '../../utils/AppContext';
 import LoginPage from '../../assets/LoginPage.png';
 import { Redirect } from 'react-router-dom';
+import io from 'socket.io-client';
 
 const Image = styled('img')(({ theme }) => ({
     paddingTop: '10%',
@@ -87,7 +88,8 @@ function AuthenticationPage() {
     const [password, setPassword] = useState(null);
     const [isIncorrectAttempt, setIncorrectAttempt] = useState(false);
 
-    const { user, setUser, jwt, setJwt } = useContext(AppContext);
+    const { user, setUser, jwt, setJwt, setMatchingSocket } =
+        useContext(AppContext);
 
     const handleChangeUsername = (event) => setUsername(event.target.value);
     const handleChangePassword = (event) => setPassword(event.target.value);
@@ -134,6 +136,15 @@ function AuthenticationPage() {
                         setJwt(data.data.accessToken);
                         sessionStorage.setItem('jwt', data.data.accessToken);
                         sessionStorage.setItem('user', username);
+
+                        const socket = io('http://localhost:8080', {
+                            extraHeaders: {
+                                Authorization:
+                                    'Bearer ' + sessionStorage.getItem('jwt'),
+                            },
+                        });
+                        setMatchingSocket(socket);
+                        sessionStorage.setItem('matchingSocket', socket);
                     });
                 }
             }

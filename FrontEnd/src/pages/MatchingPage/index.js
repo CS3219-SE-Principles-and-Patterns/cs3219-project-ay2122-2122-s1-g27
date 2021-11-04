@@ -14,6 +14,7 @@ import { styled } from '@mui/system';
 import DoneIcon from '@mui/icons-material/Done';
 import { AppContext } from '../../utils/AppContext';
 import { Redirect } from 'react-router-dom';
+import MatchingModal from './MatchingModal';
 
 const TopicsContainer = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('md')]: {
@@ -25,10 +26,11 @@ const TopicsContainer = styled('div')(({ theme }) => ({
 }));
 
 function MatchingPage() {
-    const { jwt } = useContext(AppContext);
+    const { jwt, matchingSocket } = useContext(AppContext);
 
     const [topics, setTopics] = useState(null);
     const [difficulties, setDifficulties] = useState(null);
+    const [isCurrentlyInSomeRoom, setIsCurrentlyInSomeRoom] = useState(false);
 
     // instantiate topics and difficulties
     useEffect(() => {
@@ -50,7 +52,22 @@ function MatchingPage() {
 
     const [selectedTopics, setSelectedTopics] = useState([]);
     const [selectedDifficulties, setSelectedDifficulties] = useState([]);
+    const [shouldOpenModal, setShouldOpenModal] = useState(false);
 
+    // Web socket functions
+
+    const triggerMatchRequest = () => {
+        setShouldOpenModal(true);
+
+        matchingSocket.emit(
+            'match',
+            sessionStorage.getItem('user'),
+            selectedTopics,
+            selectedDifficulties
+        );
+    };
+
+    // State management functions
     const handleSelectedTopic = (topicName) => {
         if (!selectedTopics.includes(topicName)) {
             setSelectedTopics([...selectedTopics, topicName]);
@@ -108,6 +125,14 @@ function MatchingPage() {
     } else {
         return (
             <Grid container justifyContent="center">
+                {shouldOpenModal ? (
+                    <MatchingModal
+                        timeLeft={30}
+                        shouldOpen={shouldOpenModal}
+                        socket={matchingSocket}
+                        setShouldOpenModal={setShouldOpenModal}
+                    />
+                ) : null}
                 <Grid item xs={12} sx={{ padding: '25px' }}>
                     <Typography
                         align="center"
@@ -255,6 +280,7 @@ function MatchingPage() {
                     >
                         <Button
                             variant="contained"
+                            onClick={triggerMatchRequest}
                             disabled={
                                 selectedTopics.length === 0 ||
                                 selectedDifficulties.length === 0
