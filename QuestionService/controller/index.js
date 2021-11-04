@@ -1,16 +1,22 @@
 const { Router } = require('express')
 const QuestionService = require('../application/service/question-service')
+const RoomService = require('../application/service/room-service')
 
 const routes = Router()
 
 // Routes
 routes.get('/', (_, res) => res.send('Welcome to the QuestionService. Do you have any questions?'))
 
-// read
+// questions
 routes.get('/question/id/:id', QuestionService.FindQuestionById)
 routes.get('/question/all', QuestionService.FindAllQuestions)
-routes.post('/question/match', QuestionService.FindMatchedQuestion)
 routes.get('/question/metadata', QuestionService.GetQuestionMetadata)
+
+// matching for rooms
+routes.post('/question/room', RoomService.CreateRoom)
+routes.get('/question/room/:roomId', RoomService.FindRoomById)
+routes.delete('/question/room/:roomId', RoomService.DeleteRoom)
+routes.get('/question/room/username/:username', RoomService.GetCurrentRoomByUsername)
 
 /* 
 Below are all admin methods; feel free to delete and use mongoDB admin; 

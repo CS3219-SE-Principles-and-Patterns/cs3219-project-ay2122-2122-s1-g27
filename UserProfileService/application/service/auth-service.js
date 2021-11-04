@@ -14,14 +14,15 @@ const refreshTokens = [] // TODO: change to Redis/Cache
 const generateAccessToken = (username) => jwt.sign({ username }, JWT_SECRET_TOKEN) // no expiry for now
 
 // middleware for auth JWT
-const authenticateToken = (req, res, next) => {
+exports.AuthenticateToken = (req, res, next) => {
   const authHeader = req.headers.authorization
   const token = authHeader && authHeader.split(' ')[1]
   if (token == null) return res.status(401).json(Response(STATUS_FAIL, 'No Authorization Token'))
-  return jwt.verify(token, JWT_SECRET_TOKEN, (err, user) => {
-    if (err) return res.status(403).json(Response(STATUS_FAIL, 'Your token is invalid'))
-    console.log(`user-${user.username} is authenticated`)
-    req.user = user
+  return jwt.verify(token, JWT_SECRET_TOKEN, (err, jwtData) => {
+    if (err) return res.status(403).json(Response(STATUS_FAIL, 'Your token is invalid or expired'))
+    const extractedUsername = jwtData.username
+    req.user = extractedUsername // pass on to next
+    console.log(`user-${extractedUsername} is authenticated`)
     return next()
   })
 }
@@ -72,10 +73,9 @@ exports.RefreshToken = async (req, res) => {
 
 // use this route to verify
 exports.AuthRoute = async (req, res) => {
-  authenticateToken(req, res, () =>
-    res.status(200).json({
-      status: STATUS_SUCCESS,
-      message: 'Token is verified',
+  res.json(
+    Response(STATUS_SUCCESS, 'Token is verified', {
+      username: req.user,
     })
   )
 }

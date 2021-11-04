@@ -1,21 +1,21 @@
+require('dotenv').config()
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 const mongoose = require('mongoose')
+// const Client = require('socket.io-client')
+const io = require('socket.io-client')
 
 const app = require('../server')
-const Users = require('../infrastructure/persistence/mongo').users
+const db = require('../infrastructure/persistence/mongo')
 const { URI } = require('../configs').development.db
+const { PORT } = require('../configs').development
 const { USER_STUB } = require('./stubs')
-const { VerifySuccess, VerifyFailure } = require('./utils')
+const { VerifySuccess, VerifyFailure, Snooze } = require('./utils')
 
 chai.should()
 chai.use(chaiHttp)
 
-describe('Endpoint Testing', () => {
-  beforeEach(async () => {
-    // clear DB
-    await Users.deleteMany({})
-  })
+describe('Test MongoDB', () => {
   after(async () => {
     mongoose.disconnect()
   })
@@ -36,6 +36,21 @@ describe('Endpoint Testing', () => {
       useNewUrlParser: true,
     })
   })
+})
+
+describe('Endpoint Testing for HTTP Requests', () => {
+  before(async () => {
+    await mongoose.connect(URI, {
+      useNewUrlParser: true,
+    })
+  })
+  beforeEach(async () => {
+    // clear DB
+    await db.users.deleteMany({})
+  })
+  after(async () => {
+    mongoose.disconnect()
+  })
 
   // test server working
   it('GET root `/`', async () => {
@@ -47,7 +62,7 @@ describe('Endpoint Testing', () => {
   it('Create User and Successfully Login, Prevent Login if wrong password', async () => {
     const createRes = await chai.request(app).post('/user/create').send(USER_STUB)
     VerifySuccess(createRes, 201)
-
+    await Snooze(1000)
     const loginRes = await chai.request(app).post('/user/login').send(USER_STUB)
     VerifySuccess(loginRes, 200)
     const loginResData = loginRes.body.data
@@ -109,5 +124,53 @@ describe('Endpoint Testing', () => {
   it('No Auth Header Fail', async () => {
     const authRes = await chai.request(app).get('/user/auth')
     VerifyFailure(authRes, 401)
+  })
+})
+
+describe.skip('Endpoint Testing for Socket.io', () => {
+  let clientSocket
+  before((done) => {
+    app.listen(PORT, () => {
+      clientSocket = io(`http://localhost:${PORT}`, {
+        extraHeaders: {
+          Authorization: 'Bearer abc',
+        },
+      })
+      clientSocket.on('connect', () => {
+        setTimeout(() => {
+          // need timeout to allow proper connection to server
+          done()
+        }, 1000)
+      })
+    })
+  })
+
+  beforeEach(async () => {
+    await mongoose.connect(URI, {
+      useNewUrlParser: true,
+    })
+  })
+
+  after(() => {
+    // mongoose.disconnect()
+    clientSocket.close()
+  })
+
+  it('Test Message', () => {
+    const msg1 = 'msg1'
+    const msg2 = 'msg2'
+    clientSocket.on('message', (arg1, arg2) => {
+      arg1.should.equal(msg1)
+      arg2.should.equal(msg2)
+    })
+    clientSocket.emit('message', msg1, msg2)
+  })
+
+  it('Test Match, no possible matches', () => {
+    // warning: not actually working, can't seeem to connect to DB
+    clientSocket.on('match', (res) => {
+      res.should.equal('waiting')
+    })
+    clientSocket.emit('match', 'FooBar', ['Heaps'], ['Hard'])
   })
 })
