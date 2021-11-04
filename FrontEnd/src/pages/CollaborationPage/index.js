@@ -11,6 +11,7 @@ import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/monokai.css';
 
 import io from "socket.io-client";
+import ChatCard from './chatcard';
 
 require('codemirror/mode/xml/xml');
 require('codemirror/mode/javascript/javascript');
@@ -19,7 +20,7 @@ require('codemirror/mode/python/python');
   
 
 const socket = io("http://localhost:5005");
-
+const chatSocket = io("http://localhost:7000");
 class CollaborationPage extends Component {
     static contextType = AppContext;
 
@@ -37,6 +38,7 @@ class CollaborationPage extends Component {
     componentDidMount() {
         // fetch Question Data using room id: DONE
         const { jwt } = this.context;
+        console.log(jwt);
         const requestOptions = {
             method: 'GET',
             headers: {
@@ -56,7 +58,7 @@ class CollaborationPage extends Component {
 
         //crucial for these socket operations NOT to be in constructor to avoid synchronization errors
         //take roomId from props
-        socket.emit('room', {room: this.roomId});
+        socket.emit('room', {room: this.roomId, jwt: jwt});
         socket.on('receive code', (newCode) => {
             this.useReceivedCode(newCode);
         });
@@ -153,7 +155,9 @@ class CollaborationPage extends Component {
                             </Select>
                         </FormControl>
                 </Grid>
-
+                <Grid item xs={10}>
+                    <ChatCard roomId={this.roomId} socket={chatSocket}/>
+                </Grid>
             </Grid>
         );
     }
