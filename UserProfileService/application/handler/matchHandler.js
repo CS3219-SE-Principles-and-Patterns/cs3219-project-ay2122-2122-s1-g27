@@ -3,8 +3,7 @@ const axios = require('axios')
 const _ = require('lodash')
 
 const ormMatch = require('../orm/match-orm')
-
-const TIMEOUT = 30000 // ms
+const { MATCH_TIMEOUT_MS, CREATE_ROOM_ENDPOINT } = require('../util/constants')
 
 const checkMatchStatus = async (socket, username) => {
   const userMatch = await ormMatch.FindUserMatched(username)
@@ -17,7 +16,7 @@ const checkMatchStatus = async (socket, username) => {
       } else {
         // Check if really 30 seconds elapsed, as user may have upserted (initiated new match)
         const currDate = new Date(Date.now())
-        if (currDate - userMatch.updatedAt >= TIMEOUT) {
+        if (currDate - userMatch.updatedAt >= MATCH_TIMEOUT_MS) {
           // expired
           console.log('Evicting Expired Match: ', username)
           ormMatch.RemoveMatch(username)
@@ -35,7 +34,7 @@ const checkMatchStatus = async (socket, username) => {
 
 const getRoomID = async (matcherUsername, matchedUsername, topics, difficulties) => {
   try {
-    const res = await axios.post('http://localhost:8081/question/room', {
+    const res = await axios.post(CREATE_ROOM_ENDPOINT, {
       username1: matcherUsername,
       username2: matchedUsername,
       topics,
@@ -64,7 +63,7 @@ const createPendingMatch = (socket, topics, difficulties) => {
   if (createMatch) {
     console.log('Successful match creation, now waiting')
     socket.emit('match', 'waiting')
-    return setTimeout(() => checkMatchStatus(socket, username), TIMEOUT)
+    return setTimeout(() => checkMatchStatus(socket, username), MATCH_TIMEOUT_MS)
   } else {
     console.log('Match Fail, could not createMatch')
     return socket.emit('matchFail', 'ServerError')
@@ -133,7 +132,12 @@ const MatchHandler = (socket, io) => {
     console.log(`User: ${username} is triggering a match`)
 
     // Step1: Get a list of valid matches
-    const possibleMatches = await ormMatch.FindMatches(topics, difficulties, username, TIMEOUT)
+    const possibleMatches = await ormMatch.FindMatches(
+      topics,
+      difficulties,
+      username,
+      MATCH_TIMEOUT_MS
+    )
     console.log('Possible matches', possibleMatches)
     if (possibleMatches.err) {
       console.error('Possible matches error', possibleMatches.err)
@@ -145,7 +149,7 @@ const MatchHandler = (socket, io) => {
       // Upon timeout, if username still exist in DB (meaning not matched), will inform user that
       // no matches were found, and delete entry from DB (warning: check for EXACT object equality)
       console.log('No possible match as of now')
-      createPendingMatch(socket, topics, difficulties)
+      return createPendingMatch(socket, topics, difficulties)
     } else {
       // Step2b: Find a random user from list of matches
       // Query QuestionService to generate and get unique room ID. Emit RoomID to both clients

@@ -1,6 +1,8 @@
+require('dotenv').config()
 const server = require('./server')
 
-const config = require('./configs').development
+const ENV = process.env.ENV || 'development'
+const config = require('./configs')[ENV]
 // use process.env later
 const { PORT } = config
 
