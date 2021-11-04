@@ -4,7 +4,7 @@
  * @param {Mongoose} db
  */
 
-const schema = {
+module.exports = {
   username: {
     type: String,
     required: true,
@@ -15,5 +15,3 @@ const schema = {
     required: true,
   },
 }
-
-module.exports = schema

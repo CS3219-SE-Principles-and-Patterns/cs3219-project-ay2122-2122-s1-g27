@@ -1,10 +1,10 @@
 const db = require('./mongo')
 
-// Repository for questions (hidden from exports)
+// Repositories and functions for repository interactions and transactions
+
+// Question
 
 const questionsDb = db.questions
-
-// Functions for repository interactions and transactions
 
 const findOne = async (condition) => questionsDb.findOne(condition)
 
@@ -13,9 +13,9 @@ const findMatch = async (filter) =>
     $and: [{ topic: { $in: filter.topics } }, { difficulty: { $in: filter.difficulties } }],
   })
 
-//  questionsDb.findOne(condition)
-
 const findAll = async () => questionsDb.find({})
+
+// Consolidate database storage apis
 
 module.exports = { findOne, findAll, findMatch, questionsDb }
 

@@ -61,8 +61,28 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/a
 
 ### Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+For deployment of new version of peerprep frontend, run these in order
 
-### `yarn build` fails to minify
+### `yarn predeploy`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Creates the build folder that needs to be served.
+
+### `yarn build:prod`
+
+This command builds a new docker image with the tag manasvegi/reactnginx.
+
+### `yarn start:prod`
+
+This command locally runs the docker image manasvegi/reactnginx with container name 'myreact' accessible at http://localhost:5000.
+
+### `yarn stop:prod`
+
+Stops the docker container that is running the react app and removes the container name.
+
+### `docker push manasvegi/reactnginx`
+
+Updates the docker image.
+
+### `eb deploy peerprepUI`
+
+Note: need to generalize this command so that all users can deploy to the aws elastic beanstalk.
