@@ -1,6 +1,9 @@
-const ormMatch = require('../orm/match-orm')
+/* eslint-disable no-await-in-loop */
+const axios = require('axios')
+const _ = require('lodash')
 
-const TIMEOUT = 30000 // ms
+const ormMatch = require('../orm/match-orm')
+const { MATCH_TIMEOUT_MS, CREATE_ROOM_ENDPOINT } = require('../util/constants')
 
 const checkMatchStatus = async (socket, username) => {
   const userMatch = await ormMatch.FindUserMatched(username)
@@ -13,7 +16,7 @@ const checkMatchStatus = async (socket, username) => {
       } else {
         // Check if really 30 seconds elapsed, as user may have upserted (initiated new match)
         const currDate = new Date(Date.now())
-        if (currDate - userMatch.updatedAt >= TIMEOUT) {
+        if (currDate - userMatch.updatedAt >= MATCH_TIMEOUT_MS) {
           // expired
           console.log('Evicting Expired Match: ', username)
           ormMatch.RemoveMatch(username)
@@ -29,11 +32,58 @@ const checkMatchStatus = async (socket, username) => {
   }
 }
 
+const getRoomID = async (matcherUsername, matchedUsername, topics, difficulties) => {
+  try {
+    const res = await axios.post(CREATE_ROOM_ENDPOINT, {
+      username1: matcherUsername,
+      username2: matchedUsername,
+      topics,
+      difficulties,
+    })
+    if (res.status === 200) {
+      const roomID = res.data.data
+      return roomID
+    } else {
+      console.error(`Could not get RoomID. HTTP Status: ${res.status}`)
+      return null
+    }
+  } catch (err) {
+    console.error(`Get RoomID Error: ${err}`)
+    return null
+  }
+}
+
+const createPendingMatch = (socket, topics, difficulties) => {
+  const { username } = socket
+  const createMatch = ormMatch.CreateMatch(username, socket.id, topics, difficulties)
+  if (createMatch.err) {
+    console.error('createMatch error', createMatch.err)
+    return socket.emit('matchFail', 'ServerError')
+  }
+  if (createMatch) {
+    console.log('Successful match creation, now waiting')
+    socket.emit('match', 'waiting')
+    return setTimeout(() => checkMatchStatus(socket, username), MATCH_TIMEOUT_MS)
+  } else {
+    console.log('Match Fail, could not createMatch')
+    return socket.emit('matchFail', 'ServerError')
+  }
+}
+
 /**
  * Loop through all possible matches, attempt match
  * @param {[match]} possibleMatches
+ * @param {[string]} matcherTopics
+ * @param {[string]} matcherDifficulties
  */
-const handlePossibleMatches = async (possibleMatches, socket, io) => {
+const handlePossibleMatches = async (
+  possibleMatches,
+  matcherTopics,
+  matcherDifficulties,
+  socket,
+  io
+) => {
+  const matcherUsername = socket.username
   const matchStack = possibleMatches.reverse()
   let successful = false
   while (matchStack.length > 0) {
@@ -41,32 +91,53 @@ const handlePossibleMatches = async (possibleMatches, socket, io) => {
     console.log('Current matched', currMatch)
     const matchedUsername = currMatch.username
     const matchedSocketID = currMatch.socketID
-    // eslint-disable-next-line no-await-in-loop
-    const clearMatched = await ormMatch.RemoveMatch(matchedUsername)
-    if (clearMatched.err) {
-      console.error(`Deleting User-${matchedUsername} encountered error`)
+    // find intersection
+    const intersectingTopics = _.intersection(currMatch.topics, matcherTopics)
+    const intersectingDifficulties = _.intersection(currMatch.difficulties, matcherDifficulties)
+    console.log(
+      `Intersecting - [Difficulties]: ${intersectingDifficulties} | [Topics]: ${intersectingTopics}`
+    )
+    const roomID = await getRoomID(
+      matcherUsername,
+      matchedUsername,
+      intersectingTopics,
+      intersectingDifficulties
+    )
+    if (roomID == null) {
+      console.error(`RoomID generation encountered error`) // continue, try next
     } else {
-      const dummyRoomID = 'some-room'
-      socket.emit('matchSuccess', dummyRoomID, matchedUsername) // emit to initator
-      io.to(matchedSocketID).emit('matchSuccess', dummyRoomID, matchedUsername) // emit to matched
+      const clearMatched = await ormMatch.RemoveMatch(matchedUsername)
+      if (clearMatched.err) {
+        console.error(`Deleting User-${matchedUsername} encountered error`)
+      }
+      socket.emit('matchSuccess', roomID, matchedUsername) // emit to initator
+      io.to(matchedSocketID).emit('matchSuccess', roomID, matcherUsername) // emit to matched
       successful = true
       break
     }
   }
   if (!successful) {
-    socket.emit('matchFail', 'failed')
+    console.warn(`User: ${matcherUsername} Unsuccessful in finding a match, triggering wait`)
+    createPendingMatch(socket, matcherTopics, matcherDifficulties)
   }
 }
 
 const MatchHandler = (socket, io) => {
-  socket.on('match', async (username, topics, difficulties) => {
-    if (typeof username !== 'string' || !Array.isArray(topics) || !Array.isArray(difficulties)) {
+  socket.on('match', async (topics, difficulties) => {
+    const { username } = socket // from auth middleware
+    if (!Array.isArray(topics) || !Array.isArray(difficulties)) {
       return socket.emit('match', 'Bad Request')
     }
     // Arguments Valid
+    console.log(`User: ${username} is triggering a match`)
 
     // Step1: Get a list of valid matches
-    const possibleMatches = await ormMatch.FindMatches(topics, difficulties, username, TIMEOUT)
+    const possibleMatches = await ormMatch.FindMatches(
+      topics,
+      difficulties,
+      username,
+      MATCH_TIMEOUT_MS
+    )
     console.log('Possible matches', possibleMatches)
     if (possibleMatches.err) {
       console.error('Possible matches error', possibleMatches.err)
@@ -78,25 +149,13 @@ const MatchHandler = (socket, io) => {
       // Upon timeout, if username still exist in DB (meaning not matched), will inform user that
       // no matches were found, and delete entry from DB (warning: check for EXACT object equality)
       console.log('No possible match as of now')
-      const createMatch = ormMatch.CreateMatch(username, socket.id, topics, difficulties)
-      if (createMatch.err) {
-        console.error('createMatch error', createMatch.err)
-        return socket.emit('matchFail', 'ServerError')
-      }
-      if (createMatch) {
-        console.log('Successful match creation, now waiting')
-        socket.emit('match', 'waiting')
-        return setTimeout(() => checkMatchStatus(socket, username), TIMEOUT)
-      } else {
-        console.log('Match Fail, could not createMatch')
-        return socket.emit('matchFail', 'ServerError')
-      }
+      return createPendingMatch(socket, topics, difficulties)
+    } else {
+      // Step2b: Find a random user from list of matches
+      // Query QuestionService to generate and get unique room ID. Emit RoomID to both clients
+      // Additionally, delete the matched user from the QuestionService (so it wont get matched with someone else)
+      return handlePossibleMatches(possibleMatches, topics, difficulties, socket, io)
     }
-
-    // Step2b: Find a random user from list of matches
-    // Query QuestionService to generate and get unique room ID. Emit RoomID to both clients
-    // Additionally, delete the matched user from the QuestionService (so it wont get matched with someone else)
-    return handlePossibleMatches(possibleMatches, socket, io)
   })
 }
 

@@ -54,6 +54,8 @@ MONGODB_LOCAL_PORT: Docker Compose MongoDB Connection Port
 
 NODE_LOCAL_PORT: Port to use to connect to our app. 8080 by default
 NODE_DOCKER_PORT: Port to use in our **Docker Container**. Also 8080 by default
+
+QUESTION_SERVICE_LOCAL_URL: URL where the local QuestionService is hosted.
 ```
 
 ## Database

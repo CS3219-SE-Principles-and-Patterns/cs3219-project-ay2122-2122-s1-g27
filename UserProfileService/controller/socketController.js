@@ -9,12 +9,6 @@ const socketController = (socket, io) => {
   // declare 'handlers' here, pass (socket, io) to functions defined in application/handler
   // see: https://socket.io/docs/v4/server-application-structure/
 
-  socket.on('message', (msg1, msg2) => {
-    console.log('Receiving Msg1: ', msg1)
-    console.log('Receiving Msg2: ', msg2)
-    io.emit('message', msg1, msg2)
-  })
-
   MatchHandler(socket, io)
 
   socket.on('disconnect', (reason) => {
