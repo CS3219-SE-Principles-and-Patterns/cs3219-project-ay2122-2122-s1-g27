@@ -27,8 +27,6 @@ require('codemirror/mode/javascript/javascript');
 require('codemirror/mode/clike/clike');
 require('codemirror/mode/python/python');
 
-const socket = io('http://localhost:5005');
-const chatSocket = io('http://localhost:7000');
 class CollaborationPage extends Component {
     static contextType = AppContext;
 
@@ -45,39 +43,41 @@ class CollaborationPage extends Component {
         this.handleLangChange = this.handleLangChange.bind(this);
         this.roomId =
             'd5bfd8c21114ae407a0c22f91f5969f515b997180da35d963fa41d2c3771fdcd'; // props.roomId
+        this.socket = sessionStorage.getItem('collabSocket');
+        this.chatSocket = sessionStorage.getItem('chatTextSocket');
         // console.log(this.props.location.state.roomId);
     }
 
     componentDidMount() {
         //crucial for these socket operations NOT to be in constructor to avoid synchronization errors
         //take roomId from props
-        const { jwt } = this.context;
+        const { jwt} = this.context;
 
-        socket.emit('room', { room: this.roomId, jwt: jwt });
-        socket.on('receive code', (newCode) => {
+        this.socket.emit('room', { room: this.roomId, jwt: jwt });
+        this.socket.on('receive code', (newCode) => {
             this.useReceivedCode(newCode);
         });
 
-        socket.on('new user joined', () => {
+        this.socket.on('new user joined', () => {
             console.log('sending ' + this.state.code + ' to new user');
             this.broadcastUpdatedCode(this.roomId, this.state.code);
             this.broadcastUpdatedLang(this.roomId, this.state.lang);
         });
 
-        socket.on('receive lang', (newLang) => {
+        this.socket.on('receive lang', (newLang) => {
             this.useReceivedLang(newLang);
         });
     }
 
     broadcastUpdatedCode(roomId, newCode) {
-        socket.emit('coding event', {
+        this.socket.emit('coding event', {
             room: roomId,
             newCode: newCode,
         });
     }
 
     broadcastUpdatedLang(roomId, newLang) {
-        socket.emit('lang event', {
+        this.socket.emit('lang event', {
             room: roomId,
             newLang: newLang,
         });
@@ -209,7 +209,7 @@ class CollaborationPage extends Component {
                         <Grid item xs={12}>
                             <ChatCard
                                 roomId={this.roomId}
-                                socket={chatSocket}
+                                socket={this.chatSocket}
                             />
                         </Grid>
                     </Grid>

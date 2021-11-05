@@ -145,6 +145,22 @@ function AuthenticationPage() {
                         });
                         setMatchingSocket(socket);
                         sessionStorage.setItem('matchingSocket', socket);
+                    
+                        const collabSocketInit = io('http://localhost:5005', {
+                            extraHeaders: {
+                                Authorization:
+                                    'Bearer ' + sessionStorage.getItem('jwt'),
+                            },
+                        });
+                        sessionStorage.setItem('collabSocket', collabSocketInit);
+                        
+                        const chatTextSocketInit = io('http://localhost:7000', {
+                            extraHeaders: {
+                                Authorization:
+                                    'Bearer ' + sessionStorage.getItem('jwt'),
+                            },
+                        });
+                        sessionStorage.setItem('chatTextSocket', chatTextSocketInit);
                     });
                 }
             }
