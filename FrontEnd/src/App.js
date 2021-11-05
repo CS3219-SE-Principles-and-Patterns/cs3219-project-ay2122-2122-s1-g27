@@ -3,7 +3,6 @@ import { AppContext } from './utils/AppContext';
 import AuthenticationPage from './pages/AuthenticationPage';
 import LandingPage from './pages/LandingPage';
 import MatchingPage from './pages/MatchingPage';
-import UserProfilePage from './pages/UserProfilePage';
 import CollaborationPage from './pages/CollaborationPage';
 import { styled } from '@mui/system';
 import { Grid } from '@mui/material';
@@ -73,9 +72,8 @@ const PeerPrepText = styled(Typography)(({ theme }) => ({
 
 function NavBar(props) {
     const { pathname } = useLocation();
-    const { user, setUser, setJwt } = useContext(AppContext);
 
-    return (
+    return pathname.includes('collaborate') ? null : (
         <Box sx={{ flexGrow: 1 }}>
             <StyledAppBar position="static">
                 <Toolbar>
@@ -96,8 +94,14 @@ function NavBar(props) {
                     </PeerPrepText>
 
                     {pathname !== '/login' ? (
-                        <Button color="inherit" disabled={user}>
-                            <LoginLink to="/login" disabled={user}>
+                        <Button
+                            color="inherit"
+                            disabled={sessionStorage.getItem('user')}
+                        >
+                            <LoginLink
+                                to="/login"
+                                disabled={sessionStorage.getItem('user')}
+                            >
                                 <Typography
                                     variant="h6"
                                     sx={{
@@ -106,18 +110,19 @@ function NavBar(props) {
                                         fontWeight: 600,
                                     }}
                                 >
-                                    {user ? '@' + user : 'Sign In'}
+                                    {sessionStorage.getItem('user')
+                                        ? '@' + sessionStorage.getItem('user')
+                                        : 'Sign In'}
                                 </Typography>
                             </LoginLink>
                         </Button>
                     ) : null}
 
-                    {user ? (
+                    {sessionStorage.getItem('user') ? (
                         <Button
                             color="inherit"
                             onClick={() => {
-                                setUser(null);
-                                setJwt(null);
+                                sessionStorage.clear();
                             }}
                         >
                             <LoginLink to="/about">
@@ -140,12 +145,9 @@ function NavBar(props) {
 }
 
 function App() {
-    const [user, setUser] = useState(null);
-    const [jwt, setJwt] = useState(null);
-
     return (
         <ThemeProvider theme={theme}>
-            <AppContext.Provider value={{ user, setUser, jwt, setJwt }}>
+            <AppContext.Provider value={{}}>
                 <Router>
                     <AppContainer>
                         <NavBar />
@@ -157,11 +159,7 @@ function App() {
                             />
                             <Route path="/match" component={MatchingPage} />
                             <Route
-                                path="/profile"
-                                component={UserProfilePage}
-                            />
-                            <Route
-                                path="/collaborate"
+                                path="/collaborate/:roomId"
                                 component={CollaborationPage}
                             />
                             <Route
