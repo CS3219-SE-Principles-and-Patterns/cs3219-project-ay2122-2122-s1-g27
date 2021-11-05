@@ -5,6 +5,7 @@ import {
     List,
     ListItem,
     TextField,
+    Chip,
     IconButton,
 } from '@mui/material';
 import { styled } from '@mui/system';
@@ -124,7 +125,7 @@ function ChatMessage({ messageOwner, message, user, id }) {
                 key={id}
                 sx={{ display: 'flex', justifyContent: 'flex-end' }}
             >
-                <ChatText>{message}</ChatText>
+                <Chip sx={{ backgroundColor: '#9BCC5F' }} label={message} />
             </ListItem>
         );
     } else {
@@ -133,7 +134,7 @@ function ChatMessage({ messageOwner, message, user, id }) {
                 key={id}
                 sx={{ display: 'flex', justifyContent: 'flex-start' }}
             >
-                <ChatText>{message}</ChatText>
+                <Chip sx={{ backgroundColor: '#1982FC' }} label={message} />
             </ListItem>
         );
     }
