@@ -1,5 +1,5 @@
 const chai = require('chai')
-const { STATUS_SUCCESS, STATUS_FAIL } = require('../util/enums')
+const { STATUS_SUCCESS, STATUS_FAIL } = require('../application/service/common')
 const app = require('../server')
 
 const dummyQuestionData = require('../data/dummy-questions.json')

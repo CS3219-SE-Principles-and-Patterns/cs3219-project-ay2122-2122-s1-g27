@@ -1,5 +1,5 @@
 const chai = require('chai')
-const { STATUS_SUCCESS, STATUS_FAIL } = require('../util/enums')
+const { STATUS_SUCCESS, STATUS_FAIL } = require('../application/util/enums')
 
 chai.should()
 

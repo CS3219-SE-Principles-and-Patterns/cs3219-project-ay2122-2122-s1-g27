@@ -3,9 +3,8 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 const ormUser = require('../orm/user-orm')
-const { Response } = require('../../util/response')
-const { STATUS_SUCCESS, STATUS_FAIL } = require('../../util/enums')
-const { InternalServerError, MissingArgsError } = require('./common')
+const { STATUS_SUCCESS, STATUS_FAIL } = require('../util/enums')
+const { Response, InternalServerError, MissingArgsError } = require('./common')
 
 const { JWT_SECRET_TOKEN, REFRESH_TOKEN } = process.env
 

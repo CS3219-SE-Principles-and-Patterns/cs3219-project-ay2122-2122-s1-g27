@@ -1,9 +1,9 @@
 const { sha256 } = require('js-sha256')
-const { Response, wrapResult } = require('../util/response')
+
+const { Response, WrapResult, UnauthorizedError } = require('./common')
 const ormRoom = require('../orm/room-orm')
 const ormQuestion = require('../orm/question-orm')
-const { GetRandomNumberBetweenInclMinExclMax } = require('../util/utilities')
-const { UnauthorizedError } = require('./common')
+const { GetRandomNumberBetweenInclMinExclMax } = require('../util')
 
 // for generating room id
 const SALT_1 = 32
@@ -40,7 +40,7 @@ const CreateRoom = async (req, res) => {
 
     const respOrm = await ormRoom.CreateRoom(randomMatchedQuestion, hash, usernames)
 
-    return wrapResult(res, 'Cannot Create Room', 'Room Created', respOrm)
+    return WrapResult(res, 'Cannot Create Room', 'Room Created', respOrm)
   } catch (err) {
     console.log('err: ', err)
     const resp = Response('Failure', 'DB failed')
@@ -64,7 +64,7 @@ const FindRoomById = async (req, res) => {
       result = { question: respOrmQuestion }
     }
 
-    return wrapResult(res, 'Cannot Find Room', 'Found Room', result)
+    return WrapResult(res, 'Cannot Find Room', 'Found Room', result)
   } catch (err) {
     console.log('err: ', err)
     const resp = Response('Failure', 'DB failed')
@@ -87,7 +87,7 @@ const DeleteRoom = async (req, res) => {
 
     const respOrmRoom = await ormRoom.DeleteRoom(roomId)
 
-    return wrapResult(res, 'Cannot Delete Room', 'Deleted Room', respOrmRoom)
+    return WrapResult(res, 'Cannot Delete Room', 'Deleted Room', respOrmRoom)
   } catch (err) {
     console.log('err: ', err)
     const resp = Response('Failure', 'DB failed')
@@ -105,7 +105,7 @@ const GetCurrentRoomByUsername = async (req, res) => {
 
     const result = respOrmRoom
 
-    return wrapResult(res, 'Cannot Find Room', 'Found Room', result)
+    return WrapResult(res, 'Cannot Find Room', 'Found Room', result)
   } catch (err) {
     console.log('err: ', err)
     const resp = Response('Failure', 'DB failed')

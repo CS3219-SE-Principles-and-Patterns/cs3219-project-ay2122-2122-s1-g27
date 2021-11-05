@@ -9,8 +9,8 @@ const app = require('../server')
 const db = require('../infrastructure/persistence/mongo')
 const { URI } = require('../configs').development.db
 const { PORT } = require('../configs').development
-const { USER_STUB } = require('./stubs')
-const { VerifySuccess, VerifyFailure, Snooze } = require('./utils')
+const { USER_STUB } = require('./stubs.test')
+const { VerifySuccess, VerifyFailure, Snooze } = require('./utils.test')
 
 chai.should()
 chai.use(chaiHttp)
