@@ -159,7 +159,7 @@ function MatchingPage() {
         return (
             <Redirect
                 to={{
-                    pathname: '/collaborate',
+                    pathname: `/collaborate/${redirectRoomId}`,
                     state: {
                         roomId: redirectRoomId,
                     },

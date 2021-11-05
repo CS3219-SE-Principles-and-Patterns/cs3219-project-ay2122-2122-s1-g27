@@ -159,7 +159,7 @@ function App() {
                             />
                             <Route path="/match" component={MatchingPage} />
                             <Route
-                                path="/collaborate"
+                                path="/collaborate/:roomId"
                                 component={CollaborationPage}
                             />
                             <Route

@@ -139,6 +139,9 @@ class CollaborationPage extends Component {
         if (this.state.shouldRedirect) {
             return <Redirect to={{ pathname: '/match' }} />;
         }
+        if (!this.roomId) {
+            return <Redirect to={{ pathname: '/match' }} />;
+        }
         const codeMirrorOptions = {
             lineNumbers: true,
             mode: this.state.lang,

@@ -66,7 +66,7 @@ export default function MatchingModal(props) {
                 {roomId ? (
                     <Redirect
                         to={{
-                            pathname: '/collaborate',
+                            pathname: `/collaborate/${roomId}`,
                             state: {
                                 roomId: roomId,
                             },
