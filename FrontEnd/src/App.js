@@ -3,7 +3,6 @@ import { AppContext } from './utils/AppContext';
 import AuthenticationPage from './pages/AuthenticationPage';
 import LandingPage from './pages/LandingPage';
 import MatchingPage from './pages/MatchingPage';
-import UserProfilePage from './pages/UserProfilePage';
 import CollaborationPage from './pages/CollaborationPage';
 import { styled } from '@mui/system';
 import { Grid } from '@mui/material';
@@ -75,7 +74,7 @@ function NavBar(props) {
     const { pathname } = useLocation();
     const { user, setUser, setJwt } = useContext(AppContext);
 
-    return (
+    return pathname.includes('collaborate') ? null : (
         <Box sx={{ flexGrow: 1 }}>
             <StyledAppBar position="static">
                 <Toolbar>
@@ -106,18 +105,21 @@ function NavBar(props) {
                                         fontWeight: 600,
                                     }}
                                 >
-                                    {user ? '@' + user : 'Sign In'}
+                                    {user || sessionStorage.getItem('user')
+                                        ? '@' + user
+                                        : 'Sign In'}
                                 </Typography>
                             </LoginLink>
                         </Button>
                     ) : null}
 
-                    {user ? (
+                    {user || sessionStorage.getItem('user') ? (
                         <Button
                             color="inherit"
                             onClick={() => {
                                 setUser(null);
                                 setJwt(null);
+                                sessionStorage.clear();
                             }}
                         >
                             <LoginLink to="/about">
@@ -142,10 +144,23 @@ function NavBar(props) {
 function App() {
     const [user, setUser] = useState(null);
     const [jwt, setJwt] = useState(null);
+    const [matchingSocket, setMatchingSocket] = useState(null);
 
+    if (!user && sessionStorage.getItem('user')) {
+        setUser(sessionStorage.getItem('user'));
+    }
     return (
         <ThemeProvider theme={theme}>
-            <AppContext.Provider value={{ user, setUser, jwt, setJwt }}>
+            <AppContext.Provider
+                value={{
+                    user,
+                    setUser,
+                    jwt,
+                    setJwt,
+                    matchingSocket,
+                    setMatchingSocket,
+                }}
+            >
                 <Router>
                     <AppContainer>
                         <NavBar />
@@ -156,10 +171,6 @@ function App() {
                                 component={AuthenticationPage}
                             />
                             <Route path="/match" component={MatchingPage} />
-                            <Route
-                                path="/profile"
-                                component={UserProfilePage}
-                            />
                             <Route
                                 path="/collaborate"
                                 component={CollaborationPage}
