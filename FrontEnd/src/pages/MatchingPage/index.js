@@ -34,6 +34,7 @@ function MatchingPage() {
 
     // instantiate topics and difficulties
     useEffect(() => {
+        console.log(sessionStorage.getItem('jwt'));
         const requestOptions = {
             method: 'GET',
             headers: {
@@ -121,7 +122,7 @@ function MatchingPage() {
     }
 
     if (!jwt && !sessionStorage.getItem('jwt')) {
-        return <Redirect to={{ pathname: '/about' }} />;
+        return <Redirect to={{ pathname: '/login' }} />;
     } else {
         return (
             <Grid container justifyContent="center">

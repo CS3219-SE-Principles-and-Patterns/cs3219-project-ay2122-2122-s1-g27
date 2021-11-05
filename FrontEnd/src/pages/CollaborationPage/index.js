@@ -13,6 +13,8 @@ import {
 } from '@mui/material';
 import '../../App.css';
 import { AppContext } from '../../utils/AppContext';
+import LoginPage from '../../assets/LoginPage.png';
+import { Redirect } from 'react-router-dom';
 
 //code-mirror stuff
 import { Controlled as Codemirror } from 'react-codemirror2';
@@ -52,6 +54,10 @@ class CollaborationPage extends Component {
         //crucial for these socket operations NOT to be in constructor to avoid synchronization errors
         //take roomId from props
         const { jwt} = this.context;
+
+        if (!this.socket) {
+            return;
+        }
 
         this.socket.emit('room', { room: this.roomId, jwt: jwt });
         this.socket.on('receive code', (newCode) => {
@@ -98,6 +104,10 @@ class CollaborationPage extends Component {
     }
 
     render() {
+
+        if (!sessionStorage.getItem('jwt')) {
+            return <Redirect to={{ pathname: '/login' }}/>
+        }
         const codeMirrorOptions = {
             lineNumbers: true,
             mode: this.state.lang,

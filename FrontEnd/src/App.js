@@ -145,6 +145,8 @@ function App() {
     const [user, setUser] = useState(null);
     const [jwt, setJwt] = useState(null);
     const [matchingSocket, setMatchingSocket] = useState(null);
+    const [collabSocket, setCollabSocket] = useState(null);
+    const [chatTextSocket, setChatTextSocket] = useState(null);
 
     if (!user && sessionStorage.getItem('user')) {
         setUser(sessionStorage.getItem('user'));
@@ -159,6 +161,10 @@ function App() {
                     setJwt,
                     matchingSocket,
                     setMatchingSocket,
+                    collabSocket,
+                    chatTextSocket,
+                    setCollabSocket,
+                    setChatTextSocket
                 }}
             >
                 <Router>
