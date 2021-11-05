@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Box, Modal, Button, Typography, Grid } from '@mui/material';
 import Waiting from '../../assets/waiting.svg';
 import Sorry from '../../assets/sorry.svg';
+import io from 'socket.io-client';
 import { Redirect } from 'react-router-dom';
 
 const style = {
@@ -66,7 +67,9 @@ export default function MatchingModal(props) {
                     <Redirect
                         to={{
                             pathname: '/collaborate',
-                            state: { roomId: roomId },
+                            state: {
+                                roomId: roomId,
+                            },
                         }}
                     />
                 ) : timeLeft != 0 ? (

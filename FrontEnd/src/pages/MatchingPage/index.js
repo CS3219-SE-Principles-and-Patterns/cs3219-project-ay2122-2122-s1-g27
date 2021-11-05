@@ -15,6 +15,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import { AppContext } from '../../utils/AppContext';
 import { Redirect } from 'react-router-dom';
 import MatchingModal from './MatchingModal';
+import io from 'socket.io-client';
 
 const TopicsContainer = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('md')]: {
@@ -26,20 +27,18 @@ const TopicsContainer = styled('div')(({ theme }) => ({
 }));
 
 function MatchingPage() {
-    const { jwt, matchingSocket } = useContext(AppContext);
-
     const [topics, setTopics] = useState(null);
     const [difficulties, setDifficulties] = useState(null);
-    const [isCurrentlyInSomeRoom, setIsCurrentlyInSomeRoom] = useState(false);
+    const [redirectRoomId, setRedirectRoomId] = useState(null);
+    const [matchingSocket, setMatchingSocket] = useState(null);
 
     // instantiate topics and difficulties
     useEffect(() => {
-        console.log(sessionStorage.getItem('jwt'));
         const requestOptions = {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + jwt,
+                Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
             },
         };
 
@@ -51,6 +50,44 @@ function MatchingPage() {
             });
     }, []);
 
+    useEffect(() => {
+        if (!sessionStorage.getItem('user')) {
+            return;
+        }
+
+        const requestOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
+            },
+        };
+
+        return fetch(
+            'http://localhost:8081/question/room/username/' +
+                sessionStorage.getItem('user'),
+            requestOptions
+        ).then((data) => {
+            if (data.status === 200) {
+                data.json().then((data) => {
+                    console.log(data);
+                    setRedirectRoomId(data.data.roomId);
+                });
+            }
+        });
+    }, []);
+
+    useEffect(() => {
+        if (!matchingSocket) {
+            const socket = io('http://localhost:8080', {
+                extraHeaders: {
+                    Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
+                },
+            });
+            setMatchingSocket(socket);
+        }
+    }, []);
+
     const [selectedTopics, setSelectedTopics] = useState([]);
     const [selectedDifficulties, setSelectedDifficulties] = useState([]);
     const [shouldOpenModal, setShouldOpenModal] = useState(false);
@@ -60,12 +97,7 @@ function MatchingPage() {
     const triggerMatchRequest = () => {
         setShouldOpenModal(true);
 
-        matchingSocket.emit(
-            'match',
-            sessionStorage.getItem('user'),
-            selectedTopics,
-            selectedDifficulties
-        );
+        matchingSocket.emit('match', selectedTopics, selectedDifficulties);
     };
 
     // State management functions
@@ -121,8 +153,19 @@ function MatchingPage() {
         );
     }
 
-    if (!jwt && !sessionStorage.getItem('jwt')) {
+    if (!sessionStorage.getItem('jwt')) {
         return <Redirect to={{ pathname: '/login' }} />;
+    } else if (redirectRoomId) {
+        return (
+            <Redirect
+                to={{
+                    pathname: '/collaborate',
+                    state: {
+                        roomId: redirectRoomId,
+                    },
+                }}
+            />
+        );
     } else {
         return (
             <Grid container justifyContent="center">

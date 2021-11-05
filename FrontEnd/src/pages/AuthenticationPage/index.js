@@ -11,7 +11,6 @@ import { styled } from '@mui/system';
 import { AppContext } from '../../utils/AppContext';
 import LoginPage from '../../assets/LoginPage.png';
 import { Redirect } from 'react-router-dom';
-import io from 'socket.io-client';
 
 const Image = styled('img')(({ theme }) => ({
     paddingTop: '10%',
@@ -87,9 +86,7 @@ function AuthenticationPage() {
     const [username, setUsername] = useState(null);
     const [password, setPassword] = useState(null);
     const [isIncorrectAttempt, setIncorrectAttempt] = useState(false);
-
-    const { user, setUser, jwt, setJwt, setMatchingSocket } =
-        useContext(AppContext);
+    const [hasStoredJwt, setHasStoredJwt] = useState(false);
 
     const handleChangeUsername = (event) => setUsername(event.target.value);
     const handleChangePassword = (event) => setPassword(event.target.value);
@@ -132,35 +129,9 @@ function AuthenticationPage() {
                 } else if (data.status === 200) {
                     data.json().then((data) => {
                         // set JWT access token in session storage
-                        setUser(username);
-                        setJwt(data.data.accessToken);
                         sessionStorage.setItem('jwt', data.data.accessToken);
                         sessionStorage.setItem('user', username);
-
-                        const socket = io('http://localhost:8080', {
-                            extraHeaders: {
-                                Authorization:
-                                    'Bearer ' + sessionStorage.getItem('jwt'),
-                            },
-                        });
-                        setMatchingSocket(socket);
-                        sessionStorage.setItem('matchingSocket', socket);
-                    
-                        const collabSocketInit = io('http://localhost:5005', {
-                            extraHeaders: {
-                                Authorization:
-                                    'Bearer ' + sessionStorage.getItem('jwt'),
-                            },
-                        });
-                        sessionStorage.setItem('collabSocket', collabSocketInit);
-                        
-                        const chatTextSocketInit = io('http://localhost:7000', {
-                            extraHeaders: {
-                                Authorization:
-                                    'Bearer ' + sessionStorage.getItem('jwt'),
-                            },
-                        });
-                        sessionStorage.setItem('chatTextSocket', chatTextSocketInit);
+                        setHasStoredJwt(true);
                     });
                 }
             }
@@ -169,8 +140,7 @@ function AuthenticationPage() {
 
     return (
         <Grid container>
-            {(user || sessionStorage.getItem('user')) &&
-            (jwt || sessionStorage.getItem('jwt')) ? (
+            {sessionStorage.getItem('user') && sessionStorage.getItem('jwt') ? (
                 <Redirect to={{ pathname: '/match' }} />
             ) : null}
             <Grid

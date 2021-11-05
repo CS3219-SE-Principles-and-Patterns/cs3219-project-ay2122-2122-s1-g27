@@ -15,7 +15,7 @@ import SendIcon from '@mui/icons-material/Send';
 function ChatCard(props) {
     const socket = props.socket;
     //const { user } = useContext(AppContext);
-    let user = socket.id; //change this to the one from context later
+    let user = sessionStorage.getItem('user');
     const [messages, setMessages] = useState([]);
     const [messageEntered, setMessageEntered] = useState('');
 
@@ -37,7 +37,6 @@ function ChatCard(props) {
 
     useEffect(() => {
         socket.on('connect', () => {
-            user = socket.id; //remove this later
             socket.emit('room', { username: user, room: props.roomId });
         });
         socket.on('message', (username, message) => {

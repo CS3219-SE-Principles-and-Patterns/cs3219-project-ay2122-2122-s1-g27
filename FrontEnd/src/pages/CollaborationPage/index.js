@@ -13,7 +13,6 @@ import {
 } from '@mui/material';
 import '../../App.css';
 import { AppContext } from '../../utils/AppContext';
-import LoginPage from '../../assets/LoginPage.png';
 import { Redirect } from 'react-router-dom';
 
 //code-mirror stuff
@@ -30,60 +29,81 @@ require('codemirror/mode/clike/clike');
 require('codemirror/mode/python/python');
 
 class CollaborationPage extends Component {
-    static contextType = AppContext;
-
     constructor(props) {
         //make sure to receive room id and question from props
         super(props);
         this.state = {
             code: 'x = "Hello World";',
             lang: 'javascript',
+            socket: sessionStorage.getItem('jwt')
+                ? io('http://localhost:5005', {
+                      extraHeaders: {
+                          Authorization:
+                              'Bearer ' + sessionStorage.getItem('jwt'),
+                      },
+                  })
+                : null,
+            chatSocket: sessionStorage.getItem('jwt')
+                ? io('http://localhost:7000', {
+                      extraHeaders: {
+                          Authorization:
+                              'Bearer ' + sessionStorage.getItem('jwt'),
+                      },
+                  })
+                : null,
+            shouldRedirect: false,
         };
         this.useReceivedCode = this.useReceivedCode.bind(this);
         this.brodcastUpdatedCode = this.broadcastUpdatedCode.bind(this);
         this.brodcastUpdatedLang = this.broadcastUpdatedLang.bind(this);
         this.handleLangChange = this.handleLangChange.bind(this);
-        this.roomId =
-            'd5bfd8c21114ae407a0c22f91f5969f515b997180da35d963fa41d2c3771fdcd'; // props.roomId
-        this.socket = sessionStorage.getItem('collabSocket');
-        this.chatSocket = sessionStorage.getItem('chatTextSocket');
-        // console.log(this.props.location.state.roomId);
+        this.roomId = this.props.location.state?.roomId;
+
+        this.handleFinish = this.handleFinish.bind(this);
+        this.handleRedirectToMatchPage =
+            this.handleRedirectToMatchPage.bind(this);
     }
 
     componentDidMount() {
         //crucial for these socket operations NOT to be in constructor to avoid synchronization errors
-        //take roomId from props
-        const { jwt} = this.context;
 
-        if (!this.socket) {
+        if (!this.roomId || !this.state.socket) {
             return;
         }
 
-        this.socket.emit('room', { room: this.roomId, jwt: jwt });
-        this.socket.on('receive code', (newCode) => {
+        this.state.socket.emit('room', {
+            room: this.roomId,
+            jwt: sessionStorage.getItem('jwt'),
+        });
+        this.state.socket.on('receive code', (newCode) => {
             this.useReceivedCode(newCode);
         });
 
-        this.socket.on('new user joined', () => {
+        this.state.socket.on('new user joined', () => {
             console.log('sending ' + this.state.code + ' to new user');
             this.broadcastUpdatedCode(this.roomId, this.state.code);
             this.broadcastUpdatedLang(this.roomId, this.state.lang);
         });
 
-        this.socket.on('receive lang', (newLang) => {
+        this.state.socket.on('receive lang', (newLang) => {
             this.useReceivedLang(newLang);
+        });
+
+        this.state.socket.on('finish triggered', (roomId) => {
+            this.state.socket.emit('finish', { room: this.roomId });
+            this.setState({ shouldRedirect: true });
         });
     }
 
     broadcastUpdatedCode(roomId, newCode) {
-        this.socket.emit('coding event', {
+        this.state.socket.emit('coding event', {
             room: roomId,
             newCode: newCode,
         });
     }
 
     broadcastUpdatedLang(roomId, newLang) {
-        this.socket.emit('lang event', {
+        this.state.socket.emit('lang event', {
             room: roomId,
             newLang: newLang,
         });
@@ -103,10 +123,21 @@ class CollaborationPage extends Component {
         this.broadcastUpdatedLang(this.roomId, event.target.value);
     }
 
-    render() {
+    handleFinish() {
+        this.state.socket.emit('finish', { room: this.roomId });
+        this.setState({ shouldRedirect: true });
+    }
 
+    handleRedirectToMatchPage() {
+        return <Redirect to={{ pathname: '/match' }} />;
+    }
+
+    render() {
         if (!sessionStorage.getItem('jwt')) {
-            return <Redirect to={{ pathname: '/login' }}/>
+            return <Redirect to={{ pathname: '/login' }} />;
+        }
+        if (this.state.shouldRedirect) {
+            return <Redirect to={{ pathname: '/match' }} />;
         }
         const codeMirrorOptions = {
             lineNumbers: true,
@@ -181,6 +212,7 @@ class CollaborationPage extends Component {
 
                                 <Grid item>
                                     <Button
+                                        onClick={this.handleFinish}
                                         sx={{
                                             backgroundColor: '#1EA94C',
                                             height: '40px',
@@ -203,7 +235,7 @@ class CollaborationPage extends Component {
                                     this.broadcastUpdatedCode(
                                         this.roomId,
                                         value
-                                    ); //change to props.roomId later
+                                    );
                                 } else {
                                     console.log(
                                         'change caused by other user: not firing emit'
@@ -216,12 +248,14 @@ class CollaborationPage extends Component {
                             }}
                             options={codeMirrorOptions}
                         />
-                        <Grid item xs={12}>
-                            <ChatCard
-                                roomId={this.roomId}
-                                socket={this.chatSocket}
-                            />
-                        </Grid>
+                        {this.state.chatSocket && this.roomId ? (
+                            <Grid item xs={12}>
+                                <ChatCard
+                                    roomId={this.roomId}
+                                    socket={this.state.chatSocket}
+                                />
+                            </Grid>
+                        ) : null}
                     </Grid>
                 </Grid>
             </Grid>
@@ -231,7 +265,6 @@ class CollaborationPage extends Component {
 
 function QuestionPanel(props) {
     const [question, setQuestion] = useState(null);
-    const { jwt } = useContext(AppContext);
 
     useEffect(() => {
         // fetch Question Data using room id: DONE
@@ -239,7 +272,7 @@ function QuestionPanel(props) {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + jwt,
+                Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
             },
         };
 

@@ -72,7 +72,6 @@ const PeerPrepText = styled(Typography)(({ theme }) => ({
 
 function NavBar(props) {
     const { pathname } = useLocation();
-    const { user, setUser, setJwt } = useContext(AppContext);
 
     return pathname.includes('collaborate') ? null : (
         <Box sx={{ flexGrow: 1 }}>
@@ -95,8 +94,14 @@ function NavBar(props) {
                     </PeerPrepText>
 
                     {pathname !== '/login' ? (
-                        <Button color="inherit" disabled={user}>
-                            <LoginLink to="/login" disabled={user}>
+                        <Button
+                            color="inherit"
+                            disabled={sessionStorage.getItem('user')}
+                        >
+                            <LoginLink
+                                to="/login"
+                                disabled={sessionStorage.getItem('user')}
+                            >
                                 <Typography
                                     variant="h6"
                                     sx={{
@@ -105,20 +110,18 @@ function NavBar(props) {
                                         fontWeight: 600,
                                     }}
                                 >
-                                    {user || sessionStorage.getItem('user')
-                                        ? '@' + user
+                                    {sessionStorage.getItem('user')
+                                        ? '@' + sessionStorage.getItem('user')
                                         : 'Sign In'}
                                 </Typography>
                             </LoginLink>
                         </Button>
                     ) : null}
 
-                    {user || sessionStorage.getItem('user') ? (
+                    {sessionStorage.getItem('user') ? (
                         <Button
                             color="inherit"
                             onClick={() => {
-                                setUser(null);
-                                setJwt(null);
                                 sessionStorage.clear();
                             }}
                         >
@@ -142,31 +145,9 @@ function NavBar(props) {
 }
 
 function App() {
-    const [user, setUser] = useState(null);
-    const [jwt, setJwt] = useState(null);
-    const [matchingSocket, setMatchingSocket] = useState(null);
-    const [collabSocket, setCollabSocket] = useState(null);
-    const [chatTextSocket, setChatTextSocket] = useState(null);
-
-    if (!user && sessionStorage.getItem('user')) {
-        setUser(sessionStorage.getItem('user'));
-    }
     return (
         <ThemeProvider theme={theme}>
-            <AppContext.Provider
-                value={{
-                    user,
-                    setUser,
-                    jwt,
-                    setJwt,
-                    matchingSocket,
-                    setMatchingSocket,
-                    collabSocket,
-                    chatTextSocket,
-                    setCollabSocket,
-                    setChatTextSocket
-                }}
-            >
+            <AppContext.Provider value={{}}>
                 <Router>
                     <AppContainer>
                         <NavBar />
