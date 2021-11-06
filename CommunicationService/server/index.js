@@ -22,8 +22,8 @@ const io = new Server(httpServer, {
 })
 
 /**
- * Checks if connection contains JWT authorization
- * attaches username to socket for subsequent messages
+ * Checks if connection contains Authorization header with JWT Token
+ * Extracts and attaches username to socket for subsequent messages
  * @param {string} header
  * @param {Socket} socket
  * @returns
