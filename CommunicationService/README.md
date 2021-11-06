@@ -31,3 +31,9 @@ ENV: `development` for local usage/dev, `production` for production use
 PORT: Port that the server will startup and expose itself on
 JWT_SECRET_TOKEN: Secret Key to generate JWT
 ```
+
+## DevOps / Containerization / Orchestration
+
+**Relevant Commands**
+- `docker build -t cs:latest .`: (Re)Build Image Locally
+- `docker run -dp 7000:7000 cs`: Run standalone Docker Image (Typically in production mode)
