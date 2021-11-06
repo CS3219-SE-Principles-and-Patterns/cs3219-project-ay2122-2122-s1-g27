@@ -11,6 +11,8 @@ const io = require('socket.io')(server, {
 })
 const fetch = require('cross-fetch')
 
+const { PORT, questionServiceURL } = require('./configs')
+
 io.on('connection', (socket) => {
   const header = socket.handshake.headers.authorization
   const jwt = header.split(' ')[1]
@@ -54,7 +56,7 @@ io.on('connection', (socket) => {
           },
         }
 
-        fetch(`http://localhost:8081/question/room/${room}`, requestOptions).then(() =>
+        fetch(`${questionServiceURL}/question/room/${room}`, requestOptions).then(() =>
           console.log(`destroyed room:${room}`)
         )
       }
@@ -83,6 +85,6 @@ io.on('connection', (socket) => {
   })
 })
 
-server.listen(5005, () => {
-  console.log('listening on *:5005')
+server.listen(PORT, () => {
+  console.log(`CollabSocketService started on port: ${PORT}`)
 })
