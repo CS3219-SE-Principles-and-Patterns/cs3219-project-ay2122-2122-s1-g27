@@ -23,12 +23,12 @@ To start, we recommend installing the `ESLint`(dbaeumer.vscode-eslint) and `Pret
 
 ## DevOps
 
-This app components (MongoDB and NodeJS) is containerized using `Docker-Compose`.
-
 **Relevant Commands**
 
-- `docker-compose build`: (Re)Build Docker Image
-- `docker-compose up -d`: Run composed Docker Image
+- `docker build -t qs:latest .`: (Re)Build Image Locally
+- `docker run -dp 8081:8081 qs`: Run standalone Docker Image (Typically in production mode)
+- `docker-compose build`: (Re)Build Docker Compose Application. Typically for local usage (as it attached a MongoDB Cluster)
+- `docker-compose up -d`: Run composed Docker application in detached mode
 
 ## `.env` File
 
@@ -38,13 +38,14 @@ Here are the variables below and their explanations
 
 ```
 ENV: `development` for local usage/dev, `production` for production use
+JWT_SECRET_TOKEN: Secret Key to generate JWT
+ATLAS_PASSWORD: MongoDB Atlas Password
+
 DB_HOST: Host of the DB. `localhost` by default in local dev
 DB_PORT: DB Connection Port. `27017` by default
 DB_NAME: DB Name we are connecting to. QuestionDB by default
 DB_USER: DB Username credentials. Empty by default (for local dev)
 DB_PASSWORD: DB Password credentials. Empty by default (for local dev)
-
-ATLAS_PASSWORD: MongoDB Atlas Password
 
 MONGODB_USER: Docker Compose MongoDB Username Credential
 MONGODB_PASSWORD: Docker Compose MongoDB Password

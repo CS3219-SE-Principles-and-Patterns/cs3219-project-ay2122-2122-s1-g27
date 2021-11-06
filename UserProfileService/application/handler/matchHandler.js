@@ -5,6 +5,7 @@ const _ = require('lodash')
 const ormMatch = require('../orm/match-orm')
 const { MATCH_TIMEOUT_MS, CREATE_ROOM_ENDPOINT } = require('../util/constants')
 
+console.log('Create Room Endpoint', CREATE_ROOM_ENDPOINT)
 const checkMatchStatus = async (socket, username) => {
   const userMatch = await ormMatch.FindUserMatched(username)
   // if null: have been matched by someone else and already removed. Already received success message
