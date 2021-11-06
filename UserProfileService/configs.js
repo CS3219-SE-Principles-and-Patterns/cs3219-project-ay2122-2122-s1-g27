@@ -40,6 +40,7 @@ const configs = {
     db: {
       URI: `mongodb+srv://cs3219:${ATLAS_PASSWORD}@cluster0.afp4g.mongodb.net/UserProfileDB?retryWrites=true&w=majority`,
     },
+    questionServiceURL: QUESTION_SERVICE_LOCAL_URL,
   },
 }
 
