@@ -1,4 +1,4 @@
-# CommunicationsService
+# CollabSocketService 
 
 This service purpose is to maintain collaborative editing of a Code Editor.
 
@@ -39,5 +39,5 @@ QUESTION_SERVICE_REMOTE_URL: URL of the deployed QuestionService on remote
 
 **Relevant Commands**
 
-- `docker build -t cs:latest .`: (Re)Build Image Locally
-- `docker run -dp 7000:7000 cs`: Run standalone Docker Image (Typically in production mode)
+- `docker build -t css:latest .`: (Re)Build Image Locally
+- `docker run -dp 5005:5005 css`: Run standalone Docker Image (Typically in production mode)

@@ -6,8 +6,9 @@ const { PORT, QUESTION_SERVICE_LOCAL_URL, QUESTION_SERVICE_REMOTE_URL } = proces
 console.log('Printing Environment Variables')
 console.log('ENV', ENV)
 console.log('PORT', PORT)
-console.log(`QUUESTION_SERVICE_LOCAL_URLES`, QUESTION_SERVICE_LOCAL_URL)
+console.log(`QUESTION_SERVICE_LOCAL_URL`, QUESTION_SERVICE_LOCAL_URL)
 console.log(`QUESTION_SERVICE_REMOTE_URL`, QUESTION_SERVICE_REMOTE_URL)
+
 const configs = {
   development: {
     PORT: PORT || 5005,
