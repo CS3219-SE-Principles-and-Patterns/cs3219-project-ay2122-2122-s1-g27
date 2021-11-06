@@ -2,8 +2,11 @@ const express = require('express')
 const cors = require('cors')
 const { createServer } = require('http')
 const { Server } = require('socket.io')
+const jwt = require('jsonwebtoken')
 
 const { SocketController } = require('../controller/socketController')
+
+const { JWT_SECRET_TOKEN } = process.env
 
 const app = express()
 app.use(express.urlencoded({ extended: true }))
@@ -16,6 +19,36 @@ const io = new Server(httpServer, {
   cors: {
     origin: '*',
   },
+})
+
+/**
+ * Checks if connection contains JWT authorization
+ * attaches username to socket for subsequent messages
+ * @param {string} header
+ * @param {Socket} socket
+ * @returns
+ */
+const isValidJwt = (header, socket) => {
+  try {
+    const jwtToken = header.split(' ')[1]
+    return jwt.verify(jwtToken, JWT_SECRET_TOKEN, (err, jwtData) => {
+      if (err) return false
+      const { username } = jwtData
+      // eslint-disable-next-line no-param-reassign
+      socket.username = username
+      return true
+    })
+  } catch (err) {
+    return false
+  }
+}
+
+io.use((socket, next) => {
+  const header = socket.handshake.headers.authorization
+  if (isValidJwt(header, socket)) {
+    return next()
+  }
+  return next(new Error('authentication error'))
 })
 
 io.on('connection', (socket) => SocketController(socket, io))
