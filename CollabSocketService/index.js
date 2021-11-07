@@ -1,19 +1,39 @@
 const express = require('express')
 
-const app = express()
 const http = require('http')
+const { Server } = require('socket.io')
+const fetch = require('cross-fetch')
+const cors = require('cors')
+const { PORT, questionServiceURL } = require('./configs')
 
+// express app
+const app = express()
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
+app.use(cors())
+app.options('*', cors())
+
+const router = express.Router()
+router.get('/', (_, res) => {
+  console.log('Req from root CollabSocketService')
+  res.send('Hello World from CollabSocketService')
+})
+
+// routes must start with /api/collab
+app.use('/api/collab', router).all((_, res) => {
+  res.setHeader('content-type', 'application/json')
+  res.setHeader('Access-Control-Allow-Origin', '*')
+})
+
+// socket io wrapper
 const server = http.createServer(app)
-const io = require('socket.io')(server, {
+const io = new Server(server, {
   cors: {
     origin: '*',
   },
 })
-const fetch = require('cross-fetch')
 
-const { PORT, questionServiceURL } = require('./configs')
-
-io.on('connection', (socket) => {
+io.of('/api/collab').on('connection', (socket) => {
   const header = socket.handshake.headers.authorization
   const jwt = header.split(' ')[1]
 

@@ -36,7 +36,7 @@ class CollaborationPage extends Component {
             code: 'x = "Hello World";',
             lang: 'javascript',
             socket: sessionStorage.getItem('jwt')
-                ? io('http://localhost:5005', {
+                ? io('http://localhost:5005/api/collab', {
                       extraHeaders: {
                           Authorization:
                               'Bearer ' + sessionStorage.getItem('jwt'),
