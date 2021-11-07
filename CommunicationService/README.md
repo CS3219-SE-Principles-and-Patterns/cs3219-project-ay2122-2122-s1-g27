@@ -35,5 +35,5 @@ JWT_SECRET_TOKEN: Secret Key to generate JWT
 ## DevOps / Containerization / Orchestration
 
 **Relevant Commands**
-- `docker build -t cs:latest .`: (Re)Build Image Locally
-- `docker run -dp 7000:7000 cs`: Run standalone Docker Image (Typically in production mode)
+- `docker build -t peerprep/comm:latest .`: (Re)Build Image Locally
+- `docker run -dp 7000:7000 --platform linux/amd64 peerprep/comm:latest`: Run standalone Docker Image (Typically in production mode)
