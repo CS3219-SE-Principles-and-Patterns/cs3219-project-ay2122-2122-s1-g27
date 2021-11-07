@@ -44,7 +44,7 @@ class CollaborationPage extends Component {
                   })
                 : null,
             chatSocket: sessionStorage.getItem('jwt')
-                ? io('http://localhost:7000', {
+                ? io('http://localhost:7000/api/comm', {
                       extraHeaders: {
                           Authorization:
                               'Bearer ' + sessionStorage.getItem('jwt'),

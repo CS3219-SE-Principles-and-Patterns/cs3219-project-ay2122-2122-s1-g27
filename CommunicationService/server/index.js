@@ -8,11 +8,13 @@ const { SocketController } = require('../controller/socketController')
 
 const { JWT_SECRET_TOKEN } = process.env
 
+// express app
 const app = express()
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(cors()) // config cors so that front-end can use
 app.options('*', cors())
+require('../controller/routeController')(app)
 
 const httpServer = createServer(app)
 const io = new Server(httpServer, {
@@ -43,7 +45,7 @@ const isValidJwt = (header, socket) => {
   }
 }
 
-io.use((socket, next) => {
+io.of('/api/comm').use((socket, next) => {
   const header = socket.handshake.headers.authorization
   if (isValidJwt(header, socket)) {
     return next()
@@ -51,6 +53,6 @@ io.use((socket, next) => {
   return next(new Error('authentication error'))
 })
 
-io.on('connection', (socket) => SocketController(socket, io))
+io.of('/api/comm').on('connection', (socket) => SocketController(socket, io))
 
 module.exports = httpServer
