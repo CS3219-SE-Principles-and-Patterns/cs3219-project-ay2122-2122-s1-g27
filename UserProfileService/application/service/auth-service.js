@@ -8,7 +8,7 @@ const { Response, InternalServerError, MissingArgsError } = require('./common')
 
 const { JWT_SECRET_TOKEN, REFRESH_TOKEN } = process.env
 
-const refreshTokens = [] // TODO: change to Redis/Cache
+// const refreshTokens = [] // TODO: change to Redis/Cache
 
 const generateAccessToken = (username) => jwt.sign({ username }, JWT_SECRET_TOKEN) // no expiry for now
 
@@ -37,7 +37,7 @@ exports.LoginUser = async (req, res) => {
           // verified, create JWT
           const accessToken = generateAccessToken(username)
           const refreshToken = jwt.sign(username, REFRESH_TOKEN)
-          refreshTokens.push(refreshToken)
+          // refreshTokens.push(refreshToken)
           const resp = Response(STATUS_SUCCESS, 'Credentials Confirmed', {
             accessToken,
             refreshToken,
@@ -60,11 +60,11 @@ exports.LoginUser = async (req, res) => {
 exports.RefreshToken = async (req, res) => {
   const refreshToken = req.body.token
   if (refreshToken == null)
-    return res.sendStatus(401).json(Response(STATUS_FAIL, 'Token not present in Body'))
-  if (!refreshTokens.includes(refreshToken))
-    return res.sendStatus(403).json(Response(STATUS_FAIL, 'Access Denied'))
+    return res.status(401).json(Response(STATUS_FAIL, 'Token not present in Body'))
+  // if (!refreshTokens.includes(refreshToken))
+  //   return res.status(403).json(Response(STATUS_FAIL, 'Access Denied'))
   return jwt.verify(refreshToken, REFRESH_TOKEN, (err, user) => {
-    if (err) return res.sendStatus(403).json(Response(STATUS_FAIL, 'Refresh Token Invalid'))
+    if (err) return res.status(403).json(Response(STATUS_FAIL, 'Refresh Token Invalid'))
     const accessToken = generateAccessToken(user.username)
     return res.json(Response(STATUS_SUCCESS, 'Refresh Token Success', { accessToken }))
   })

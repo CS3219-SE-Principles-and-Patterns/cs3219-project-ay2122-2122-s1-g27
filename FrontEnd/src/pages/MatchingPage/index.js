@@ -79,7 +79,7 @@ function MatchingPage() {
 
     useEffect(() => {
         if (!matchingSocket) {
-            const socket = io('http://localhost:8080', {
+            const socket = io('http://localhost:8080/api/user', {
                 extraHeaders: {
                     Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
                 },
