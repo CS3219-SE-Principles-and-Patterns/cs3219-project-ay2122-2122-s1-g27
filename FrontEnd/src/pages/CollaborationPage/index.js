@@ -280,7 +280,7 @@ function QuestionPanel(props) {
         };
 
         return fetch(
-            'http://localhost:8081/question/room/' + props.roomId,
+            'http://localhost:8081/api/question/room/' + props.roomId,
             requestOptions
         )
             .then((data) => data.json())

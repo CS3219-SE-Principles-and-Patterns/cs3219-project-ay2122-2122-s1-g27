@@ -42,7 +42,7 @@ function MatchingPage() {
             },
         };
 
-        return fetch('http://localhost:8081/question/metadata', requestOptions)
+        return fetch('http://localhost:8081/api/question/questions/metadata', requestOptions)
             .then((data) => data.json())
             .then((metadata) => {
                 setTopics(metadata.TOPICS);
@@ -64,7 +64,7 @@ function MatchingPage() {
         };
 
         return fetch(
-            'http://localhost:8081/question/room/username/' +
+            'http://localhost:8081/api/question/room/username/' +
                 sessionStorage.getItem('user'),
             requestOptions
         ).then((data) => {

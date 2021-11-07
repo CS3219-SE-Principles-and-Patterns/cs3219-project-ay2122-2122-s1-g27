@@ -18,7 +18,7 @@ exports.VerifyFailure = (res, expectedCode) => {
 }
 
 exports.getQuestionFindResult = async (questionId) => {
-  const questionFindUrl = `/question/id/${questionId}`
+  const questionFindUrl = `/api/question/questions/id/${questionId}`
   const getAllQuestionsResult = await chai.request(app).get(questionFindUrl)
   return getAllQuestionsResult
 }

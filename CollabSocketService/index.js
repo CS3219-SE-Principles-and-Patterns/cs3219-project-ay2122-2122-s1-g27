@@ -76,7 +76,7 @@ io.of('/api/collab').on('connection', (socket) => {
           },
         }
 
-        fetch(`${questionServiceURL}/question/room/${room}`, requestOptions).then(() =>
+        fetch(`${questionServiceURL}/api/question/room/${room}`, requestOptions).then(() =>
           console.log(`destroyed room:${room}`)
         )
       }
