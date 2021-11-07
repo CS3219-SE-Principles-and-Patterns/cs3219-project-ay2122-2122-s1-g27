@@ -32,7 +32,6 @@ const io = new Server(server, {
     origin: '*',
   },
 })
-
 io.of('/api/collab').on('connection', (socket) => {
   const header = socket.handshake.headers.authorization
   const jwt = header.split(' ')[1]
@@ -61,10 +60,8 @@ io.of('/api/collab').on('connection', (socket) => {
     // destroy room if noone else is present
     // eslint-disable-next-line no-restricted-syntax
     for (const room of rooms) {
-      const numClientsInRoom = io.sockets.adapter.rooms.get(room).size
-
-      console.log(`number of users in ${room} is: ${numClientsInRoom}`)
-      if (numClientsInRoom === 1) {
+      const numClientsInRoom = io.of('/api/collab').adapter.rooms.get(room).size
+      if (numClientsInRoom <= 1) {
         // send API call to destroy room
         console.log('going to destroy room now')
 

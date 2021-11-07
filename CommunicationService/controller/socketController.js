@@ -12,7 +12,9 @@ exports.SocketController = (socket, io) => {
     console.log(`${username} joins room ${String(data.room)}`)
 
     socket.join(data.room)
-    io.in(data.room).emit('entryMessage', `${String(username)} connected to the chat`)
+    io.of('/api/comm')
+      .in(data.room)
+      .emit('entryMessage', `${String(username)} connected to the chat`)
   })
 
   // user interaction via text-chat
