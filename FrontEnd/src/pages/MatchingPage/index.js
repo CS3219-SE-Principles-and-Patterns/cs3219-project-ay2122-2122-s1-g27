@@ -14,6 +14,8 @@ import { styled } from '@mui/system';
 import DoneIcon from '@mui/icons-material/Done';
 import { AppContext } from '../../utils/AppContext';
 import { Redirect } from 'react-router-dom';
+import MatchingModal from './MatchingModal';
+import io from 'socket.io-client';
 
 const TopicsContainer = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('md')]: {
@@ -25,10 +27,10 @@ const TopicsContainer = styled('div')(({ theme }) => ({
 }));
 
 function MatchingPage() {
-    const { jwt } = useContext(AppContext);
-
     const [topics, setTopics] = useState(null);
     const [difficulties, setDifficulties] = useState(null);
+    const [redirectRoomId, setRedirectRoomId] = useState(null);
+    const [matchingSocket, setMatchingSocket] = useState(null);
 
     // instantiate topics and difficulties
     useEffect(() => {
@@ -36,11 +38,11 @@ function MatchingPage() {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + jwt,
+                Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
             },
         };
 
-        return fetch('http://localhost:8081/question/metadata', requestOptions)
+        return fetch('http://localhost:8081/api/question/questions/metadata', requestOptions)
             .then((data) => data.json())
             .then((metadata) => {
                 setTopics(metadata.TOPICS);
@@ -48,9 +50,57 @@ function MatchingPage() {
             });
     }, []);
 
+    useEffect(() => {
+        if (!sessionStorage.getItem('user')) {
+            return;
+        }
+
+        const requestOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
+            },
+        };
+
+        return fetch(
+            'http://localhost:8081/api/question/room/username/' +
+                sessionStorage.getItem('user'),
+            requestOptions
+        ).then((data) => {
+            if (data.status === 200) {
+                data.json().then((data) => {
+                    console.log(data);
+                    setRedirectRoomId(data.data.roomId);
+                });
+            }
+        });
+    }, []);
+
+    useEffect(() => {
+        if (!matchingSocket) {
+            const socket = io('http://localhost:8080/api/user', {
+                extraHeaders: {
+                    Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
+                },
+            });
+            setMatchingSocket(socket);
+        }
+    }, []);
+
     const [selectedTopics, setSelectedTopics] = useState([]);
     const [selectedDifficulties, setSelectedDifficulties] = useState([]);
+    const [shouldOpenModal, setShouldOpenModal] = useState(false);
 
+    // Web socket functions
+
+    const triggerMatchRequest = () => {
+        setShouldOpenModal(true);
+
+        matchingSocket.emit('match', selectedTopics, selectedDifficulties);
+    };
+
+    // State management functions
     const handleSelectedTopic = (topicName) => {
         if (!selectedTopics.includes(topicName)) {
             setSelectedTopics([...selectedTopics, topicName]);
@@ -103,11 +153,30 @@ function MatchingPage() {
         );
     }
 
-    if (!jwt) {
-        return <Redirect to={{ pathname: '/about' }} />;
+    if (!sessionStorage.getItem('jwt')) {
+        return <Redirect to={{ pathname: '/login' }} />;
+    } else if (redirectRoomId) {
+        return (
+            <Redirect
+                to={{
+                    pathname: `/collaborate/${redirectRoomId}`,
+                    state: {
+                        roomId: redirectRoomId,
+                    },
+                }}
+            />
+        );
     } else {
         return (
             <Grid container justifyContent="center">
+                {shouldOpenModal ? (
+                    <MatchingModal
+                        timeLeft={30}
+                        shouldOpen={shouldOpenModal}
+                        socket={matchingSocket}
+                        setShouldOpenModal={setShouldOpenModal}
+                    />
+                ) : null}
                 <Grid item xs={12} sx={{ padding: '25px' }}>
                     <Typography
                         align="center"
@@ -128,6 +197,7 @@ function MatchingPage() {
                                     clickable
                                     size="medium"
                                     sx={{
+                                        fontSize: '15px',
                                         fontWeight: 'bold',
                                         margin: '20px',
                                         marginLeft: '7px',
@@ -181,6 +251,7 @@ function MatchingPage() {
                                     <Chip
                                         key={difficulty + idx}
                                         sx={{
+                                            fontSize: '15px',
                                             fontWeight: 'bold',
                                             margin: '4%',
                                             textShadow: '1px 1px #000000',
@@ -253,6 +324,7 @@ function MatchingPage() {
                     >
                         <Button
                             variant="contained"
+                            onClick={triggerMatchRequest}
                             disabled={
                                 selectedTopics.length === 0 ||
                                 selectedDifficulties.length === 0

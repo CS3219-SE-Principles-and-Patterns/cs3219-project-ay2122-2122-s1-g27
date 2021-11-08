@@ -1,5 +1,5 @@
 const chai = require('chai')
-const { STATUS_SUCCESS, STATUS_FAIL } = require('../util/enums')
+const { STATUS_SUCCESS, STATUS_FAIL } = require('../application/service/common')
 const app = require('../server')
 
 const dummyQuestionData = require('../data/dummy-questions.json')
@@ -18,7 +18,7 @@ exports.VerifyFailure = (res, expectedCode) => {
 }
 
 exports.getQuestionFindResult = async (questionId) => {
-  const questionFindUrl = `/question/id/${questionId}`
+  const questionFindUrl = `/api/question/questions/id/${questionId}`
   const getAllQuestionsResult = await chai.request(app).get(questionFindUrl)
   return getAllQuestionsResult
 }

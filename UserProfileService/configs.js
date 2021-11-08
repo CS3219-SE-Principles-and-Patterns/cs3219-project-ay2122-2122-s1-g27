@@ -10,6 +10,7 @@ const {
   NODE_DOCKER_PORT,
   ATLAS_PASSWORD,
   QUESTION_SERVICE_LOCAL_URL,
+  QUESTION_SERVICE_DEPLOYED_URL,
 } = process.env
 
 console.log('Printing ENV variables')
@@ -21,6 +22,7 @@ console.log(`Local DB_PORT`, DB_PORT)
 console.log(`Local DB_NAME`, DB_NAME)
 console.log(`Local NODE_DOCKER_PORT`, NODE_DOCKER_PORT)
 console.log(`Local QuestionService URL`, QUESTION_SERVICE_LOCAL_URL)
+console.log(`Deployed QuestionService URL`, QUESTION_SERVICE_DEPLOYED_URL)
 
 const configs = {
   development: {
@@ -40,6 +42,7 @@ const configs = {
     db: {
       URI: `mongodb+srv://cs3219:${ATLAS_PASSWORD}@cluster0.afp4g.mongodb.net/UserProfileDB?retryWrites=true&w=majority`,
     },
+    questionServiceURL: QUESTION_SERVICE_DEPLOYED_URL,
   },
 }
 

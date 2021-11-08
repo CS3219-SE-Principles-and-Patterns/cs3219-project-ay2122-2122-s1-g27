@@ -4,6 +4,6 @@ ENV ENV=production
 
 WORKDIR /app
 COPY . .
-EXPOSE 8080
+EXPOSE 7000
 RUN yarn install
 CMD yarn start

@@ -20,14 +20,14 @@ To start, we recommend installing the `ESLint`(dbaeumer.vscode-eslint) and `Pret
 - `yarn lint --fix`: Use ESLint to auto-fix any errors highlighted
 - `yarn test`: Run Unit Tests
 
-## DevOps
-
-This app components (MongoDB and NodeJS) is containerized using `Docker-Compose`.
+## DevOps / Containerization / Orchestration
 
 **Relevant Commands**
 
-- `docker-compose build`: (Re)Build Docker Image
-- `docker-compose up -d`: Run composed Docker Image
+- `docker build -t peerprep/user:latest .`: (Re)Build Image Locally
+- `docker run -dp 8080:8080 QUESTION_SERVICE_DEPLOYED_URL=<QUESTION_SERVICE_URL> --platform linux/amd64 peerprep/user:latest`: Run standalone Docker Image (Typically in production mode). If `QuestionService` is started locally, you may use `docker run -dp 8080:8080 --env QUESTION_SERVICE_DEPLOYED_URL=http://localhost:8081 --platform linux/amd64 peerprep/user:latest`
+- `docker-compose build`: (Re)Build Docker Compose Application. Typically for local usage (as it attached a MongoDB Cluster)
+- `docker-compose up -d`: Run composed Docker application in detached mode
 
 ## `.env` File
 
@@ -36,24 +36,23 @@ This app components (MongoDB and NodeJS) is containerized using `Docker-Compose`
 Here are the variables below and their explanations
 
 ```
+ENV: `development` for local usage/dev, `production` for production use
 JWT_SECRET_TOKEN: Secret Key to generate JWT
 REFRESH_TOKEN: Secret Key to regenerate JWT Auth
+ATLAS_PASSWORD: MongoDB Atlas Password
 
-ENV: `development` for local usage/dev, `production` for production use
 DB_HOST: Host of the DB. `localhost` by default in local dev
 DB_PORT: DB Connection Port. `27017` by default
 DB_NAME: DB Name we are connecting to. UserProfileDB by default
 DB_USER: DB Username credentials. Empty by default (for local dev)
 DB_PASSWORD: DB Password credentials. Empty by default (for local dev)
 
-ATLAS_PASSWORD: MongoDB Atlas Password
-
 MONGODB_USER: Docker Compose MongoDB Username Credential
 MONGODB_PASSWORD: Docker Compose MongoDB Password
 MONGODB_LOCAL_PORT: Docker Compose MongoDB Connection Port
 
 NODE_LOCAL_PORT: Port to use to connect to our app. 8080 by default
-NODE_DOCKER_PORT: Port to use in our **Docker Container**. Also 8080 by default
+NODE_DOCKER_PORT: Port to use in our **Docker Container/Node.js Server App**. Also 8080 by default
 
 QUESTION_SERVICE_LOCAL_URL: URL where the local QuestionService is hosted.
 ```

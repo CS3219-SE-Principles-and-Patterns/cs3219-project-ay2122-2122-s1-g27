@@ -1,5 +1,5 @@
-const { METADATA } = require('../constants/constants')
-const { Response, wrapResult } = require('../util/response')
+const { Response, WrapResult } = require('./common')
+const { METADATA } = require('../../data/metadata')
 const ormQuestion = require('../orm/question-orm')
 
 /**
@@ -12,7 +12,7 @@ const FindQuestionById = async (req, res) => {
   try {
     const questionID = req.params.id
     const respOrm = await ormQuestion.FindQuestion(questionID)
-    return await wrapResult(res, 'Cannot Find Question', 'Found Question', respOrm)
+    return await WrapResult(res, 'Cannot Find Question', 'Found Question', respOrm)
   } catch (err) {
     console.log('err: ', err)
     const resp = Response('Failure', 'DB failed')
@@ -23,7 +23,7 @@ const FindQuestionById = async (req, res) => {
 const FindAllQuestions = async (_, res) => {
   try {
     const respOrm = await ormQuestion.FindAllQuestions()
-    return await wrapResult(res, 'Cannot Find All Questions', 'Found All Questions', respOrm)
+    return await WrapResult(res, 'Cannot Find All Questions', 'Found All Questions', respOrm)
   } catch (err) {
     console.log('err: ', err)
     const resp = Response('Failure', 'DB failed')

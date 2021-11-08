@@ -10,3 +10,4 @@
 - QuestionService: Back-End Service for Question Storage, Handling
 - UserProfileService: Back-End Service for handling User Actions e.g. Registration, Login, Initiate Match
 - CommunicationService: Back-End Service for handling Communications (Text, Audio, Video)
+- CollabSocketService: Service to handle code editing collaboration

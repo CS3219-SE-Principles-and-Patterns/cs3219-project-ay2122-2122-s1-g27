@@ -1,7 +1,6 @@
 const ormMatch = require('../orm/match-orm')
-const { Response } = require('../../util/response')
-const { STATUS_SUCCESS, STATUS_FAIL } = require('../../util/enums')
-const { InternalServerError, MissingArgsError } = require('./common')
+const { STATUS_SUCCESS, STATUS_FAIL } = require('../util/enums')
+const { Response, InternalServerError, MissingArgsError } = require('./common')
 
 // WARNING: This service is not supposed to be used in production, just for testing/debugging purposes!
 

@@ -49,20 +49,20 @@ describe('Endpoint Testing', () => {
 
   // test server working
   it('GET root `/`', async () => {
-    const res = await chai.request(app).get('/')
+    const res = await chai.request(app).get('/api/question')
     res.should.have.status(200)
     res.body.should.be.a('object')
   })
 
-  it('Able to get all questions via GET /question/all', async () => {
-    const getAllQuestionsResultEmpty = await chai.request(app).get('/question/all')
+  it('Able to get all questions via GET /questions/all', async () => {
+    const getAllQuestionsResultEmpty = await chai.request(app).get('/api/question/questions/all')
     VerifySuccess(getAllQuestionsResultEmpty, 200)
     getAllQuestionsResultEmpty.body.should.be.a('object')
     getAllQuestionsResultEmpty.body.data.should.be.a('array')
     getAllQuestionsResultEmpty.body.data.length.should.eql(0)
 
     loadDummyQuestionData()
-    const getAllQuestionsResult = await chai.request(app).get('/question/all')
+    const getAllQuestionsResult = await chai.request(app).get('/api/question/questions/all')
     VerifySuccess(getAllQuestionsResult, 200)
 
     getAllQuestionsResult.body.should.be.a('object')
@@ -81,8 +81,8 @@ describe('Endpoint Testing', () => {
     resultDataElement.should.have.property('constraints')
   })
 
-  it('Able to get question metadata via GET /question/metadata', async () => {
-    const getMetadataResult = await chai.request(app).get('/question/metadata')
+  it('Able to get question metadata via GET /questions/metadata', async () => {
+    const getMetadataResult = await chai.request(app).get('/api/question/questions/metadata')
 
     console.log(getMetadataResult)
     getMetadataResult.should.have.status(200)
@@ -108,7 +108,7 @@ describe('Endpoint Testing', () => {
     getMetadataResultBody.TOPICS.should.have.property('HEAPS')
   })
 
-  it('Able to get specific question via GET /question/id/:id', async () => {
+  it('Able to get specific question via GET /questions/id/:id', async () => {
     const question1ResultBeforePopulate = await getQuestionFindResult(1)
     VerifyFailure(question1ResultBeforePopulate, 404)
 
@@ -181,7 +181,7 @@ describe('Endpoint Testing', () => {
     }
     const getRoomIdResult = await chai
       .request(app)
-      .post('/question/room')
+      .post('/api/question/room')
       .set('content-type', 'application/json')
       .send(matchRequestData)
 
@@ -198,7 +198,7 @@ describe('Endpoint Testing', () => {
     }
     const invalidMatchRequestTopicsDataResult = await chai
       .request(app)
-      .post('/question/room')
+      .post('/api/question/room')
       .set('content-type', 'application/json')
       .send(invalidMatchRequestTopicsData)
 
@@ -215,7 +215,7 @@ describe('Endpoint Testing', () => {
     }
     const invalidMatchRequestDifficultiesDataResult = await chai
       .request(app)
-      .post('/question/room')
+      .post('/api/question/room')
       .set('content-type', 'application/json')
       .send(invalidMatchRequestDifficultiesData)
 
@@ -232,7 +232,7 @@ describe('Endpoint Testing', () => {
     }
     const emptyMatchRequestTopicsDataResult = await chai
       .request(app)
-      .post('/question/room')
+      .post('/api/question/room')
       .set('content-type', 'application/json')
       .send(emptyMatchRequestTopicsData)
 
@@ -249,7 +249,7 @@ describe('Endpoint Testing', () => {
     }
     const emptyMatchRequestDifficultiesDataResult = await chai
       .request(app)
-      .post('/question/room')
+      .post('/api/question/room')
       .set('content-type', 'application/json')
       .send(emptyMatchRequestDifficultiesData)
 
@@ -258,7 +258,7 @@ describe('Endpoint Testing', () => {
     checkIfCreateRoomFail(emptyDifficultiesBody)
   })
 
-  it('Able to obtain question from room-question mapping given roomId via GET /question/room', async () => {
+  it('Able to obtain question from room-question mapping given roomId via GET /room', async () => {
     loadDummyQuestionData()
 
     // creation of room
@@ -270,7 +270,7 @@ describe('Endpoint Testing', () => {
     }
     const getRoomIdResult = await chai
       .request(app)
-      .post('/question/room')
+      .post('/api/question/room')
       .set('content-type', 'application/json')
       .send(matchRequestData)
 
@@ -282,7 +282,7 @@ describe('Endpoint Testing', () => {
     const roomId = getRoomIdResultBody.data
     const getRoomMatchedQuestionResult = await chai
       .request(app)
-      .get(`/question/room/${roomId}`)
+      .get(`/api/question/room/${roomId}`)
       .set('Authorization', Stubs.firebreathingeugeneJWT)
 
     VerifySuccess(getRoomMatchedQuestionResult, 200)
@@ -293,20 +293,20 @@ describe('Endpoint Testing', () => {
     getRoomMatchedQuestionBody.data.question.id.should.be.oneOf([1, 2, 5, 7, 9])
 
     // Rejected if auth token not given
-    const noAuthMatchedQuestionResult = await chai.request(app).get(`/question/room/${roomId}`)
+    const noAuthMatchedQuestionResult = await chai.request(app).get(`/api/question/room/${roomId}`)
     VerifyFailure(noAuthMatchedQuestionResult, 401)
 
     // Rejected if its another user
     const unauthorizedUserAttemptAccess = await chai
       .request(app)
-      .get(`/question/room/${roomId}`)
+      .get(`/api/question/room/${roomId}`)
       .set('Authorization', Stubs.otherUsernameJWT)
     VerifyFailure(unauthorizedUserAttemptAccess, 403)
 
     // try to access via an invalid room id
     const invalidRoomMatchedQuestionResult = await chai
       .request(app)
-      .get(`/question/room/${roomId}extraCodeHere`)
+      .get(`/api/question/room/${roomId}extraCodeHere`)
       .set('Authorization', Stubs.firebreathingeugeneJWT)
 
     VerifyFailure(invalidRoomMatchedQuestionResult, 404)
@@ -317,7 +317,7 @@ describe('Endpoint Testing', () => {
     invalidRoomMatchedQuestionBody.data.should.have.property('err')
   })
 
-  it('Able to delete room-question mapping given roomId via DELETE /question/room:roomId', async () => {
+  it('Able to delete room-question mapping given roomId via DELETE /room:roomId', async () => {
     loadDummyQuestionData()
 
     // creation of room
@@ -329,7 +329,7 @@ describe('Endpoint Testing', () => {
     }
     const getRoomIdResult = await chai
       .request(app)
-      .post('/question/room')
+      .post('/api/question/room')
       .set('content-type', 'application/json')
       .send(matchRequestData)
 
@@ -341,7 +341,7 @@ describe('Endpoint Testing', () => {
     const roomId = getRoomIdResultBody.data
     const getRoomMatchedQuestionResult = await chai
       .request(app)
-      .delete(`/question/room/${roomId}`)
+      .delete(`/api/question/room/${roomId}`)
       .set('Authorization', Stubs.firebreathingeugeneJWT)
 
     VerifySuccess(getRoomMatchedQuestionResult, 200)
@@ -355,7 +355,7 @@ describe('Endpoint Testing', () => {
     // invalid: should not be able to delete same mapping again
     const getRoomMatchedQuestionResultAgain = await chai
       .request(app)
-      .delete(`/question/room/${roomId}`)
+      .delete(`/api/question/room/${roomId}`)
       .set('Authorization', Stubs.firebreathingeugeneJWT)
 
     VerifySuccess(getRoomMatchedQuestionResult, 200)
@@ -366,7 +366,7 @@ describe('Endpoint Testing', () => {
     getRoomMatchedQuestionBodyAgain.data.should.have.property('err')
   })
 
-  it('Able to obtain roomId from room-question mapping given either username via GET /question/room/username/:username', async () => {
+  it('Able to obtain roomId from room-question mapping given either username via GET /room/username/:username', async () => {
     loadDummyQuestionData()
 
     const username1 = 'firebreathingeugene'
@@ -383,7 +383,7 @@ describe('Endpoint Testing', () => {
     }
     const getRoomIdResult = await chai
       .request(app)
-      .post('/question/room')
+      .post('/api/question/room')
       .set('content-type', 'application/json')
       .send(matchRequestData)
 
@@ -396,7 +396,7 @@ describe('Endpoint Testing', () => {
 
     const getRoomMatchedQuestionResult1 = await chai
       .request(app)
-      .get(`/question/room/username/${username1}`)
+      .get(`/api/question/room/username/${username1}`)
       .set('Authorization', Stubs.firebreathingeugeneJWT)
 
     VerifySuccess(getRoomMatchedQuestionResult1, 200)
@@ -408,7 +408,7 @@ describe('Endpoint Testing', () => {
 
     const getRoomMatchedQuestionResult2 = await chai
       .request(app)
-      .get(`/question/room/username/${username2}`)
+      .get(`/api/question/room/username/${username2}`)
       .set('Authorization', Stubs.waterbreathingeugeneJWT)
 
     VerifySuccess(getRoomMatchedQuestionResult2, 200)
@@ -421,7 +421,7 @@ describe('Endpoint Testing', () => {
     // try to access via an invalid room id (e.g. hacker)
     const invalidRoomMatchedQuestionResult = await chai
       .request(app)
-      .get(`/question/room/username/${neverBeforeUsedUsername}`)
+      .get(`/api/question/room/username/${neverBeforeUsedUsername}`)
       .set('Authorization', Stubs.otherUsernameJWT)
 
     VerifyFailure(invalidRoomMatchedQuestionResult, 403)
@@ -440,7 +440,7 @@ describe('Endpoint Testing', () => {
     }
     const getRoomIdResult2 = await chai
       .request(app)
-      .post('/question/room')
+      .post('/api/question/room')
       .set('content-type', 'application/json')
       .send(matchRequestData2)
 
@@ -457,7 +457,7 @@ describe('Endpoint Testing', () => {
 
     const getRoomMatchedQuestionResult3 = await chai
       .request(app)
-      .get(`/question/room/username/${username2}`)
+      .get(`/api/question/room/username/${username2}`)
       .set('Authorization', Stubs.waterbreathingeugeneJWT)
 
     VerifySuccess(getRoomMatchedQuestionResult3, 200)
@@ -469,7 +469,7 @@ describe('Endpoint Testing', () => {
 
     const getRoomMatchedQuestionResult4 = await chai
       .request(app)
-      .get(`/question/room/username/${username3}`)
+      .get(`/api/question/room/username/${username3}`)
       .set('Authorization', Stubs.airbreathingeugeneJWT)
 
     console.log(getRoomMatchedQuestionResult4)

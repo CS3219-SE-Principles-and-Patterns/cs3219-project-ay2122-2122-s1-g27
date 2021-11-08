@@ -1,8 +1,7 @@
 require('dotenv').config()
 const jwt = require('jsonwebtoken')
-
-const { STATUS_FAIL } = require('../util/enums')
-const { Response } = require('../application/util/response')
+const { Response } = require('../application/service/common')
+const { STATUS_FAIL } = require('../application/service/common')
 
 const { JWT_SECRET_TOKEN } = process.env
 

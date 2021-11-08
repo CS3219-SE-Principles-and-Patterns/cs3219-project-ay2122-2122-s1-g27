@@ -9,6 +9,4 @@ const TOPICS = {
   HEAPS: 'Heaps',
 }
 
-const METADATA = { DIFFICULTIES, TOPICS }
-
-module.exports = { METADATA, DIFFICULTIES, TOPICS }
+exports.METADATA = { DIFFICULTIES, TOPICS }
