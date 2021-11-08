@@ -48,7 +48,7 @@ const isValidJwt = (header, socket) => {
   }
 }
 
-io.use((socket, next) => {
+io.of('/api/user').use((socket, next) => {
   const header = socket.handshake.headers.authorization
   if (isValidJwt(header, socket)) {
     return next()
@@ -56,7 +56,7 @@ io.use((socket, next) => {
   return next(new Error('authentication error'))
 })
 // Event Fired upon a new connection
-io.on('connection', (socket) => socketController(socket, io))
+io.of('/api/user').on('connection', (socket) => socketController(socket, io))
 
 // TODO: Define IO middleware by io.use [See: https://socket.io/docs/v4/middlewares/]
 

@@ -112,7 +112,7 @@ const handlePossibleMatches = async (
         console.error(`Deleting User-${matchedUsername} encountered error`)
       }
       socket.emit('matchSuccess', roomID, matchedUsername) // emit to initator
-      io.to(matchedSocketID).emit('matchSuccess', roomID, matcherUsername) // emit to matched
+      io.of('/api/user').to(matchedSocketID).emit('matchSuccess', roomID, matcherUsername) // emit to matched
       successful = true
       break
     }

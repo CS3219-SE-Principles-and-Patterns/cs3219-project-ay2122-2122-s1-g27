@@ -24,8 +24,8 @@ To start, we recommend installing the `ESLint`(dbaeumer.vscode-eslint) and `Pret
 
 **Relevant Commands**
 
-- `docker build -t ups:latest .`: (Re)Build Image Locally
-- `docker run -dp 8080:8080 --env QUESTION_SERVICE_LOCAL_URL=$URL ups`: Run standalone Docker Image (Typically in production mode)
+- `docker build -t peerprep/user:latest .`: (Re)Build Image Locally
+- `docker run -dp 8080:8080 QUESTION_SERVICE_DEPLOYED_URL=<QUESTION_SERVICE_URL> --platform linux/amd64 peerprep/user:latest`: Run standalone Docker Image (Typically in production mode). If `QuestionService` is started locally, you may use `docker run -dp 8080:8080 --env QUESTION_SERVICE_DEPLOYED_URL=http://localhost:8081 --platform linux/amd64 peerprep/user:latest`
 - `docker-compose build`: (Re)Build Docker Compose Application. Typically for local usage (as it attached a MongoDB Cluster)
 - `docker-compose up -d`: Run composed Docker application in detached mode
 

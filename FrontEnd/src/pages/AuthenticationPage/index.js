@@ -101,7 +101,7 @@ function AuthenticationPage() {
             }),
         };
 
-        return fetch('http://localhost:8080/user/create', requestOptions).then(
+        return fetch('http://localhost:8080/api/user/create', requestOptions).then(
             (data) => {
                 if (data.status === 409 || data.status === 201) {
                     // already exists / successfully created, so can login
@@ -121,7 +121,7 @@ function AuthenticationPage() {
             }),
         };
 
-        return fetch('http://localhost:8080/user/login', requestOptions).then(
+        return fetch('http://localhost:8080/api/user/login', requestOptions).then(
             (data) => {
                 if (data.status === 401) {
                     // incorrect password

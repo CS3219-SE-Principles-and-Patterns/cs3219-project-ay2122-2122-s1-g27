@@ -39,5 +39,5 @@ QUESTION_SERVICE_REMOTE_URL: URL of the deployed QuestionService on remote
 
 **Relevant Commands**
 
-- `docker build -t css:latest .`: (Re)Build Image Locally
-- `docker run -dp 5005:5005 css`: Run standalone Docker Image (Typically in production mode)
+- `docker build -t peerprep/collab:latest .`: (Re)Build Image Locally
+- `docker run -dp 5005:5005 QUESTION_SERVICE_DEPLOYED_URL=<QUESTION_SERVICE_URL> --platform linux/amd64 peerprep/collab:latest`: Run standalone Docker Image (Typically in production mode), If `QuestionService` is started locally, you may use `docker run -dp 5005:5005 --env QUESTION_SERVICE_DEPLOYED_URL=http://localhost:8081 --platform linux/amd64 peerprep/collab:latest`

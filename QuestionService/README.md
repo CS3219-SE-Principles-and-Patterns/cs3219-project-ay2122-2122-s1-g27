@@ -25,8 +25,8 @@ To start, we recommend installing the `ESLint`(dbaeumer.vscode-eslint) and `Pret
 
 **Relevant Commands**
 
-- `docker build -t qs:latest .`: (Re)Build Image Locally
-- `docker run -dp 8081:8081 qs`: Run standalone Docker Image (Typically in production mode)
+- `docker build -t peerprep/question:latest .`: (Re)Build Image Locally
+- `docker run -dp 8081:8081 --platform linux/amd64 peerprep/question:latest`: Run standalone Docker Image (Typically in production mode)
 - `docker-compose build`: (Re)Build Docker Compose Application. Typically for local usage (as it attached a MongoDB Cluster)
 - `docker-compose up -d`: Run composed Docker application in detached mode
 

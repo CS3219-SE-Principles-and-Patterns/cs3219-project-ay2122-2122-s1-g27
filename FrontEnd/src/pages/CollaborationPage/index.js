@@ -36,7 +36,7 @@ class CollaborationPage extends Component {
             code: 'x = "Hello World";',
             lang: 'javascript',
             socket: sessionStorage.getItem('jwt')
-                ? io('http://localhost:5005', {
+                ? io('http://localhost:5005/api/collab', {
                       extraHeaders: {
                           Authorization:
                               'Bearer ' + sessionStorage.getItem('jwt'),
@@ -44,7 +44,7 @@ class CollaborationPage extends Component {
                   })
                 : null,
             chatSocket: sessionStorage.getItem('jwt')
-                ? io('http://localhost:7000', {
+                ? io('http://localhost:7000/api/comm', {
                       extraHeaders: {
                           Authorization:
                               'Bearer ' + sessionStorage.getItem('jwt'),
@@ -280,7 +280,7 @@ function QuestionPanel(props) {
         };
 
         return fetch(
-            'http://localhost:8081/question/room/' + props.roomId,
+            'http://localhost:8081/api/question/room/' + props.roomId,
             requestOptions
         )
             .then((data) => data.json())
