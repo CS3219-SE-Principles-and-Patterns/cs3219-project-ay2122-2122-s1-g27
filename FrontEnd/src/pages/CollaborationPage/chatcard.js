@@ -9,7 +9,7 @@ import {
     IconButton,
 } from '@mui/material';
 import { styled } from '@mui/system';
-import { React, useCallback, useContext, useEffect, useState } from 'react';
+import { React, useCallback, useEffect, useState, useRef } from 'react';
 import SendIcon from '@mui/icons-material/Send';
 
 function ChatCard(props) {
@@ -18,6 +18,14 @@ function ChatCard(props) {
     let user = sessionStorage.getItem('user');
     const [messages, setMessages] = useState([]);
     const [messageEntered, setMessageEntered] = useState('');
+
+    const messagesEndRef = useRef(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    useEffect(scrollToBottom, [messages]);
 
     const handleMessages = useCallback((newMessage, messageOwner) => {
         setMessages((messages) => {
@@ -70,6 +78,7 @@ function ChatCard(props) {
                                 id={index}
                             />
                         ))}
+                        <div ref={messagesEndRef} />
                     </List>
                 </Paper>
             </Grid>

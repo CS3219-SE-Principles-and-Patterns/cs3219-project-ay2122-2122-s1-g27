@@ -34,7 +34,7 @@ const io = new Server(server, {
 })
 io.of('/api/collab').on('connection', (socket) => {
   const header = socket.handshake.headers.authorization
-  const jwt = header.split(' ')[1]
+  const jwt = header?.split(' ')[1]
 
   console.log(`${socket.id} connected with socket server wohoo!`)
 
