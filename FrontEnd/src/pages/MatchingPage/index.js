@@ -82,6 +82,7 @@ function MatchingPage() {
             const socket = io('http://localhost:8080/api/user', {
                 extraHeaders: {
                     Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
+                    Service: 'user'
                 },
             });
             setMatchingSocket(socket);
