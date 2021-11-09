@@ -56,7 +56,7 @@ function ChatCard(props) {
         return () => {
             //can add any unmounting logic here if needed
         };
-    }, [socket, handleMessages]);
+    }, [socket, handleMessages, props.roomId, user]);
 
     return (
         <Grid container justifyContent="space-around" alignItems="center">

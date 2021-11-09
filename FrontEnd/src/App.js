@@ -1,4 +1,4 @@
-import { React, useState, useContext } from 'react';
+import { React } from 'react';
 import { AppContext } from './utils/AppContext';
 import AuthenticationPage from './pages/AuthenticationPage';
 import LandingPage from './pages/LandingPage';

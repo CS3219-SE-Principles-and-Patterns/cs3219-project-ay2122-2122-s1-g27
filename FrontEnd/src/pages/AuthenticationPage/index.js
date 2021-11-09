@@ -1,4 +1,4 @@
-import { React, useState, useContext } from 'react';
+import { React, useState } from 'react';
 import {
     Grid,
     Typography,
@@ -8,7 +8,6 @@ import {
     Button,
 } from '@mui/material';
 import { styled } from '@mui/system';
-import { AppContext } from '../../utils/AppContext';
 import LoginPage from '../../assets/LoginPage.png';
 import { Redirect } from 'react-router-dom';
 
@@ -86,7 +85,7 @@ function AuthenticationPage() {
     const [username, setUsername] = useState(null);
     const [password, setPassword] = useState(null);
     const [isIncorrectAttempt, setIncorrectAttempt] = useState(false);
-    const [hasStoredJwt, setHasStoredJwt] = useState(false);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     const handleChangeUsername = (event) => setUsername(event.target.value);
     const handleChangePassword = (event) => setPassword(event.target.value);
@@ -101,14 +100,15 @@ function AuthenticationPage() {
             }),
         };
 
-        return fetch('http://localhost:8080/api/user/create', requestOptions).then(
-            (data) => {
-                if (data.status === 409 || data.status === 201) {
-                    // already exists / successfully created, so can login
-                    data.json().then((data) => performLogin());
-                }
+        return fetch(
+            'http://localhost:8080/api/user/create',
+            requestOptions
+        ).then((data) => {
+            if (data.status === 409 || data.status === 201) {
+                // already exists / successfully created, so can login
+                data.json().then((data) => performLogin());
             }
-        );
+        });
     };
 
     const performLogin = () => {
@@ -121,26 +121,29 @@ function AuthenticationPage() {
             }),
         };
 
-        return fetch('http://localhost:8080/api/user/login', requestOptions).then(
-            (data) => {
-                if (data.status === 401) {
-                    // incorrect password
-                    setIncorrectAttempt(true);
-                } else if (data.status === 200) {
-                    data.json().then((data) => {
-                        // set JWT access token in session storage
-                        sessionStorage.setItem('jwt', data.data.accessToken);
-                        sessionStorage.setItem('user', username);
-                        setHasStoredJwt(true);
-                    });
-                }
+        return fetch(
+            'http://localhost:8080/api/user/login',
+            requestOptions
+        ).then((data) => {
+            if (data.status === 401) {
+                // incorrect password
+                setIncorrectAttempt(true);
+            } else if (data.status === 200) {
+                data.json().then((data) => {
+                    // set JWT access token in session storage
+                    sessionStorage.setItem('jwt', data.data.accessToken);
+                    sessionStorage.setItem('user', username);
+                    setIsLoggedIn(true);
+                });
             }
-        );
+        });
     };
 
     return (
         <Grid container>
-            {sessionStorage.getItem('user') && sessionStorage.getItem('jwt') ? (
+            {isLoggedIn ||
+            (sessionStorage.getItem('user') &&
+                sessionStorage.getItem('jwt')) ? (
                 <Redirect to={{ pathname: '/match' }} />
             ) : null}
             <Grid

@@ -1,4 +1,4 @@
-import { React, useState, useContext, useEffect } from 'react';
+import { React, useState, useEffect } from 'react';
 import {
     Grid,
     Chip,
@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import DoneIcon from '@mui/icons-material/Done';
-import { AppContext } from '../../utils/AppContext';
 import { Redirect } from 'react-router-dom';
 import MatchingModal from './MatchingModal';
 import io from 'socket.io-client';
@@ -42,7 +41,10 @@ function MatchingPage() {
             },
         };
 
-        return fetch('http://localhost:8081/api/question/questions/metadata', requestOptions)
+        return fetch(
+            'http://localhost:8081/api/question/questions/metadata',
+            requestOptions
+        )
             .then((data) => data.json())
             .then((metadata) => {
                 setTopics(metadata.TOPICS);
@@ -82,12 +84,12 @@ function MatchingPage() {
             const socket = io('http://localhost:8080/api/user', {
                 extraHeaders: {
                     Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
-                    Service: 'user'
+                    Service: 'user',
                 },
             });
             setMatchingSocket(socket);
         }
-    }, []);
+    }, [matchingSocket]);
 
     const [selectedTopics, setSelectedTopics] = useState([]);
     const [selectedDifficulties, setSelectedDifficulties] = useState([]);
