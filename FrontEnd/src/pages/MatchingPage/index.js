@@ -1,4 +1,4 @@
-import { React, useState, useContext, useEffect } from 'react';
+import { React, useState, useEffect } from 'react';
 import {
     Grid,
     Chip,
@@ -12,10 +12,10 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/system';
 import DoneIcon from '@mui/icons-material/Done';
-import { AppContext } from '../../utils/AppContext';
 import { Redirect } from 'react-router-dom';
 import MatchingModal from './MatchingModal';
 import io from 'socket.io-client';
+import configs from '../../configs';
 
 const TopicsContainer = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('md')]: {
@@ -38,11 +38,11 @@ function MatchingPage() {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
+                Authorization: 'Bearer ' + localStorage.getItem('jwt'),
             },
         };
 
-        return fetch('http://localhost:8081/api/question/questions/metadata', requestOptions)
+        return fetch(configs.getQuestionMetadataEndpoint, requestOptions)
             .then((data) => data.json())
             .then((metadata) => {
                 setTopics(metadata.TOPICS);
@@ -51,7 +51,7 @@ function MatchingPage() {
     }, []);
 
     useEffect(() => {
-        if (!sessionStorage.getItem('user')) {
+        if (!localStorage.getItem('user')) {
             return;
         }
 
@@ -59,34 +59,36 @@ function MatchingPage() {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
+                Authorization: 'Bearer ' + localStorage.getItem('jwt'),
             },
         };
 
         return fetch(
-            'http://localhost:8081/api/question/room/username/' +
-                sessionStorage.getItem('user'),
+            configs.getAllocatedRoomEndpoint + localStorage.getItem('user'),
             requestOptions
         ).then((data) => {
             if (data.status === 200) {
                 data.json().then((data) => {
-                    console.log(data);
                     setRedirectRoomId(data.data.roomId);
+                    localStorage.setItem('roomId', data.data.roomId);
                 });
+            } else if (data.status === 404) {
+                setRedirectRoomId(null);
             }
         });
     }, []);
 
     useEffect(() => {
         if (!matchingSocket) {
-            const socket = io('http://localhost:8080/api/user', {
+            const socket = io(configs.matchingSocketEndpoint, {
                 extraHeaders: {
-                    Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
+                    Authorization: 'Bearer ' + localStorage.getItem('jwt'),
+                    Service: 'user',
                 },
             });
             setMatchingSocket(socket);
         }
-    }, []);
+    }, [matchingSocket]);
 
     const [selectedTopics, setSelectedTopics] = useState([]);
     const [selectedDifficulties, setSelectedDifficulties] = useState([]);
@@ -153,15 +155,15 @@ function MatchingPage() {
         );
     }
 
-    if (!sessionStorage.getItem('jwt')) {
+    if (!localStorage.getItem('jwt')) {
         return <Redirect to={{ pathname: '/login' }} />;
-    } else if (redirectRoomId) {
+    } else if (localStorage.getItem('roomId')) {
         return (
             <Redirect
                 to={{
-                    pathname: `/collaborate/${redirectRoomId}`,
+                    pathname: `/collaborate/${localStorage.getItem('roomId')}`,
                     state: {
-                        roomId: redirectRoomId,
+                        roomId: localStorage.getItem('roomId'),
                     },
                 }}
             />

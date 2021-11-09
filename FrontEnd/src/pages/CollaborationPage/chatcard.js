@@ -15,7 +15,7 @@ import SendIcon from '@mui/icons-material/Send';
 function ChatCard(props) {
     const socket = props.socket;
     //const { user } = useContext(AppContext);
-    let user = sessionStorage.getItem('user');
+    let user = localStorage.getItem('user');
     const [messages, setMessages] = useState([]);
     const [messageEntered, setMessageEntered] = useState('');
 
@@ -56,7 +56,7 @@ function ChatCard(props) {
         return () => {
             //can add any unmounting logic here if needed
         };
-    }, [socket, handleMessages]);
+    }, [socket, handleMessages, props.roomId, user]);
 
     return (
         <Grid container justifyContent="space-around" alignItems="center">
@@ -133,7 +133,7 @@ function ChatMessage({ messageOwner, message, user, id }) {
                 key={id}
                 sx={{ display: 'flex', justifyContent: 'flex-end' }}
             >
-                <Chip sx={{ backgroundColor: '#9BCC5F' }} label={message} />
+                <Chip sx={{ backgroundColor: '#009900' }} label={message} />
             </ListItem>
         );
     } else {

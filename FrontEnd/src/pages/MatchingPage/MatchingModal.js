@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Box, Modal, Button, Typography, Grid } from '@mui/material';
 import Waiting from '../../assets/waiting.svg';
 import Sorry from '../../assets/sorry.svg';
-import io from 'socket.io-client';
 import { Redirect } from 'react-router-dom';
 
 const style = {
@@ -21,13 +20,11 @@ const style = {
 };
 
 export default function MatchingModal(props) {
-    const [open, setOpen] = React.useState(props.shouldOpen);
     const [timeLeft, setTimeLeft] = React.useState(props.timeLeft);
-    const [isMatching, setIsMatching] = React.useState(true);
     const [roomId, setRoomId] = React.useState(null);
 
     const handleClose = () => {
-        if (timeLeft == 0) {
+        if (timeLeft === 0) {
             props.setShouldOpenModal(false);
         }
     };
@@ -40,7 +37,7 @@ export default function MatchingModal(props) {
 
     // event listener
     props.socket.on('matchFail', () => {
-        setIsMatching(false);
+        setTimeLeft(0);
     });
 
     React.useEffect(() => {
@@ -58,7 +55,7 @@ export default function MatchingModal(props) {
     return (
         <React.Fragment>
             <Modal
-                open={open}
+                open={props.shouldOpen}
                 onClose={handleClose}
                 aria-labelledby="child-modal-title"
                 aria-describedby="child-modal-description"
@@ -72,9 +69,8 @@ export default function MatchingModal(props) {
                             },
                         }}
                     />
-                ) : timeLeft != 0 ? (
+                ) : timeLeft !== 0 ? (
                     <Box sx={{ ...style, width: 300 }}>
-                        <h2 id="child-modal-title"></h2>
                         <Typography variant="h6" align="center">
                             Currently finding you a match!
                         </Typography>
@@ -82,7 +78,7 @@ export default function MatchingModal(props) {
                             Hang in there... Time left: {timeLeft} seconds
                         </Typography>
 
-                        <img src={Waiting} />
+                        <img alt="waiting" src={Waiting} />
 
                         <Typography
                             variant="subtitle1"
@@ -96,12 +92,11 @@ export default function MatchingModal(props) {
                     </Box>
                 ) : (
                     <Box sx={{ ...style, width: 300 }}>
-                        <h2 id="child-modal-title"></h2>
                         <Typography variant="h6" align="center">
                             Could not find you a match...
                         </Typography>
 
-                        <img src={Sorry} />
+                        <img alt="match-failed" src={Sorry} />
 
                         <Typography
                             variant="subtitle1"

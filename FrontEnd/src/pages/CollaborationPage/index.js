@@ -1,4 +1,4 @@
-import { React, Component, useState, useEffect, useContext } from 'react';
+import { React, Component, useState, useEffect } from 'react';
 import {
     FormControl,
     Box,
@@ -12,8 +12,8 @@ import {
     CircularProgress,
 } from '@mui/material';
 import '../../App.css';
-import { AppContext } from '../../utils/AppContext';
 import { Redirect } from 'react-router-dom';
+import configs from '../../configs';
 
 //code-mirror stuff
 import { Controlled as Codemirror } from 'react-codemirror2';
@@ -33,25 +33,11 @@ class CollaborationPage extends Component {
         //make sure to receive room id and question from props
         super(props);
         this.state = {
-            code: 'x = "Hello World";',
-            lang: 'javascript',
-            socket: sessionStorage.getItem('jwt')
-                ? io('http://localhost:5005/api/collab', {
-                      extraHeaders: {
-                          Authorization:
-                              'Bearer ' + sessionStorage.getItem('jwt'),
-                      },
-                  })
-                : null,
-            chatSocket: sessionStorage.getItem('jwt')
-                ? io('http://localhost:7000/api/comm', {
-                      extraHeaders: {
-                          Authorization:
-                              'Bearer ' + sessionStorage.getItem('jwt'),
-                      },
-                  })
-                : null,
+            code: '',
+            lang: '',
             shouldRedirect: false,
+            socket: null,
+            chatSocket: null,
         };
         this.useReceivedCode = this.useReceivedCode.bind(this);
         this.brodcastUpdatedCode = this.broadcastUpdatedCode.bind(this);
@@ -66,33 +52,52 @@ class CollaborationPage extends Component {
 
     componentDidMount() {
         //crucial for these socket operations NOT to be in constructor to avoid synchronization errors
+        if (!this.roomId) {
+            return;
+        }
+        this.setState(
+            {
+                socket: io(configs.collabSocketEndpoint, {
+                    extraHeaders: {
+                        Authorization: 'Bearer ' + localStorage.getItem('jwt'),
+                        Service: 'collab',
+                    },
+                }),
+                chatSocket: io(configs.chatSocketEndpoint, {
+                    extraHeaders: {
+                        Authorization: 'Bearer ' + localStorage.getItem('jwt'),
+                        Service: 'comm',
+                    },
+                }),
+            },
+            () => {
+                this.state.socket.emit('room', {
+                    room: this.roomId,
+                    jwt: localStorage.getItem('jwt'),
+                });
+                this.state.socket.on('receive code', (newCode) => {
+                    this.useReceivedCode(newCode);
+                });
 
+                this.state.socket.on('new user joined', () => {
+                    console.log('sending ' + this.state.code + ' to new user');
+                    this.broadcastUpdatedCode(this.roomId, this.state.code);
+                    this.broadcastUpdatedLang(this.roomId, this.state.lang);
+                });
+
+                this.state.socket.on('receive lang', (newLang) => {
+                    this.useReceivedLang(newLang);
+                });
+
+                this.state.socket.on('finish triggered', (roomId) => {
+                    this.state.socket.emit('finish', { room: this.roomId });
+                    this.setState({ shouldRedirect: true });
+                });
+            }
+        );
         if (!this.roomId || !this.state.socket) {
             return;
         }
-
-        this.state.socket.emit('room', {
-            room: this.roomId,
-            jwt: sessionStorage.getItem('jwt'),
-        });
-        this.state.socket.on('receive code', (newCode) => {
-            this.useReceivedCode(newCode);
-        });
-
-        this.state.socket.on('new user joined', () => {
-            console.log('sending ' + this.state.code + ' to new user');
-            this.broadcastUpdatedCode(this.roomId, this.state.code);
-            this.broadcastUpdatedLang(this.roomId, this.state.lang);
-        });
-
-        this.state.socket.on('receive lang', (newLang) => {
-            this.useReceivedLang(newLang);
-        });
-
-        this.state.socket.on('finish triggered', (roomId) => {
-            this.state.socket.emit('finish', { room: this.roomId });
-            this.setState({ shouldRedirect: true });
-        });
     }
 
     broadcastUpdatedCode(roomId, newCode) {
@@ -125,6 +130,7 @@ class CollaborationPage extends Component {
 
     handleFinish() {
         this.state.socket.emit('finish', { room: this.roomId });
+        localStorage.removeItem('roomId');
         this.setState({ shouldRedirect: true });
     }
 
@@ -133,7 +139,7 @@ class CollaborationPage extends Component {
     }
 
     render() {
-        if (!sessionStorage.getItem('jwt')) {
+        if (!localStorage.getItem('jwt')) {
             return <Redirect to={{ pathname: '/login' }} />;
         }
         if (this.state.shouldRedirect) {
@@ -275,20 +281,19 @@ function QuestionPanel(props) {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
+                Authorization: 'Bearer ' + localStorage.getItem('jwt'),
             },
         };
 
         return fetch(
-            'http://localhost:8081/api/question/room/' + props.roomId,
+            configs.getCollabQuestionEndpoint + props.roomId,
             requestOptions
         )
             .then((data) => data.json())
             .then((questionData) => {
-                console.log(questionData);
                 setQuestion(questionData.data.question);
             });
-    }, []);
+    }, [props.roomId]);
 
     const openInNewTab = (url) => {
         const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
@@ -322,7 +327,7 @@ function QuestionPanel(props) {
                     <Typography
                         variant="subtitle2"
                         sx={{ color: '#FCFCFC', paddingBottom: '10px' }}
-                        id={'description-' + idx}
+                        key={'description-' + idx}
                     >
                         {paragraph}
                     </Typography>
@@ -341,7 +346,7 @@ function QuestionPanel(props) {
                     <Typography
                         variant="subtitle2"
                         sx={{ color: '#FCFCFC', paddingBottom: '10px' }}
-                        id={'sample-cases-' + idx}
+                        key={'sample-cases-' + idx}
                     >
                         <Typography variant="subtitle1">
                             <b>Example {idx + 1}</b>
@@ -371,7 +376,7 @@ function QuestionPanel(props) {
                     <Typography
                         variant="subtitle2"
                         sx={{ color: '#FCFCFC', paddingBottom: '10px' }}
-                        id={'constraints-' + idx}
+                        key={'constraints-' + idx}
                     >
                         {paragraph}
                     </Typography>
