@@ -15,6 +15,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import { Redirect } from 'react-router-dom';
 import MatchingModal from './MatchingModal';
 import io from 'socket.io-client';
+import configs from '../../configs';
 
 const TopicsContainer = styled('div')(({ theme }) => ({
     [theme.breakpoints.up('md')]: {
@@ -41,10 +42,7 @@ function MatchingPage() {
             },
         };
 
-        return fetch(
-            'http://localhost:8081/api/question/questions/metadata',
-            requestOptions
-        )
+        return fetch(configs.getQuestionMetadataEndpoint, requestOptions)
             .then((data) => data.json())
             .then((metadata) => {
                 setTopics(metadata.TOPICS);
@@ -66,22 +64,22 @@ function MatchingPage() {
         };
 
         return fetch(
-            'http://localhost:8081/api/question/room/username/' +
-                localStorage.getItem('user'),
+            configs.getAllocatedRoomEndpoint + localStorage.getItem('user'),
             requestOptions
         ).then((data) => {
             if (data.status === 200) {
                 data.json().then((data) => {
-                    console.log(data);
                     setRedirectRoomId(data.data.roomId);
                 });
+            } else if (data.status === 404) {
+                setRedirectRoomId(null);
             }
         });
     }, []);
 
     useEffect(() => {
         if (!matchingSocket) {
-            const socket = io('http://localhost:8080/api/user', {
+            const socket = io(configs.matchingSocketEndpoint, {
                 extraHeaders: {
                     Authorization: 'Bearer ' + localStorage.getItem('jwt'),
                     Service: 'user',
@@ -159,7 +157,6 @@ function MatchingPage() {
     if (!localStorage.getItem('jwt')) {
         return <Redirect to={{ pathname: '/login' }} />;
     } else if (redirectRoomId) {
-        setRedirectRoomId(false);
         return (
             <Redirect
                 to={{

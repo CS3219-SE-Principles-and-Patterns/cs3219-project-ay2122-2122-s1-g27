@@ -10,6 +10,7 @@ import {
 import { styled } from '@mui/system';
 import LoginPage from '../../assets/LoginPage.png';
 import { Redirect } from 'react-router-dom';
+import configs from '../../configs';
 
 const Image = styled('img')(({ theme }) => ({
     paddingTop: '10%',
@@ -100,10 +101,7 @@ function AuthenticationPage() {
             }),
         };
 
-        return fetch(
-            'http://localhost:8080/api/user/create',
-            requestOptions
-        ).then((data) => {
+        return fetch(configs.signupEndpoint, requestOptions).then((data) => {
             if (data.status === 409 || data.status === 201) {
                 // already exists / successfully created, so can login
                 data.json().then((data) => performLogin());
@@ -121,10 +119,7 @@ function AuthenticationPage() {
             }),
         };
 
-        return fetch(
-            'http://localhost:8080/api/user/login',
-            requestOptions
-        ).then((data) => {
+        return fetch(configs.loginEndpoint, requestOptions).then((data) => {
             if (data.status === 401) {
                 // incorrect password
                 setIncorrectAttempt(true);

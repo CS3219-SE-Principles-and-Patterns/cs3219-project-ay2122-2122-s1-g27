@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import '../../App.css';
 import { Redirect } from 'react-router-dom';
+import configs from '../../configs';
 
 //code-mirror stuff
 import { Controlled as Codemirror } from 'react-codemirror2';
@@ -56,13 +57,13 @@ class CollaborationPage extends Component {
         }
         this.setState(
             {
-                socket: io('http://localhost:5005/api/collab', {
+                socket: io(configs.collabSocketEndpoint, {
                     extraHeaders: {
                         Authorization: 'Bearer ' + localStorage.getItem('jwt'),
                         Service: 'collab',
                     },
                 }),
-                chatSocket: io('http://localhost:7000/api/comm', {
+                chatSocket: io(configs.chatSocketEndpoint, {
                     extraHeaders: {
                         Authorization: 'Bearer ' + localStorage.getItem('jwt'),
                         Service: 'comm',
@@ -284,7 +285,7 @@ function QuestionPanel(props) {
         };
 
         return fetch(
-            'http://localhost:8081/api/question/room/' + props.roomId,
+            configs.getCollabQuestionEndpoint + props.roomId,
             requestOptions
         )
             .then((data) => data.json())
