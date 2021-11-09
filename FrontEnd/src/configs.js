@@ -1,4 +1,6 @@
-const ENV = 'development'; // either 'development' or 'production'
+require('dotenv').config();
+
+const ENV = process.env.ENV || 'development'; // either 'development' or 'production'
 const PORT = 3000;
 
 // dev
