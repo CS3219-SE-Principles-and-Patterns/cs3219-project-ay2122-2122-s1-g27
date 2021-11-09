@@ -15,7 +15,6 @@ app.options('*', cors())
 
 const router = express.Router()
 router.get('/', (_, res) => {
-  console.log('Req from root CollabSocketService')
   res.send('Hello World from CollabSocketService')
 })
 

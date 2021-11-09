@@ -3,7 +3,6 @@ const { Router } = require('express')
 const routes = Router()
 
 routes.get('/', (_, res) => {
-  console.log('Req on Root')
   res.send('Hello World from Communication Service')
 })
 
