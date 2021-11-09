@@ -131,8 +131,8 @@ function AuthenticationPage() {
             } else if (data.status === 200) {
                 data.json().then((data) => {
                     // set JWT access token in session storage
-                    sessionStorage.setItem('jwt', data.data.accessToken);
-                    sessionStorage.setItem('user', username);
+                    localStorage.setItem('jwt', data.data.accessToken);
+                    localStorage.setItem('user', username);
                     setIsLoggedIn(true);
                 });
             }
@@ -142,8 +142,7 @@ function AuthenticationPage() {
     return (
         <Grid container>
             {isLoggedIn ||
-            (sessionStorage.getItem('user') &&
-                sessionStorage.getItem('jwt')) ? (
+            (localStorage.getItem('user') && localStorage.getItem('jwt')) ? (
                 <Redirect to={{ pathname: '/match' }} />
             ) : null}
             <Grid

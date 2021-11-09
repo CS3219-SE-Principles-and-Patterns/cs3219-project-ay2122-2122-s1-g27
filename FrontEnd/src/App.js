@@ -84,7 +84,7 @@ function NavBar(props) {
                         aria-label="menu"
                         sx={{ mr: 2 }}
                     >
-                        <Link to="/about">
+                        <Link to="/match">
                             <Logo src={logo} alt="logo" />
                         </Link>
                     </IconButton>
@@ -97,15 +97,13 @@ function NavBar(props) {
                         <Button
                             color="inherit"
                             disabled={
-                                sessionStorage.getItem('user') ? true : false
+                                localStorage.getItem('user') ? true : false
                             }
                         >
                             <LoginLink
                                 to="/login"
                                 disabled={
-                                    sessionStorage.getItem('user')
-                                        ? true
-                                        : false
+                                    localStorage.getItem('user') ? true : false
                                 }
                             >
                                 <Typography
@@ -116,19 +114,19 @@ function NavBar(props) {
                                         fontWeight: 600,
                                     }}
                                 >
-                                    {sessionStorage.getItem('user')
-                                        ? '@' + sessionStorage.getItem('user')
+                                    {localStorage.getItem('user')
+                                        ? '@' + localStorage.getItem('user')
                                         : 'Sign In'}
                                 </Typography>
                             </LoginLink>
                         </Button>
                     ) : null}
 
-                    {sessionStorage.getItem('user') ? (
+                    {localStorage.getItem('user') ? (
                         <Button
                             color="inherit"
                             onClick={() => {
-                                sessionStorage.clear();
+                                localStorage.clear();
                             }}
                         >
                             <LoginLink to="/about">

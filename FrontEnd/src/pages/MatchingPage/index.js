@@ -37,7 +37,7 @@ function MatchingPage() {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
+                Authorization: 'Bearer ' + localStorage.getItem('jwt'),
             },
         };
 
@@ -53,7 +53,7 @@ function MatchingPage() {
     }, []);
 
     useEffect(() => {
-        if (!sessionStorage.getItem('user')) {
+        if (!localStorage.getItem('user')) {
             return;
         }
 
@@ -61,13 +61,13 @@ function MatchingPage() {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
+                Authorization: 'Bearer ' + localStorage.getItem('jwt'),
             },
         };
 
         return fetch(
             'http://localhost:8081/api/question/room/username/' +
-                sessionStorage.getItem('user'),
+                localStorage.getItem('user'),
             requestOptions
         ).then((data) => {
             if (data.status === 200) {
@@ -83,7 +83,7 @@ function MatchingPage() {
         if (!matchingSocket) {
             const socket = io('http://localhost:8080/api/user', {
                 extraHeaders: {
-                    Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
+                    Authorization: 'Bearer ' + localStorage.getItem('jwt'),
                     Service: 'user',
                 },
             });
@@ -156,7 +156,7 @@ function MatchingPage() {
         );
     }
 
-    if (!sessionStorage.getItem('jwt')) {
+    if (!localStorage.getItem('jwt')) {
         return <Redirect to={{ pathname: '/login' }} />;
     } else if (redirectRoomId) {
         setRedirectRoomId(false);

@@ -15,7 +15,7 @@ import SendIcon from '@mui/icons-material/Send';
 function ChatCard(props) {
     const socket = props.socket;
     //const { user } = useContext(AppContext);
-    let user = sessionStorage.getItem('user');
+    let user = localStorage.getItem('user');
     const [messages, setMessages] = useState([]);
     const [messageEntered, setMessageEntered] = useState('');
 

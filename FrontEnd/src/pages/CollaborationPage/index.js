@@ -58,15 +58,13 @@ class CollaborationPage extends Component {
             {
                 socket: io('http://localhost:5005/api/collab', {
                     extraHeaders: {
-                        Authorization:
-                            'Bearer ' + sessionStorage.getItem('jwt'),
+                        Authorization: 'Bearer ' + localStorage.getItem('jwt'),
                         Service: 'collab',
                     },
                 }),
                 chatSocket: io('http://localhost:7000/api/comm', {
                     extraHeaders: {
-                        Authorization:
-                            'Bearer ' + sessionStorage.getItem('jwt'),
+                        Authorization: 'Bearer ' + localStorage.getItem('jwt'),
                         Service: 'comm',
                     },
                 }),
@@ -74,7 +72,7 @@ class CollaborationPage extends Component {
             () => {
                 this.state.socket.emit('room', {
                     room: this.roomId,
-                    jwt: sessionStorage.getItem('jwt'),
+                    jwt: localStorage.getItem('jwt'),
                 });
                 this.state.socket.on('receive code', (newCode) => {
                     this.useReceivedCode(newCode);
@@ -139,7 +137,7 @@ class CollaborationPage extends Component {
     }
 
     render() {
-        if (!sessionStorage.getItem('jwt')) {
+        if (!localStorage.getItem('jwt')) {
             return <Redirect to={{ pathname: '/login' }} />;
         }
         if (this.state.shouldRedirect) {
@@ -281,7 +279,7 @@ function QuestionPanel(props) {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: 'Bearer ' + sessionStorage.getItem('jwt'),
+                Authorization: 'Bearer ' + localStorage.getItem('jwt'),
             },
         };
 
