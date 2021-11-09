@@ -33,8 +33,8 @@ class CollaborationPage extends Component {
         //make sure to receive room id and question from props
         super(props);
         this.state = {
-            code: 'x = "Hello World";',
-            lang: 'javascript',
+            code: '',
+            lang: '',
             shouldRedirect: false,
             socket: null,
             chatSocket: null,
