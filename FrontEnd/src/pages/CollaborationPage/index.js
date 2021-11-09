@@ -322,7 +322,7 @@ function QuestionPanel(props) {
                     <Typography
                         variant="subtitle2"
                         sx={{ color: '#FCFCFC', paddingBottom: '10px' }}
-                        id={'description-' + idx}
+                        key={'description-' + idx}
                     >
                         {paragraph}
                     </Typography>
@@ -341,7 +341,7 @@ function QuestionPanel(props) {
                     <Typography
                         variant="subtitle2"
                         sx={{ color: '#FCFCFC', paddingBottom: '10px' }}
-                        id={'sample-cases-' + idx}
+                        key={'sample-cases-' + idx}
                     >
                         <Typography variant="subtitle1">
                             <b>Example {idx + 1}</b>
@@ -371,7 +371,7 @@ function QuestionPanel(props) {
                     <Typography
                         variant="subtitle2"
                         sx={{ color: '#FCFCFC', paddingBottom: '10px' }}
-                        id={'constraints-' + idx}
+                        key={'constraints-' + idx}
                     >
                         {paragraph}
                     </Typography>
