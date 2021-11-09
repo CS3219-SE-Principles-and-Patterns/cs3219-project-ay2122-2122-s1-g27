@@ -133,7 +133,7 @@ function ChatMessage({ messageOwner, message, user, id }) {
                 key={id}
                 sx={{ display: 'flex', justifyContent: 'flex-end' }}
             >
-                <Chip sx={{ backgroundColor: '#9BCC5F' }} label={message} />
+                <Chip sx={{ backgroundColor: '#009900' }} label={message} />
             </ListItem>
         );
     } else {

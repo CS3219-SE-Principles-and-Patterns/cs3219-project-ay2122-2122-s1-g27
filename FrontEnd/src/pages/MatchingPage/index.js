@@ -70,6 +70,7 @@ function MatchingPage() {
             if (data.status === 200) {
                 data.json().then((data) => {
                     setRedirectRoomId(data.data.roomId);
+                    localStorage.setItem('roomId', data.data.roomId);
                 });
             } else if (data.status === 404) {
                 setRedirectRoomId(null);
@@ -156,13 +157,13 @@ function MatchingPage() {
 
     if (!localStorage.getItem('jwt')) {
         return <Redirect to={{ pathname: '/login' }} />;
-    } else if (redirectRoomId) {
+    } else if (localStorage.getItem('roomId')) {
         return (
             <Redirect
                 to={{
-                    pathname: `/collaborate/${redirectRoomId}`,
+                    pathname: `/collaborate/${localStorage.getItem('roomId')}`,
                     state: {
-                        roomId: redirectRoomId,
+                        roomId: localStorage.getItem('roomId'),
                     },
                 }}
             />

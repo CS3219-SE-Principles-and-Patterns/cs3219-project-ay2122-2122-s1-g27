@@ -130,6 +130,7 @@ class CollaborationPage extends Component {
 
     handleFinish() {
         this.state.socket.emit('finish', { room: this.roomId });
+        localStorage.removeItem('roomId');
         this.setState({ shouldRedirect: true });
     }
 
