@@ -96,11 +96,17 @@ function NavBar(props) {
                     {pathname !== '/login' ? (
                         <Button
                             color="inherit"
-                            disabled={sessionStorage.getItem('user')}
+                            disabled={
+                                sessionStorage.getItem('user') ? true : false
+                            }
                         >
                             <LoginLink
                                 to="/login"
-                                disabled={sessionStorage.getItem('user')}
+                                disabled={
+                                    sessionStorage.getItem('user')
+                                        ? true
+                                        : false
+                                }
                             >
                                 <Typography
                                     variant="h6"

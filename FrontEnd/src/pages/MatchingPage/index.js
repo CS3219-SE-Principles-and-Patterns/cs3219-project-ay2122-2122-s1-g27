@@ -159,6 +159,7 @@ function MatchingPage() {
     if (!sessionStorage.getItem('jwt')) {
         return <Redirect to={{ pathname: '/login' }} />;
     } else if (redirectRoomId) {
+        setRedirectRoomId(false);
         return (
             <Redirect
                 to={{
