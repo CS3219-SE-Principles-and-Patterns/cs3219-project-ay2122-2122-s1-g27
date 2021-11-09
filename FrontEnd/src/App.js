@@ -1,4 +1,4 @@
-import { React, useState, useContext } from 'react';
+import { React } from 'react';
 import { AppContext } from './utils/AppContext';
 import AuthenticationPage from './pages/AuthenticationPage';
 import LandingPage from './pages/LandingPage';
@@ -84,7 +84,7 @@ function NavBar(props) {
                         aria-label="menu"
                         sx={{ mr: 2 }}
                     >
-                        <Link to="/about">
+                        <Link to="/match">
                             <Logo src={logo} alt="logo" />
                         </Link>
                     </IconButton>
@@ -96,11 +96,15 @@ function NavBar(props) {
                     {pathname !== '/login' ? (
                         <Button
                             color="inherit"
-                            disabled={sessionStorage.getItem('user')}
+                            disabled={
+                                localStorage.getItem('user') ? true : false
+                            }
                         >
                             <LoginLink
                                 to="/login"
-                                disabled={sessionStorage.getItem('user')}
+                                disabled={
+                                    localStorage.getItem('user') ? true : false
+                                }
                             >
                                 <Typography
                                     variant="h6"
@@ -110,19 +114,19 @@ function NavBar(props) {
                                         fontWeight: 600,
                                     }}
                                 >
-                                    {sessionStorage.getItem('user')
-                                        ? '@' + sessionStorage.getItem('user')
+                                    {localStorage.getItem('user')
+                                        ? '@' + localStorage.getItem('user')
                                         : 'Sign In'}
                                 </Typography>
                             </LoginLink>
                         </Button>
                     ) : null}
 
-                    {sessionStorage.getItem('user') ? (
+                    {localStorage.getItem('user') ? (
                         <Button
                             color="inherit"
                             onClick={() => {
-                                sessionStorage.clear();
+                                localStorage.clear();
                             }}
                         >
                             <LoginLink to="/about">
