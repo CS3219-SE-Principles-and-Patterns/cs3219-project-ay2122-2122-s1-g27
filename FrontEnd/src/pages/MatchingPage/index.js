@@ -157,7 +157,7 @@ function MatchingPage() {
 
     if (!localStorage.getItem('jwt')) {
         return <Redirect to={{ pathname: '/login' }} />;
-    } else if (localStorage.getItem('roomId')) {
+    } else if (localStorage.getItem('roomId') !== null) {
         return (
             <Redirect
                 to={{

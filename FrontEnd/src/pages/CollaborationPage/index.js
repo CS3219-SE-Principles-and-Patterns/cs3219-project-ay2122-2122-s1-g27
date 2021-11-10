@@ -36,8 +36,19 @@ class CollaborationPage extends Component {
             code: '',
             lang: '',
             shouldRedirect: false,
-            socket: null,
-            chatSocket: null,
+            socket: io(configs.collabSocketEndpoint, {
+                extraHeaders: {
+                    Authorization: 'Bearer ' + localStorage.getItem('jwt'),
+                    Service: 'collab',
+                },
+            }),
+
+            chatSocket: io(configs.chatSocketEndpoint, {
+                extraHeaders: {
+                    Authorization: 'Bearer ' + localStorage.getItem('jwt'),
+                    Service: 'comm',
+                },
+            }),
         };
         this.useReceivedCode = this.useReceivedCode.bind(this);
         this.brodcastUpdatedCode = this.broadcastUpdatedCode.bind(this);
@@ -55,48 +66,30 @@ class CollaborationPage extends Component {
         if (!this.roomId) {
             return;
         }
-        this.setState(
-            {
-                socket: io(configs.collabSocketEndpoint, {
-                    extraHeaders: {
-                        Authorization: 'Bearer ' + localStorage.getItem('jwt'),
-                        Service: 'collab',
-                    },
-                }),
-                chatSocket: io(configs.chatSocketEndpoint, {
-                    extraHeaders: {
-                        Authorization: 'Bearer ' + localStorage.getItem('jwt'),
-                        Service: 'comm',
-                    },
-                }),
-            },
-            () => {
-                this.state.socket.emit('room', {
-                    room: this.roomId,
-                    jwt: localStorage.getItem('jwt'),
-                });
-                this.state.socket.on('receive code', (newCode) => {
-                    this.useReceivedCode(newCode);
-                });
 
-                this.state.socket.on('new user joined', () => {
-                    console.log('sending ' + this.state.code + ' to new user');
-                    this.broadcastUpdatedCode(this.roomId, this.state.code);
-                    this.broadcastUpdatedLang(this.roomId, this.state.lang);
-                });
+        if (this.state.socket) {
+            this.state.socket.emit('room', {
+                room: this.roomId,
+                jwt: localStorage.getItem('jwt'),
+            });
+            this.state.socket.on('receive code', (newCode) => {
+                this.useReceivedCode(newCode);
+            });
 
-                this.state.socket.on('receive lang', (newLang) => {
-                    this.useReceivedLang(newLang);
-                });
+            this.state.socket.on('new user joined', () => {
+                console.log('sending ' + this.state.code + ' to new user');
+                this.broadcastUpdatedCode(this.roomId, this.state.code);
+                this.broadcastUpdatedLang(this.roomId, this.state.lang);
+            });
 
-                this.state.socket.on('finish triggered', (roomId) => {
-                    this.state.socket.emit('finish', { room: this.roomId });
-                    this.setState({ shouldRedirect: true });
-                });
-            }
-        );
-        if (!this.roomId || !this.state.socket) {
-            return;
+            this.state.socket.on('receive lang', (newLang) => {
+                this.useReceivedLang(newLang);
+            });
+
+            this.state.socket.on('finish triggered', (roomId) => {
+                this.state.socket.emit('finish', { room: this.roomId });
+                this.setState({ shouldRedirect: true });
+            });
         }
     }
 
