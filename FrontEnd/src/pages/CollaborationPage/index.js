@@ -36,8 +36,21 @@ class CollaborationPage extends Component {
             code: '',
             lang: '',
             shouldRedirect: false,
-            socket: null,
-            chatSocket: null,
+            socket: io(configs.collabSocketEndpoint, {
+                extraHeaders: {
+                    Authorization: 'Bearer ' + localStorage.getItem('jwt'),
+                    Service: 'collab',
+                    withCredentials: true,
+                },
+            }),
+
+            chatSocket: io(configs.chatSocketEndpoint, {
+                extraHeaders: {
+                    Authorization: 'Bearer ' + localStorage.getItem('jwt'),
+                    Service: 'comm',
+                    withCredentials: true,
+                },
+            }),
         };
         this.useReceivedCode = this.useReceivedCode.bind(this);
         this.brodcastUpdatedCode = this.broadcastUpdatedCode.bind(this);
@@ -55,48 +68,32 @@ class CollaborationPage extends Component {
         if (!this.roomId) {
             return;
         }
-        this.setState(
-            {
-                socket: io(configs.collabSocketEndpoint, {
-                    extraHeaders: {
-                        Authorization: 'Bearer ' + localStorage.getItem('jwt'),
-                        Service: 'collab',
-                    },
-                }),
-                chatSocket: io(configs.chatSocketEndpoint, {
-                    extraHeaders: {
-                        Authorization: 'Bearer ' + localStorage.getItem('jwt'),
-                        Service: 'comm',
-                    },
-                }),
-            },
-            () => {
-                this.state.socket.emit('room', {
-                    room: this.roomId,
-                    jwt: localStorage.getItem('jwt'),
-                });
-                this.state.socket.on('receive code', (newCode) => {
-                    this.useReceivedCode(newCode);
-                });
 
-                this.state.socket.on('new user joined', () => {
-                    console.log('sending ' + this.state.code + ' to new user');
-                    this.broadcastUpdatedCode(this.roomId, this.state.code);
-                    this.broadcastUpdatedLang(this.roomId, this.state.lang);
-                });
+        if (this.state.socket) {
+            this.state.socket.emit('room', {
+                room: this.roomId,
+                jwt: localStorage.getItem('jwt'),
+            });
+            this.state.socket.on('receive code', (newCode) => {
+                this.useReceivedCode(newCode);
+            });
 
-                this.state.socket.on('receive lang', (newLang) => {
-                    this.useReceivedLang(newLang);
-                });
+            this.state.socket.on('new user joined', () => {
+                console.log('sending ' + this.state.code + ' to new user');
+                this.broadcastUpdatedCode(this.roomId, this.state.code);
+                this.broadcastUpdatedLang(this.roomId, this.state.lang);
+            });
 
-                this.state.socket.on('finish triggered', (roomId) => {
-                    this.state.socket.emit('finish', { room: this.roomId });
-                    this.setState({ shouldRedirect: true });
-                });
-            }
-        );
-        if (!this.roomId || !this.state.socket) {
-            return;
+            this.state.socket.on('receive lang', (newLang) => {
+                this.useReceivedLang(newLang);
+            });
+
+            this.state.socket.on('finish triggered', (roomId) => {
+                this.state.socket.emit('finish', { room: this.roomId });
+                localStorage.removeItem('roomId');
+                localStorage.setItem('shouldNotRedirect', 'true');
+                this.setState({ shouldRedirect: true });
+            });
         }
     }
 
@@ -131,10 +128,13 @@ class CollaborationPage extends Component {
     handleFinish() {
         this.state.socket.emit('finish', { room: this.roomId });
         localStorage.removeItem('roomId');
+        localStorage.setItem('shouldNotRedirect', 'true');
         this.setState({ shouldRedirect: true });
     }
 
     handleRedirectToMatchPage() {
+        localStorage.removeItem('roomId');
+        localStorage.setItem('shouldNotRedirect', 'true');
         return <Redirect to={{ pathname: '/match' }} />;
     }
 
@@ -142,11 +142,8 @@ class CollaborationPage extends Component {
         if (!localStorage.getItem('jwt')) {
             return <Redirect to={{ pathname: '/login' }} />;
         }
-        if (this.state.shouldRedirect) {
-            return <Redirect to={{ pathname: '/match' }} />;
-        }
-        if (!this.roomId) {
-            return <Redirect to={{ pathname: '/match' }} />;
+        if (this.state.shouldRedirect || !this.roomId) {
+            return this.handleRedirectToMatchPage();
         }
         const codeMirrorOptions = {
             lineNumbers: true,
@@ -274,6 +271,7 @@ class CollaborationPage extends Component {
 
 function QuestionPanel(props) {
     const [question, setQuestion] = useState(null);
+    const [shouldRedirect, setShouldRedirect] = useState(false);
 
     useEffect(() => {
         // fetch Question Data using room id: DONE
@@ -288,11 +286,17 @@ function QuestionPanel(props) {
         return fetch(
             configs.getCollabQuestionEndpoint + props.roomId,
             requestOptions
-        )
-            .then((data) => data.json())
-            .then((questionData) => {
-                setQuestion(questionData.data.question);
-            });
+        ).then((data) => {
+            if (data.status === 200) {
+                data.json().then((questionData) => {
+                    setQuestion(questionData.data.question);
+                });
+            } else if (data.status === 404 || data.status === 500) {
+                localStorage.removeItem('roomId');
+                localStorage.setItem('shouldNotRedirect', 'true');
+                setShouldRedirect(true);
+            }
+        });
     }, [props.roomId]);
 
     const openInNewTab = (url) => {
@@ -300,7 +304,9 @@ function QuestionPanel(props) {
         if (newWindow) newWindow.opener = null;
     };
 
-    return question ? (
+    return shouldRedirect ? (
+        <Redirect to={{ pathname: '/match' }} />
+    ) : question ? (
         <Grid
             container
             sx={{

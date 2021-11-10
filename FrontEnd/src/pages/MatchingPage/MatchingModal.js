@@ -32,11 +32,15 @@ export default function MatchingModal(props) {
     // listeners
     props.socket.on('matchSuccess', (roomId, matchedUser) => {
         // redirect to collab page
+        localStorage.setItem('roomId', roomId);
+        localStorage.removeItem('shouldNotRedirect');
         setRoomId(roomId);
     });
 
     // event listener
     props.socket.on('matchFail', () => {
+        localStorage.removeItem('roomId');
+        localStorage.setItem('shouldNotRedirect', 'true');
         setTimeLeft(0);
     });
 
