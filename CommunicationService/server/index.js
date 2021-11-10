@@ -3,10 +3,21 @@ const cors = require('cors')
 const { createServer } = require('http')
 const { Server } = require('socket.io')
 const jwt = require('jsonwebtoken')
+const { createClient } = require('redis')
+const { createAdapter } = require('@socket.io/redis-adapter')
+const { promisify } = require('util')
 
 const { SocketController } = require('../controller/socketController')
 
 const { JWT_SECRET_TOKEN } = process.env
+
+const { PORT, redisHost, redisPort, redisPw } = require('../configs')
+// setting redis client and defining its async alternatives
+const redisClient = createClient({
+  host: redisHost,
+  port: redisPort,
+  password: redisPw,
+})
 
 // express app
 const app = express()
@@ -20,8 +31,12 @@ const httpServer = createServer(app)
 const io = new Server(httpServer, {
   cors: {
     origin: '*',
+    credentials: true,
   },
 })
+const pubClient = createClient({ host: redisHost, port: redisPort, password: redisPw }) // possible bug source
+const subClient = pubClient.duplicate()
+io.adapter(createAdapter(pubClient, subClient))
 
 /**
  * Checks if connection contains Authorization header with JWT Token
@@ -55,4 +70,4 @@ io.of('/api/comm').use((socket, next) => {
 
 io.of('/api/comm').on('connection', (socket) => SocketController(socket, io))
 
-module.exports = httpServer
+module.exports = { httpServer }

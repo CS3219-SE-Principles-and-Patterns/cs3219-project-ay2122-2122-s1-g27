@@ -5,18 +5,10 @@ const { Server } = require('socket.io')
 const fetch = require('cross-fetch')
 const cors = require('cors')
 const { createClient } = require('redis')
+const { createAdapter } = require("@socket.io/redis-adapter");
 const { promisify } = require('util')
 
 const { PORT, questionServiceURL, redisHost, redisPort, redisPw } = require('./configs')
-// setting redis client and defining its async alternatives
-const redisClient = createClient({
-  host: redisHost,
-  port: redisPort,
-  password: redisPw,
-})
-const getAsync = promisify(redisClient.get).bind(redisClient)
-const setAsync = promisify(redisClient.set).bind(redisClient)
-const delAsync = promisify(redisClient.del).bind(redisClient)
 
 // express app
 const app = express()
@@ -45,8 +37,21 @@ const server = http.createServer(app)
 const io = new Server(server, {
   cors: {
     origin: '*',
+    credentials: true
   },
 })
+// setting redis client and defining its async alternatives
+const pubClient = createClient({
+  host: redisHost,
+  port: redisPort,
+  password: redisPw,
+})
+const getAsync = promisify(pubClient.get).bind(pubClient)
+const setAsync = promisify(pubClient.set).bind(pubClient)
+const delAsync = promisify(pubClient.del).bind(pubClient)
+const subClient = pubClient.duplicate();
+io.adapter(createAdapter(pubClient, subClient));
+
 io.of('/api/collab').on('connection', (socket) => {
   const header = socket.handshake.headers.authorization
   const jwt = header?.split(' ')[1]

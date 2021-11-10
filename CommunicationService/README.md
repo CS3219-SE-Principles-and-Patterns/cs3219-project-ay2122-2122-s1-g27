@@ -30,6 +30,14 @@ Here are the variables below and their explanations`
 ENV: `development` for local usage/dev, `production` for production use
 PORT: Port that the server will startup and expose itself on
 JWT_SECRET_TOKEN: Secret Key to generate JWT
+
+REDIS_LOCAL_HOSTNAME: Hostname of the local redis instance, usually just 'localhost'
+REDIS_LOCAL_PORT: Redis local port, default 6379
+REDIS_LOCAL_PW: Redis local password, default null
+
+REDIS_REMOTE_HOSTNAME: Hostname of hte remote redis instance
+REDIS_REMOTE_PORT: Redis Remote port. Usually 6379 too
+REDIS_REMOTE_PW: Redis Remote instance password.
 ```
 
 ## DevOps / Containerization / Orchestration

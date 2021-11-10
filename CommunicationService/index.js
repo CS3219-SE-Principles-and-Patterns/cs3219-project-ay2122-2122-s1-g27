@@ -2,8 +2,8 @@ require('dotenv').config()
 
 const { PORT } = require('./configs')
 
-const server = require('./server')
+const { httpServer, io } = require('./server')
 
-server.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`CommunicationService up on PORT: ${PORT}`)
 })
