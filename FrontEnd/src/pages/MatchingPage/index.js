@@ -69,10 +69,13 @@ function MatchingPage() {
         ).then((data) => {
             if (data.status === 200) {
                 data.json().then((data) => {
+                    localStorage.removeItem('roomId');
                     setRedirectRoomId(data.data.roomId);
                     localStorage.setItem('roomId', data.data.roomId);
                 });
-            } else if (data.status === 404) {
+            } else if (data.status === 404 || data.status === 500) {
+                localStorage.removeItem('roomId');
+                localStorage.setItem('shouldNotRedirect', 'true');
                 setRedirectRoomId(null);
             }
         });
@@ -84,6 +87,7 @@ function MatchingPage() {
                 extraHeaders: {
                     Authorization: 'Bearer ' + localStorage.getItem('jwt'),
                     Service: 'user',
+                    withCredentials: true,
                 },
             });
             setMatchingSocket(socket);
@@ -157,7 +161,10 @@ function MatchingPage() {
 
     if (!localStorage.getItem('jwt')) {
         return <Redirect to={{ pathname: '/login' }} />;
-    } else if (localStorage.getItem('roomId') !== null) {
+    } else if (
+        (localStorage.getItem('roomId') || redirectRoomId) &&
+        !localStorage.getItem('shouldNotRedirect')
+    ) {
         return (
             <Redirect
                 to={{

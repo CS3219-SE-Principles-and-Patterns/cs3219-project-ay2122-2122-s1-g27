@@ -40,6 +40,7 @@ class CollaborationPage extends Component {
                 extraHeaders: {
                     Authorization: 'Bearer ' + localStorage.getItem('jwt'),
                     Service: 'collab',
+                    withCredentials: true,
                 },
             }),
 
@@ -47,6 +48,7 @@ class CollaborationPage extends Component {
                 extraHeaders: {
                     Authorization: 'Bearer ' + localStorage.getItem('jwt'),
                     Service: 'comm',
+                    withCredentials: true,
                 },
             }),
         };
@@ -88,6 +90,8 @@ class CollaborationPage extends Component {
 
             this.state.socket.on('finish triggered', (roomId) => {
                 this.state.socket.emit('finish', { room: this.roomId });
+                localStorage.removeItem('roomId');
+                localStorage.setItem('shouldNotRedirect', 'true');
                 this.setState({ shouldRedirect: true });
             });
         }
@@ -124,10 +128,13 @@ class CollaborationPage extends Component {
     handleFinish() {
         this.state.socket.emit('finish', { room: this.roomId });
         localStorage.removeItem('roomId');
+        localStorage.setItem('shouldNotRedirect', 'true');
         this.setState({ shouldRedirect: true });
     }
 
     handleRedirectToMatchPage() {
+        localStorage.removeItem('roomId');
+        localStorage.setItem('shouldNotRedirect', 'true');
         return <Redirect to={{ pathname: '/match' }} />;
     }
 
@@ -135,11 +142,8 @@ class CollaborationPage extends Component {
         if (!localStorage.getItem('jwt')) {
             return <Redirect to={{ pathname: '/login' }} />;
         }
-        if (this.state.shouldRedirect) {
-            return <Redirect to={{ pathname: '/match' }} />;
-        }
-        if (!this.roomId) {
-            return <Redirect to={{ pathname: '/match' }} />;
+        if (this.state.shouldRedirect || !this.roomId) {
+            return this.handleRedirectToMatchPage();
         }
         const codeMirrorOptions = {
             lineNumbers: true,
@@ -267,6 +271,7 @@ class CollaborationPage extends Component {
 
 function QuestionPanel(props) {
     const [question, setQuestion] = useState(null);
+    const [shouldRedirect, setShouldRedirect] = useState(false);
 
     useEffect(() => {
         // fetch Question Data using room id: DONE
@@ -281,11 +286,17 @@ function QuestionPanel(props) {
         return fetch(
             configs.getCollabQuestionEndpoint + props.roomId,
             requestOptions
-        )
-            .then((data) => data.json())
-            .then((questionData) => {
-                setQuestion(questionData.data.question);
-            });
+        ).then((data) => {
+            if (data.status === 200) {
+                data.json().then((questionData) => {
+                    setQuestion(questionData.data.question);
+                });
+            } else if (data.status === 404 || data.status === 500) {
+                localStorage.removeItem('roomId');
+                localStorage.setItem('shouldNotRedirect', 'true');
+                setShouldRedirect(true);
+            }
+        });
     }, [props.roomId]);
 
     const openInNewTab = (url) => {
@@ -293,7 +304,9 @@ function QuestionPanel(props) {
         if (newWindow) newWindow.opener = null;
     };
 
-    return question ? (
+    return shouldRedirect ? (
+        <Redirect to={{ pathname: '/match' }} />
+    ) : question ? (
         <Grid
             container
             sx={{
