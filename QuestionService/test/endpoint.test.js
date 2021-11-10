@@ -67,7 +67,7 @@ describe('Endpoint Testing', () => {
 
     getAllQuestionsResult.body.should.be.a('object')
     getAllQuestionsResult.body.data.should.be.a('array')
-    getAllQuestionsResult.body.data.length.should.eql(10)
+    getAllQuestionsResult.body.data.length.should.eql(30)
 
     const resultDataElement = getAllQuestionsResult.body.data[0]
     resultDataElement.should.have.property('id')
@@ -166,7 +166,7 @@ describe('Endpoint Testing', () => {
     question1Data.constraints[1].should.eql('nums2.length == n')
     question1Data.constraints[2].should.eql('0 <= m, n <= 200')
     question1Data.constraints[3].should.eql('1 <= m + n <= 200')
-    question1Data.constraints[4].should.eql('-109 <= nums1[i], nums2[j] <= 109')
+    question1Data.constraints[4].should.eql('-10^9 <= nums1[i], nums2[j] <= 10^9')
   })
 
   it('Able to create room-question mapping for specific matching options via POST /question/room', async () => {
@@ -290,7 +290,7 @@ describe('Endpoint Testing', () => {
     getRoomMatchedQuestionBody.status.should.eql('success')
     getRoomMatchedQuestionBody.message.should.eql('Found Room')
     getRoomMatchedQuestionBody.data.should.be.a('object')
-    getRoomMatchedQuestionBody.data.question.id.should.be.oneOf([1, 2, 5, 7, 9])
+    getRoomMatchedQuestionBody.data.question.id.should.be.oneOf([1, 2, 5, 7, 9, 11, 12, 13])
 
     // Rejected if auth token not given
     const noAuthMatchedQuestionResult = await chai.request(app).get(`/api/question/room/${roomId}`)

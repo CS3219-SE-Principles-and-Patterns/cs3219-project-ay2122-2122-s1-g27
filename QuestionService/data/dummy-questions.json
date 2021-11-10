@@ -614,25 +614,6 @@
   },
   {
     "id": 29,
-    "title": "Sliding Window Maximum",
-    "difficulty": "Hard",
-    "topic": "Heaps",
-    "questionBody": [
-      "You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position.",
-      "Return the max sliding window."
-    ],
-    "source": "https://leetcode.com/sliding-window-maximum/",
-    "answer": "https://leetcode.com/sliding-window-maximum/discuss/?currentPage=1&orderBy=hot&query=",
-    "sampleCases": [
-      {
-        "input": "nums = [1,3,-1,-3,5,3,6,7], k = 3",
-        "output": "[3,3,5,5,6,7]"
-      }
-    ],
-    "constraints": ["1 <= nums.length <= 105", "-10^4 <= nums[i] <= 10^4", "1 <= k <= nums.length"]
-  },
-  {
-    "id": 30,
     "title": "Sort Characters By Frequency",
     "difficulty": "Medium",
     "topic": "Heaps",
@@ -654,7 +635,7 @@
     ]
   },
   {
-    "id": 31,
+    "id": 30,
     "title": "Maximum Product of Two Elements in an Array",
     "difficulty": "Easy",
     "topic": "Heaps",
