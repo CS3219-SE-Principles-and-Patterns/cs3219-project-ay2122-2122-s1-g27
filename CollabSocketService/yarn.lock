@@ -72,6 +72,16 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
   integrity sha512-9NET910DNaIPngYnLLPeg+Ogzqsi9uM4mSboU5y6p8S5DzMTVEsJZrawi+BoDNUVBa2DhJqQYUFvMDfgU062LQ==
 
+"@socket.io/redis-adapter@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@socket.io/redis-adapter/-/redis-adapter-7.0.0.tgz#5c71abb468f4c98d7297a5b47e1b504e34fc1814"
+  integrity sha512-ioqzSUH2XvrBKm70bphTeLwBSPUU0n+w/Qkz11ryKBn6IIT4GJxyVOpodVBGnmDpxhT31EImQTZRT1ZueSTiTQ==
+  dependencies:
+    debug "~4.3.1"
+    notepack.io "~2.2.0"
+    socket.io-adapter "~2.3.0"
+    uid2 "0.0.3"
+
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@szmarczak/http-timer/-/http-timer-1.1.2.tgz#b1665e2c461a2cd92f4c1bbf50d5454de0d4b421"
@@ -1726,6 +1736,11 @@ normalize-url@^4.1.0:
   resolved "https://registry.yarnpkg.com/normalize-url/-/normalize-url-4.5.1.tgz#0dd90cf1288ee1d1313b87081c9a5932ee48518a"
   integrity sha512-9UZCFRHQdNrfTpGg8+1INIg93B6zE0aXMVFkw1WFwvO4SlZywU6aLg5Of0Ap/PgcbSw4LNxvMWXMeugwMCX0AA==
 
+notepack.io@~2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/notepack.io/-/notepack.io-2.2.0.tgz#d7ea71d1cb90094f88c6f3c8d84277c2d0cd101c"
+  integrity sha512-9b5w3t5VSH6ZPosoYnyDONnUTF8o0UkBw7JLA6eBlYJWyGT1Q3vQa8Hmuj1/X6RYvHjjygBDgw6fJhe0JEojfw==
+
 object-assign@^4, object-assign@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
@@ -2208,7 +2223,7 @@ slice-ansi@^4.0.0:
     astral-regex "^2.0.0"
     is-fullwidth-code-point "^3.0.0"
 
-socket.io-adapter@~2.3.2:
+socket.io-adapter@~2.3.0, socket.io-adapter@~2.3.2:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/socket.io-adapter/-/socket.io-adapter-2.3.2.tgz#039cd7c71a52abad984a6d57da2c0b7ecdd3c289"
   integrity sha512-PBZpxUPYjmoogY0aoaTmo1643JelsaS1CiAwNjRVdrI0X9Seuc19Y2Wife8k88avW6haG8cznvwbubAZwH4Mtg==
@@ -2395,6 +2410,11 @@ typedarray-to-buffer@^3.1.5:
   integrity sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q==
   dependencies:
     is-typedarray "^1.0.0"
+
+uid2@0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/uid2/-/uid2-0.0.3.tgz#483126e11774df2f71b8b639dcd799c376162b82"
+  integrity sha1-SDEm4Rd03y9xuLY53NeZw3YWK4I=
 
 unbox-primitive@^1.0.1:
   version "1.0.1"
