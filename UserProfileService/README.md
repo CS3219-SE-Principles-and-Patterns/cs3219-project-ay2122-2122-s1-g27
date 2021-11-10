@@ -1,5 +1,7 @@
 # UserProfileService
 
+`UserProfileService` handles user login, authentication, and matching logic
+
 ## Local Setup
 
 1. Run `yarn install` to install all depedencies
@@ -55,6 +57,7 @@ NODE_LOCAL_PORT: Port to use to connect to our app. 8080 by default
 NODE_DOCKER_PORT: Port to use in our **Docker Container/Node.js Server App**. Also 8080 by default
 
 QUESTION_SERVICE_LOCAL_URL: URL where the local QuestionService is hosted.
+QUESTION_SERVICE_DEPLOYED_URL: URL where the remote QuestionService is hosted.
 ```
 
 ## Database

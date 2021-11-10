@@ -6,6 +6,7 @@ This service purpose is to maintain text messaging between two users while conne
 
 1. Run `yarn install` to install all depedencies
 2. Run `yarn start` to start the server using `Nodemon`. Server will start on port 7000 (by default)
+3. Ensure you have `Redis` installed and running.
 
 ## Local Development Guide
 
@@ -43,5 +44,5 @@ REDIS_REMOTE_PW: Redis Remote instance password.
 ## DevOps / Containerization / Orchestration
 
 **Relevant Commands**
-- `docker build -t peerprep/comm:latest .`: (Re)Build Image Locally
+- `docker build -t peerprep/comm:latest .`: (Re)Build Image Locally. Warning: Does not contain Redis as we typically point to hosted instance.
 - `docker run -dp 7000:7000 --platform linux/amd64 peerprep/comm:latest`: Run standalone Docker Image (Typically in production mode)

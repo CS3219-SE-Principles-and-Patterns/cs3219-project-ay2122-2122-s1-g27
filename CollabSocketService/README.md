@@ -6,6 +6,7 @@ This service purpose is to maintain collaborative editing of a Code Editor.
 
 1. Run `yarn install` to install all depedencies
 2. Run `yarn start` to start the server using `Nodemon`. Server will start on port 5005 (by default)
+3. Ensure you have `Redis` installed and running.
 
 ## Local Development Guide
 
@@ -47,5 +48,5 @@ REDIS_REMOTE_PW: Redis Remote instance password.
 
 **Relevant Commands**
 
-- `docker build -t peerprep/collab:latest .`: (Re)Build Image Locally
+- `docker build -t peerprep/collab:latest .`: (Re)Build Image Locally. Warning: Does not contain Redis as we typically point to hosted instance.
 - `docker run -dp 5005:5005 QUESTION_SERVICE_DEPLOYED_URL=<QUESTION_SERVICE_URL> --platform linux/amd64 peerprep/collab:latest`: Run standalone Docker Image (Typically in production mode), If `QuestionService` is started locally, you may use `docker run -dp 5005:5005 --env QUESTION_SERVICE_DEPLOYED_URL=http://localhost:8081 --platform linux/amd64 peerprep/collab:latest`

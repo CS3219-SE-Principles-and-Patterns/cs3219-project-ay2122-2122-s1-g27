@@ -1,5 +1,7 @@
 # QuestionService
 
+`QuestionService` handles question queries, room creation for triggering collaborative edit
+
 ## Local Setup
 
 1. Run `yarn install` to install all depedencies
