@@ -11,3 +11,5 @@
 - UserProfileService: Back-End Service for handling User Actions e.g. Registration, Login, Initiate Match
 - CommunicationService: Back-End Service for handling Communications (Text, Audio, Video)
 - CollabSocketService: Service to handle code editing collaboration
+
+Our microservices endpoint is hosted on AWS and available at: http://PeerP-ECSAL-VRMX8RRXSKZT-117450592.ap-southeast-1.elb.amazonaws.com
