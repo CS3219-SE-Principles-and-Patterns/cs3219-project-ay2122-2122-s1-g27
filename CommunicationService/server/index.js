@@ -5,19 +5,12 @@ const { Server } = require('socket.io')
 const jwt = require('jsonwebtoken')
 const { createClient } = require('redis')
 const { createAdapter } = require('@socket.io/redis-adapter')
-const { promisify } = require('util')
 
 const { SocketController } = require('../controller/socketController')
 
 const { JWT_SECRET_TOKEN } = process.env
 
-const { PORT, redisHost, redisPort, redisPw } = require('../configs')
-// setting redis client and defining its async alternatives
-const redisClient = createClient({
-  host: redisHost,
-  port: redisPort,
-  password: redisPw,
-})
+const { redisHost, redisPort, redisPw } = require('../configs')
 
 // express app
 const app = express()
@@ -70,4 +63,4 @@ io.of('/api/comm').use((socket, next) => {
 
 io.of('/api/comm').on('connection', (socket) => SocketController(socket, io))
 
-module.exports = { httpServer }
+module.exports = httpServer

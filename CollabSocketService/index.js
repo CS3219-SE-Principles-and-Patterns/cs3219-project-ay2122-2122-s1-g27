@@ -5,7 +5,7 @@ const { Server } = require('socket.io')
 const fetch = require('cross-fetch')
 const cors = require('cors')
 const { createClient } = require('redis')
-const { createAdapter } = require("@socket.io/redis-adapter");
+const { createAdapter } = require('@socket.io/redis-adapter')
 const { promisify } = require('util')
 
 const { PORT, questionServiceURL, redisHost, redisPort, redisPw } = require('./configs')
@@ -19,7 +19,6 @@ app.options('*', cors())
 
 const router = express.Router()
 router.get('/', (_, res) => {
-  console.log('Req from root CollabSocketService')
   res.send('Hello World from CollabSocketService')
 })
 
@@ -37,7 +36,7 @@ const server = http.createServer(app)
 const io = new Server(server, {
   cors: {
     origin: '*',
-    credentials: true
+    credentials: true,
   },
 })
 // setting redis client and defining its async alternatives
@@ -49,14 +48,14 @@ const pubClient = createClient({
 const getAsync = promisify(pubClient.get).bind(pubClient)
 const setAsync = promisify(pubClient.set).bind(pubClient)
 const delAsync = promisify(pubClient.del).bind(pubClient)
-const subClient = pubClient.duplicate();
-io.adapter(createAdapter(pubClient, subClient));
+const subClient = pubClient.duplicate()
+io.adapter(createAdapter(pubClient, subClient))
 
 io.of('/api/collab').on('connection', (socket) => {
   const header = socket.handshake.headers.authorization
   const jwt = header?.split(' ')[1]
 
-  console.log(`${socket.id} connected with socket server wohoo!`)
+  console.log(`${socket.id} connected with CollabSocketService`)
 
   // To join room
   socket.on('room', async (data) => {
